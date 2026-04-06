@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from 'react';
+import type { ReactNode } from "react";
+import { useState } from "react";
 import Sidebar from './_components/Sidebar';
 import Topbar from './_components/Topbar';
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
