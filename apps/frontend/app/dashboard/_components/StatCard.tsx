@@ -1,11 +1,10 @@
-// app/dashboard/_components/StatCard.tsx
-import React from 'react';
+import type { ReactNode } from "react";
 
 interface StatCardProps {
   title: string;
   value: string | number;
   subtext: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBgColor: string;
 }
 

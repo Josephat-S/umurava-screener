@@ -1,56 +1,80 @@
-// app/dashboard/_components/RecentActivity.tsx
-import React from 'react';
-import { Briefcase, UserCheck, Users, TrendingUp } from 'lucide-react';
+import React from "react";
+import { Briefcase, Sparkles, Users, Zap } from "lucide-react";
+import type { Job } from "@/types";
 
-// Sample data based on the image, updated with the new brand color
-const activities = [
-  {
-    id: 1,
-    title: "Job Posting 'Senior AI Engineer Rwanda' created",
-    time: "2 hours ago",
-    icon: <Briefcase size={18} className="text-[#260af5]" />,
-    iconBg: "bg-[#260af5]/10",
-  },
-  {
-    id: 2,
-    title: "'John Doe' parsed and ranked — Match Score: 89%",
-    time: "3 hours ago",
-    icon: <TrendingUp size={18} className="text-[#260af5]" />,
-    iconBg: "bg-[#260af5]/10",
-  },
-  {
-    id: 3,
-    title: "'Jane Smith' CV uploaded and parsed",
-    time: "5 hours ago",
-    icon: <Users size={18} className="text-[#260af5]" />,
-    iconBg: "bg-[#260af5]/10",
-  },
-  {
-    id: 4,
-    title: "AI Screening completed for 'Data Scientist' role",
-    time: "1 day ago",
-    icon: <UserCheck size={18} className="text-[#260af5]" />,
-    iconBg: "bg-[#260af5]/10",
-  },
-];
+interface RecentActivityProps {
+  jobs: Job[];
+}
 
-export default function RecentActivity() {
+function formatRelativeTime(value: string): string {
+  const diffMs = Date.now() - new Date(value).getTime();
+  const diffHours = Math.max(1, Math.floor(diffMs / (1000 * 60 * 60)));
+
+  if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+}
+
+export default function RecentActivity({ jobs }: RecentActivityProps) {
+  const activities = jobs.slice(0, 4).map((job, index) => {
+    const variants = [
+      {
+        icon: <Briefcase size={18} className="text-[#260af5]" />,
+        iconBg: "bg-[#260af5]/10",
+        title: `Job posting '${job.title}' created`,
+      },
+      {
+        icon: <Users size={18} className="text-[#260af5]" />,
+        iconBg: "bg-[#260af5]/10",
+        title: `'${job.title}' is ready for applicants`,
+      },
+      {
+        icon: <Zap size={18} className="text-[#260af5]" />,
+        iconBg: "bg-[#260af5]/10",
+        title: `AI screening can now be run for '${job.title}'`,
+      },
+      {
+        icon: <Sparkles size={18} className="text-[#260af5]" />,
+        iconBg: "bg-[#260af5]/10",
+        title: `'${job.title}' shortlist set to top ${job.shortlistSize}`,
+      },
+    ];
+
+    return {
+      id: job._id,
+      time: formatRelativeTime(job.createdAt),
+      ...variants[index % variants.length],
+    };
+  });
+
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm mt-6 p-6">
       <h2 className="text-lg font-semibold text-gray-800 mb-6">Recent Activity</h2>
-      <div className="space-y-6">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-4">
-            <div className={`p-2 rounded-lg ${activity.iconBg}`}>
-              {activity.icon}
+      {activities.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center">
+          <p className="text-sm font-medium text-gray-600">No recent activity yet.</p>
+          <p className="text-xs text-gray-400 mt-1">
+            Create a job to start building your screening pipeline.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {activities.map((activity) => (
+            <div key={activity.id} className="flex items-start gap-4">
+              <div className={`p-2 rounded-lg ${activity.iconBg}`}>
+                {activity.icon}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-800">{activity.title}</p>
+                <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-800">{activity.title}</p>
-              <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
