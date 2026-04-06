@@ -28,7 +28,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     case 'Screened':
       return <span className="px-3 py-1 bg-green-50 text-green-600 border border-green-200 rounded-full text-xs font-medium">Screened</span>;
     case 'Parsed':
-      return <span className="px-3 py-1 bg-purple-50 text-purple-600 border border-purple-200 rounded-full text-xs font-medium">Parsed</span>;
+      return <span className="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-full text-xs font-medium">Parsed</span>;
     case 'New':
     default:
       return <span className="px-3 py-1 bg-gray-50 text-gray-500 border border-gray-200 rounded-full text-xs font-medium">New</span>;
@@ -53,7 +53,7 @@ export default function CandidatesPage() {
           onClick={() => setActiveTab('structured')}
           className={`pb-3 text-sm font-medium transition-colors ${
             activeTab === 'structured' 
-              ? 'text-[#5D18FF] border-b-2 border-[#5D18FF]' 
+              ? 'text-[#260af5] border-b-2 border-[#260af5]' 
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
@@ -63,7 +63,7 @@ export default function CandidatesPage() {
           onClick={() => setActiveTab('external')}
           className={`pb-3 text-sm font-medium transition-colors ${
             activeTab === 'external' 
-              ? 'text-[#5D18FF] border-b-2 border-[#5D18FF]' 
+              ? 'text-[#260af5] border-b-2 border-[#260af5]' 
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
@@ -89,7 +89,7 @@ export default function CandidatesPage() {
                 <input 
                   type="text" 
                   placeholder="Search candidates..." 
-                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors w-full sm:w-64"
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors w-full sm:w-64"
                 />
               </div>
               
@@ -107,7 +107,7 @@ export default function CandidatesPage() {
               <thead>
                 <tr className="bg-white text-sm text-gray-500 border-b border-gray-100">
                   <th className="py-4 pl-6 pr-4 w-12">
-                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer" />
+                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
                   </th>
                   <th className="py-4 px-4 font-medium">Name</th>
                   <th className="py-4 px-4 font-medium">Match Score</th>
@@ -120,7 +120,7 @@ export default function CandidatesPage() {
                 {candidatesData.map((candidate) => (
                   <tr key={candidate.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
                     <td className="py-4 pl-6 pr-4">
-                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer" />
+                      <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
                     </td>
                     <td className="py-4 px-4 text-sm font-medium text-gray-800">{candidate.name}</td>
                     <td className={`py-4 px-4 text-sm ${getScoreColor(candidate.score)}`}>
@@ -147,7 +147,7 @@ export default function CandidatesPage() {
           <h2 className="text-lg font-bold text-gray-800 mb-6">Upload CVs or CSV</h2>
           
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 flex flex-col items-center justify-center text-center hover:bg-gray-50/50 transition-colors cursor-pointer group">
-            <Upload className="w-10 h-10 text-gray-500 mb-4 group-hover:text-purple-600 transition-colors" strokeWidth={1.5} />
+            <Upload className="w-10 h-10 text-gray-500 mb-4 group-hover:text-blue-600 transition-colors" strokeWidth={1.5} />
             <h3 className="text-base font-semibold text-gray-800 mb-1">Drag & Drop Files Here</h3>
             <p className="text-sm text-gray-500 mb-6">Support for PDF (CVs) and CSV files</p>
             

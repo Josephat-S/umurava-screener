@@ -20,14 +20,14 @@ export default function DashboardPage() {
           value="12" 
           subtext="+3 this week" 
           icon={<Briefcase size={20} />} 
-          iconBgColor="bg-purple-600" 
+          iconBgColor="bg-[#260af5]" /* Updated to your new brand color */
         />
         <StatCard 
           title="Candidates Screened" 
           value="284" 
           subtext="+47 today" 
           icon={<Users size={20} />} 
-          iconBgColor="bg-purple-400" 
+          iconBgColor="bg-blue-500" /* Updated to a standard blue instead of purple */
         />
         <StatCard 
           title="Top Talent Found" 

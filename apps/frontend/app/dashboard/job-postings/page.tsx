@@ -24,7 +24,7 @@ export default function CreateJobPostingPage() {
               <input
                 type="text"
                 placeholder="e.g. Senior AI Engineer"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
               />
             </div>
             
@@ -35,7 +35,7 @@ export default function CreateJobPostingPage() {
               <div className="relative">
                 <select 
                   defaultValue=""
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm appearance-none bg-white text-gray-600"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600"
                 >
                   <option value="" disabled>Select department</option>
                   <option value="engineering">Engineering</option>
@@ -55,7 +55,7 @@ export default function CreateJobPostingPage() {
             <textarea
               rows={5}
               placeholder="Describe the role, responsibilities, and what makes a great candidate..."
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm resize-y"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y"
             ></textarea>
           </div>
 
@@ -68,7 +68,7 @@ export default function CreateJobPostingPage() {
               <input
                 type="text"
                 placeholder="Type a skill and press Enter"
-                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
               />
               <button 
                 type="button" 
@@ -88,7 +88,7 @@ export default function CreateJobPostingPage() {
               <div className="relative">
                 <select 
                   defaultValue=""
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm appearance-none bg-white text-gray-600"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600"
                 >
                   <option value="" disabled>Select experience level</option>
                   <option value="junior">Junior (1-3 years)</option>
@@ -106,7 +106,7 @@ export default function CreateJobPostingPage() {
               <div className="relative">
                 <select 
                   defaultValue=""
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-colors text-sm appearance-none bg-white text-gray-600"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600"
                 >
                   <option value="" disabled>Select your country</option>
                   <option value="rwanda">Rwanda</option>
@@ -128,7 +128,7 @@ export default function CreateJobPostingPage() {
             </button>
             <button 
               type="button" 
-              className="px-8 py-2 text-sm font-medium text-white bg-[#C471ED] rounded-lg hover:bg-[#b058dd] transition-colors"
+              className="px-8 py-2 text-sm font-medium text-white bg-[#260af5] rounded-lg hover:bg-[#1a05cc] transition-colors"
             >
               Next &gt;
             </button>
