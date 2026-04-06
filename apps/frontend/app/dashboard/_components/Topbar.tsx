@@ -28,7 +28,7 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
         {/* Mobile Toggle */}
         <button 
           onClick={toggleMobile} 
-          className="md:block hidden md:hidden text-gray-500 hover:bg-gray-100 p-2 rounded-md transition-colors"
+          className="md:hidden text-gray-500 hover:bg-gray-100 p-2 rounded-md transition-colors"
         >
           <Menu className="w-5 h-5" />
         </button>
