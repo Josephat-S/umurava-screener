@@ -1,14 +1,19 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { BarChart2, Briefcase, Users, Zap, X } from 'lucide-react';
 // Import the logo directly from your app folder
 import umuravaLogo from '../../umuravalogo.png'; 
 
+// 1. Added 'path' to each item instead of 'active'
 const navItems = [
-  { name: 'DASHBOARD', desc: 'Overview & metrics', icon: BarChart2, active: true },
-  { name: 'JOB POSTINGS', desc: 'Create & manage jobs', icon: Briefcase, active: false },
-  { name: 'CANDIDATES', desc: 'Applicant management', icon: Users, active: false },
-  { name: 'AI SCREENING', desc: 'Evaluate & rank', icon: Zap, active: false },
+  { name: 'DASHBOARD', desc: 'Overview & metrics', icon: BarChart2, path: '/dashboard' },
+  { name: 'JOB POSTINGS', desc: 'Create & manage jobs', icon: Briefcase, path: '/dashboard/job-postings' },
+  { name: 'CANDIDATES', desc: 'Applicant management', icon: Users, path: '/dashboard/candidates' },
+  { name: 'AI SCREENING', desc: 'Evaluate & rank', icon: Zap, path: '/dashboard/ai-screening' },
 ];
 
 interface SidebarProps {
@@ -18,6 +23,9 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: SidebarProps) {
+  // 2. Get the current URL path to highlight the active menu item
+  const pathname = usePathname();
+
   return (
     <>
       {/* Mobile Dark Overlay */}
@@ -64,11 +72,17 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
         <nav className="flex-1 px-3 space-y-2 mt-4 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             const Icon = item.icon;
+            // 3. Check if the current route matches the item's path
+            const isActive = pathname === item.path; 
+            
             return (
-              <div
+              // 4. Changed from <div> to Next.js <Link> tag
+              <Link
                 key={item.name}
-                className={`p-3 rounded-xl flex items-center cursor-pointer transition-colors ${
-                  item.active ? 'bg-white/10' : 'hover:bg-white/5'
+                href={item.path}
+                onClick={() => setIsMobileOpen(false)} // Close mobile menu when a link is clicked
+                className={`p-3 rounded-xl flex items-center transition-colors ${
+                  isActive ? 'bg-white/10' : 'hover:bg-white/5'
                 } ${isCollapsed ? 'justify-center' : 'justify-start gap-3'}`}
                 title={isCollapsed ? item.name : undefined}
               >
@@ -81,7 +95,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
                     <div className="text-xs text-purple-200 mt-0.5">{item.desc}</div>
                   </div>
                 )}
-              </div>
+              </Link>
             );
           })}
         </nav>
