@@ -34,7 +34,7 @@ export async function runGeminiScreening(
     return [];
   }
 
-  const model = getGeminiClient().getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = getGeminiClient().getGenerativeModel({ model: "gemini-2.5-flash" });
   const prompt = buildScreeningPrompt(job, candidates, shortlistSize);
   const result = await model.generateContent(prompt);
   const rawText = result.response.text();
