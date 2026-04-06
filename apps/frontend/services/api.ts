@@ -6,7 +6,15 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 60000,
+  timeout: 600000,
+});
+
+api.interceptors.request.use((config) => {
+  // Remove Content-Type header for FormData so multipart boundary is set correctly
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
 });
 
 api.interceptors.response.use(
