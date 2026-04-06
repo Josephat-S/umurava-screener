@@ -46,7 +46,7 @@ export default function AIScreeningPage() {
           <div className="relative">
             <select 
               defaultValue="senior-ai"
-              className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
               <option value="senior-ai">Senior AI Engineer</option>
               <option value="backend">Backend Engineer</option>
@@ -54,7 +54,7 @@ export default function AIScreeningPage() {
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
-          <button className="flex items-center gap-2 bg-[#5D18FF] hover:bg-[#4a12cc] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+          <button className="flex items-center gap-2 bg-[#260af5] hover:bg-[#1a05cc] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
             <Zap className="w-4 h-4" />
             Run AI Screening
           </button>
@@ -65,11 +65,11 @@ export default function AIScreeningPage() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         
         <div className="p-6 border-b border-gray-100 flex items-center gap-2">
-          <Award className="w-5 h-5 text-[#5D18FF]" />
+          <Award className="w-5 h-5 text-[#260af5]" />
           <h2 className="text-lg font-bold text-gray-800">Ranked Candidates</h2>
         </div>
 
-        {/* Table - ALL INTERNAL COMMENTS REMOVED TO FIX HYDRATION ERROR */}
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -88,7 +88,7 @@ export default function AIScreeningPage() {
                   <td className="py-4 pl-6 pr-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                       candidate.rank === 1 
-                        ? 'bg-[#5D18FF] text-white shadow-sm' 
+                        ? 'bg-[#260af5] text-white shadow-sm' 
                         : 'bg-gray-100 text-gray-500'
                     }`}>
                       #{candidate.rank}
@@ -115,7 +115,7 @@ export default function AIScreeningPage() {
                     {candidate.job}
                   </td>
                   <td className="py-4 px-6 text-right">
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#5D18FF] transition-colors ml-auto" />
+                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#260af5] transition-colors ml-auto" />
                   </td>
                 </tr>
               ))}

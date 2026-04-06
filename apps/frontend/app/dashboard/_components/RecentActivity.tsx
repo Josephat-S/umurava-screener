@@ -2,35 +2,35 @@
 import React from 'react';
 import { Briefcase, UserCheck, Users, TrendingUp } from 'lucide-react';
 
-// Sample data based on the image
+// Sample data based on the image, updated with the new brand color
 const activities = [
   {
     id: 1,
     title: "Job Posting 'Senior AI Engineer Rwanda' created",
     time: "2 hours ago",
-    icon: <Briefcase size={18} className="text-purple-600" />,
-    iconBg: "bg-purple-100",
+    icon: <Briefcase size={18} className="text-[#260af5]" />,
+    iconBg: "bg-[#260af5]/10",
   },
   {
     id: 2,
     title: "'John Doe' parsed and ranked — Match Score: 89%",
     time: "3 hours ago",
-    icon: <TrendingUp size={18} className="text-purple-600" />,
-    iconBg: "bg-purple-100",
+    icon: <TrendingUp size={18} className="text-[#260af5]" />,
+    iconBg: "bg-[#260af5]/10",
   },
   {
     id: 3,
     title: "'Jane Smith' CV uploaded and parsed",
     time: "5 hours ago",
-    icon: <Users size={18} className="text-purple-600" />,
-    iconBg: "bg-purple-100",
+    icon: <Users size={18} className="text-[#260af5]" />,
+    iconBg: "bg-[#260af5]/10",
   },
   {
     id: 4,
     title: "AI Screening completed for 'Data Scientist' role",
     time: "1 day ago",
-    icon: <UserCheck size={18} className="text-purple-600" />,
-    iconBg: "bg-purple-100",
+    icon: <UserCheck size={18} className="text-[#260af5]" />,
+    iconBg: "bg-[#260af5]/10",
   },
 ];
 
