@@ -4,6 +4,8 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Filter,
   Plus,
   Search,
@@ -39,6 +41,8 @@ const INITIAL_APPLICANT_FORM: StructuredApplicantInput = {
   currentRole: "",
   summary: "",
 };
+
+const APPLICANTS_PER_PAGE = 10;
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
@@ -110,6 +114,10 @@ function CandidatesPageContent() {
   const [dragOver, setDragOver] = useState(false);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
+  const [paginationState, setPaginationState] = useState({
+    key: "",
+    page: 1,
+  });
   const [skillsInput, setSkillsInput] = useState("");
   const [structuredForm, setStructuredForm] =
     useState<StructuredApplicantInput>(INITIAL_APPLICANT_FORM);
@@ -118,26 +126,33 @@ function CandidatesPageContent() {
     void dispatch(fetchJobs());
   }, [dispatch]);
 
+  const queryJobId = searchParams.get("jobId");
+  const defaultJobId = useMemo(() => {
+    if (jobs.length === 0) {
+      return "";
+    }
+
+    const matchingQueryJobId = queryJobId
+      ? jobs.find((job) => job._id === queryJobId)?._id
+      : "";
+
+    return matchingQueryJobId || jobs[0]._id;
+  }, [jobs, queryJobId]);
+
+  const activeJobId = jobs.some((job) => job._id === selectedJobId)
+    ? selectedJobId
+    : defaultJobId;
+
   useEffect(() => {
-    if (selectedJobId || jobs.length === 0) {
+    if (!activeJobId) {
       return;
     }
 
-    const queryJobId = searchParams.get("jobId");
-    const jobExists = jobs.some((job) => job._id === queryJobId);
-    setSelectedJobId(jobExists && queryJobId ? queryJobId : jobs[0]._id);
-  }, [jobs, searchParams, selectedJobId]);
+    void dispatch(fetchApplicants(activeJobId));
+    void dispatch(fetchScreeningResults(activeJobId));
+  }, [activeJobId, dispatch]);
 
-  useEffect(() => {
-    if (!selectedJobId) {
-      return;
-    }
-
-    void dispatch(fetchApplicants(selectedJobId));
-    void dispatch(fetchScreeningResults(selectedJobId));
-  }, [dispatch, selectedJobId]);
-
-  const selectedJob = jobs.find((job) => job._id === selectedJobId) || null;
+  const selectedJob = jobs.find((job) => job._id === activeJobId) || null;
 
   const screeningMap = useMemo(
     () =>
@@ -145,7 +160,7 @@ function CandidatesPageContent() {
     [shortlist],
   );
 
-  const visibleApplicants = useMemo(() => {
+  const filteredApplicants = useMemo(() => {
     const sourceType = activeTab === "structured" ? "platform" : "upload";
 
     return applicants
@@ -164,6 +179,43 @@ function CandidatesPageContent() {
         return haystack.includes(deferredSearch.toLowerCase());
       });
   }, [activeTab, applicants, deferredSearch]);
+
+  const shouldPaginate = true;
+  const totalFilteredApplicants = filteredApplicants.length;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalFilteredApplicants / APPLICANTS_PER_PAGE),
+  );
+  const currentViewLabel =
+    activeTab === "structured" ? "structured applicants" : "uploaded applicants";
+  const paginationKey = `${activeTab}:${activeJobId}:${deferredSearch.toLowerCase()}`;
+  const currentPage =
+    paginationState.key === paginationKey ? paginationState.page : 1;
+  const normalizedCurrentPage = Math.min(currentPage, totalPages);
+
+  const visibleApplicants = useMemo(() => {
+    if (!shouldPaginate) {
+      return filteredApplicants;
+    }
+
+    const startIndex = (normalizedCurrentPage - 1) * APPLICANTS_PER_PAGE;
+    return filteredApplicants.slice(
+      startIndex,
+      startIndex + APPLICANTS_PER_PAGE,
+    );
+  }, [filteredApplicants, normalizedCurrentPage, shouldPaginate]);
+
+  const pageStart = shouldPaginate
+    ? totalFilteredApplicants === 0
+      ? 0
+      : (normalizedCurrentPage - 1) * APPLICANTS_PER_PAGE + 1
+    : 0;
+  const pageEnd = shouldPaginate
+    ? Math.min(
+        normalizedCurrentPage * APPLICANTS_PER_PAGE,
+        totalFilteredApplicants,
+      )
+    : 0;
 
   const addSkill = () => {
     const value = skillsInput.trim();
@@ -186,7 +238,7 @@ function CandidatesPageContent() {
   const handleStructuredSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!selectedJobId) {
+    if (!activeJobId) {
       toast.error("Select a job before adding applicants.");
       return;
     }
@@ -200,20 +252,21 @@ function CandidatesPageContent() {
 
       await dispatch(
         addStructuredApplicants({
-          jobId: selectedJobId,
+          jobId: activeJobId,
           applicants: [applicantPayload],
         }),
       ).unwrap();
       toast.success("Applicant added successfully.");
       setStructuredForm(INITIAL_APPLICANT_FORM);
       setSkillsInput("");
+      setPaginationState({ key: paginationKey, page: 1 });
     } catch (submitError) {
       toast.error((submitError as Error).message || "Failed to add applicant");
     }
   };
 
   const handleUpload = async (files: FileList | null) => {
-    if (!selectedJobId) {
+    if (!activeJobId) {
       toast.error("Select a job before uploading files.");
       return;
     }
@@ -225,8 +278,9 @@ function CandidatesPageContent() {
     try {
       const payload = Array.from(files);
       const result = await dispatch(
-        uploadApplicantFiles({ jobId: selectedJobId, files: payload }),
+        uploadApplicantFiles({ jobId: activeJobId, files: payload }),
       ).unwrap();
+      setPaginationState({ key: paginationKey, page: 1 });
       toast.success(`${result.length} applicants uploaded successfully.`);
     } catch (uploadError) {
       toast.error((uploadError as Error).message || "Upload failed");
@@ -254,7 +308,7 @@ function CandidatesPageContent() {
 
           <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
             <Filter className="w-4 h-4" />
-            {rows.length} Results
+            {totalFilteredApplicants} Results
           </button>
         </div>
       </div>
@@ -329,6 +383,54 @@ function CandidatesPageContent() {
           </tbody>
         </table>
       </div>
+
+      {shouldPaginate && totalFilteredApplicants > 0 && (
+        <div className="flex flex-col gap-4 border-t border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm text-gray-500">
+            Showing {pageStart}-{pageEnd} of {totalFilteredApplicants} {currentViewLabel}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="hidden rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:inline-flex">
+              {APPLICANTS_PER_PAGE} per page
+            </span>
+
+            <button
+              type="button"
+              onClick={() =>
+                setPaginationState({
+                  key: paginationKey,
+                  page: Math.max(normalizedCurrentPage - 1, 1),
+                })
+              }
+              disabled={normalizedCurrentPage === 1}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </button>
+
+            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700">
+              Page {normalizedCurrentPage} of {totalPages}
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setPaginationState({
+                  key: paginationKey,
+                  page: Math.min(normalizedCurrentPage + 1, totalPages),
+                })
+              }
+              disabled={normalizedCurrentPage === totalPages}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -348,7 +450,7 @@ function CandidatesPageContent() {
           </label>
           <div className="relative">
             <select
-              value={selectedJobId}
+              value={activeJobId}
               onChange={(event) => setSelectedJobId(event.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600"
             >
