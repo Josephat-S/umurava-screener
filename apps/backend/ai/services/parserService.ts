@@ -1,11 +1,23 @@
 import pdfParse from "pdf-parse";
 import * as XLSX from "xlsx";
-import { CandidateInput } from "../types/aiTypes";
+import { z } from "zod";
+import { generateGeminiText } from "./geminiClient";
+import { CandidateInput, ParsedJobDescription } from "../types/aiTypes";
 
 const sanitizeText = (value: unknown): string =>
   String(value ?? "")
     .replace(/\s+/g, " ")
     .trim();
+
+const ParsedJobDescriptionSchema = z.object({
+  title: z.string().catch(""),
+  description: z.string().catch(""),
+  skills: z.array(z.string()).catch([]),
+  requirements: z.array(z.string()).catch([]),
+  experienceYears: z.coerce.number().min(0).catch(0),
+  educationLevel: z.string().catch(""),
+  location: z.string().optional().catch(""),
+});
 
 const splitSkills = (value: unknown): string[] =>
   sanitizeText(value)
@@ -44,6 +56,54 @@ const parseExperienceYears = (row: Record<string, unknown>): number => {
 export async function parsePDF(buffer: Buffer): Promise<string> {
   const data = await pdfParse(buffer);
   return data.text.replace(/\s+/g, " ").trim();
+}
+
+export async function parseJobDescriptionWithAI(
+  description: string,
+): Promise<ParsedJobDescription> {
+  const prompt = `
+Extract structured hiring information from the job description below.
+Return ONLY valid JSON with these exact fields:
+{
+  "title": "job title",
+  "description": "brief 2-3 sentence summary",
+  "skills": ["skill1", "skill2"],
+  "requirements": ["requirement1", "requirement2"],
+  "experienceYears": 3,
+  "educationLevel": "Bachelor",
+  "location": "city, country or Remote"
+}
+
+Job Description:
+${description}
+
+Return ONLY JSON. No markdown. No explanation.
+  `.trim();
+
+  const { text: rawText } = await generateGeminiText(prompt);
+  const cleaned = rawText.replace(/```json|```/g, "").trim();
+
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    throw new Error(`Gemini returned invalid JSON. Raw response: ${rawText.slice(0, 300)}`);
+  }
+
+  const validated = ParsedJobDescriptionSchema.parse(parsed);
+
+  return {
+    title: sanitizeText(validated.title),
+    description: sanitizeText(validated.description),
+    skills: validated.skills.map((item) => sanitizeText(item)).filter(Boolean),
+    requirements: validated.requirements
+      .map((item) => sanitizeText(item))
+      .filter(Boolean),
+    experienceYears: validated.experienceYears,
+    educationLevel: sanitizeText(validated.educationLevel),
+    location: sanitizeText(validated.location),
+  };
 }
 
 export function parseSpreadsheet(buffer: Buffer): CandidateInput[] {

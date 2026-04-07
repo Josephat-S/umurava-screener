@@ -4,7 +4,13 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { ChevronDown, Plus, Trash2 } from "lucide-react";
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
-import { createJob, deleteJob, fetchJobs } from "@/store/slices/jobSlice";
+import EmptyState from "../_components/EmptyState";
+import {
+  createJob,
+  deleteJob,
+  fetchJobs,
+  parseJobDescription,
+} from "@/store/slices/jobSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import type { JobFormData } from "@/types";
 
@@ -29,13 +35,14 @@ function formatDate(value: string): string {
 
 export default function CreateJobPostingPage() {
   const dispatch = useAppDispatch();
-  const { jobs, loading, saving, deletingJobId, error } = useAppSelector(
+  const { jobs, loading, saving, parsing, deletingJobId, error } = useAppSelector(
     (state) => state.jobs,
   );
 
   const [form, setForm] = useState<JobFormData>(INITIAL_FORM);
   const [skillInput, setSkillInput] = useState("");
   const [requirementInput, setRequirementInput] = useState("");
+  const [rawDescription, setRawDescription] = useState("");
 
   useEffect(() => {
     void dispatch(fetchJobs());
@@ -113,8 +120,38 @@ export default function CreateJobPostingPage() {
     }
   };
 
+  const handleParseDescription = async () => {
+    if (!rawDescription.trim()) {
+      toast.error("Paste a job description before asking AI to parse it.");
+      return;
+    }
+
+    try {
+      const parsed = await dispatch(parseJobDescription(rawDescription)).unwrap();
+
+      setForm((previous) => ({
+        ...previous,
+        title: parsed.title || previous.title,
+        description: parsed.description || previous.description,
+        skills: parsed.skills.length > 0 ? parsed.skills : previous.skills,
+        requirements:
+          parsed.requirements.length > 0
+            ? parsed.requirements
+            : previous.requirements,
+        experienceYears:
+          parsed.experienceYears || previous.experienceYears,
+        educationLevel: parsed.educationLevel || previous.educationLevel,
+        location: parsed.location || previous.location,
+      }));
+      setRawDescription("");
+      toast.success("Job description parsed successfully.");
+    } catch (parseError) {
+      toast.error((parseError as Error).message || "Failed to parse job description");
+    }
+  };
+
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Create Job Posting</h1>
         <p className="text-gray-500 text-sm mt-1">
@@ -129,10 +166,39 @@ export default function CreateJobPostingPage() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
           <h2 className="text-lg font-bold text-gray-800 mb-6">Job Details</h2>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <h3 className="text-base font-semibold text-blue-900">
+                    Parse with AI
+                  </h3>
+                  <p className="mt-1 text-sm text-blue-700">
+                    Paste a full job description and let AI draft the form fields for you.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleParseDescription}
+                  disabled={parsing || !rawDescription.trim()}
+                  className="inline-flex rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc] disabled:cursor-not-allowed disabled:bg-[#260af5]/40"
+                >
+                  {parsing ? "Parsing..." : "Parse with AI"}
+                </button>
+              </div>
+
+              <textarea
+                rows={5}
+                value={rawDescription}
+                onChange={(event) => setRawDescription(event.target.value)}
+                placeholder="Paste the full job description here..."
+                className="mt-4 w-full rounded-lg border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -364,12 +430,11 @@ export default function CreateJobPostingPage() {
           {loading ? (
             <div className="py-12 text-center text-gray-400">Loading jobs...</div>
           ) : sortedJobs.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-10 text-center">
-              <p className="text-sm font-medium text-gray-600">No jobs created yet.</p>
-              <p className="text-xs text-gray-400 mt-1">
-                Your new roles will appear here as soon as you save them.
-              </p>
-            </div>
+            <EmptyState
+              icon={<Plus className="h-5 w-5" />}
+              title="No jobs created yet"
+              description="Your new roles will appear here as soon as you save them."
+            />
           ) : (
             <div className="space-y-4">
               {sortedJobs.map((job) => (

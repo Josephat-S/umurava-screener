@@ -1,5 +1,5 @@
 import api from "@/services/api";
-import type { ApiResponse, Job, JobFormData } from "@/types";
+import type { ApiResponse, Job, JobFormData, ParsedJobDescription } from "@/types";
 
 export const jobService = {
   async getAll(): Promise<Job[]> {
@@ -15,6 +15,14 @@ export const jobService = {
   async create(data: JobFormData): Promise<Job> {
     const response = await api.post<ApiResponse<Job>>("/api/jobs", data);
     return response.data.data as Job;
+  },
+
+  async parseDescription(description: string): Promise<ParsedJobDescription> {
+    const response = await api.post<ApiResponse<ParsedJobDescription>>(
+      "/api/jobs/parse",
+      { description },
+    );
+    return response.data.data as ParsedJobDescription;
   },
 
   async update(id: string, data: Partial<JobFormData>): Promise<Job> {

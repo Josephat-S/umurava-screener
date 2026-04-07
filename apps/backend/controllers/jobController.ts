@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
+import { parseJobDescriptionWithAI } from "../ai/services/parserService";
 import { ScreeningResult } from "../models/ScreeningResult";
 import { Applicant } from "../models/Applicant";
 import { Job } from "../models/Job";
@@ -25,6 +26,9 @@ const UpdateJobSchema = JobSchema.partial().refine(
   (value) => Object.keys(value).length > 0,
   "At least one field is required",
 );
+const ParseJobDescriptionSchema = z.object({
+  description: z.string().trim().min(20, "Description must be at least 20 characters"),
+});
 
 export const createJob = async (
   req: Request,
@@ -39,6 +43,25 @@ export const createJob = async (
       success: true,
       message: "Job created successfully",
       data: job,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const parseJobDescription = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { description } = ParseJobDescriptionSchema.parse(req.body);
+    const parsed = await parseJobDescriptionWithAI(description);
+
+    res.json({
+      success: true,
+      message: "Job description parsed successfully",
+      data: parsed,
     });
   } catch (error) {
     next(error);
