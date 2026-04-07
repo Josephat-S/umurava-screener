@@ -180,12 +180,14 @@ function CandidatesPageContent() {
       });
   }, [activeTab, applicants, deferredSearch]);
 
-  const shouldPaginate = activeTab === "external";
+  const shouldPaginate = true;
   const totalFilteredApplicants = filteredApplicants.length;
   const totalPages = Math.max(
     1,
     Math.ceil(totalFilteredApplicants / APPLICANTS_PER_PAGE),
   );
+  const currentViewLabel =
+    activeTab === "structured" ? "structured applicants" : "uploaded applicants";
   const paginationKey = `${activeTab}:${activeJobId}:${deferredSearch.toLowerCase()}`;
   const currentPage =
     paginationState.key === paginationKey ? paginationState.page : 1;
@@ -385,7 +387,7 @@ function CandidatesPageContent() {
       {shouldPaginate && totalFilteredApplicants > 0 && (
         <div className="flex flex-col gap-4 border-t border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-gray-500">
-            Showing {pageStart}-{pageEnd} of {totalFilteredApplicants} uploaded applicants
+            Showing {pageStart}-{pageEnd} of {totalFilteredApplicants} {currentViewLabel}
           </div>
 
           <div className="flex items-center gap-2">
