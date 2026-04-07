@@ -1,9 +1,10 @@
-import { CandidateInput, JobInput } from "../types/aiTypes";
+import { CandidateInput, JobInput, ScoringWeights } from "../types/aiTypes";
 
 export function buildScreeningPrompt(
   job: JobInput,
   candidates: CandidateInput[],
   shortlistSize = 10,
+  weights: ScoringWeights,
 ): string {
   const requirements =
     job.requirements.length > 0 ? job.requirements.join("; ") : "Not specified";
@@ -21,10 +22,10 @@ You are an expert technical recruiter with 10+ years of experience screening can
 - Key Requirements: ${requirements}
 
 ## Scoring Criteria (Weights)
-- Skills Match: 40% — how well their skills match the required skills
-- Experience: 30% — relevance and years of experience
-- Education: 15% — meets or exceeds education requirement
-- Profile Quality: 15% — clarity, completeness, professional presentation
+- Skills Match: ${weights.skills}% — how well their skills match the required skills
+- Experience: ${weights.experience}% — relevance and years of experience
+- Education: ${weights.education}% — meets or exceeds education requirement
+- Profile Quality: ${weights.profile}% — clarity, completeness, professional presentation
 
 ## Your Task
 Evaluate ALL ${candidates.length} candidates below against this job.

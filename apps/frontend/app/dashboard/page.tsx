@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
-import { Briefcase, MapPin, TrendingUp, Users } from "lucide-react";
+import { useEffect } from "react";
+import { Briefcase, Sparkles, TrendingUp, Users } from "lucide-react";
+import EmptyState from "./_components/EmptyState";
 import RecentActivity from "./_components/RecentActivity";
 import StatCard from "./_components/StatCard";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchAnalyticsSummary } from "@/store/slices/analyticsSlice";
 import { fetchJobs } from "@/store/slices/jobSlice";
 
 function formatDate(value: string): string {
@@ -19,30 +21,18 @@ function formatDate(value: string): string {
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const { jobs, loading, error } = useAppSelector((state) => state.jobs);
+  const {
+    summary: analytics,
+    error: analyticsError,
+  } = useAppSelector((state) => state.analytics);
 
   useEffect(() => {
     void dispatch(fetchJobs());
+    void dispatch(fetchAnalyticsSummary());
   }, [dispatch]);
 
-  const stats = useMemo(() => {
-    const shortlistCapacity = jobs.reduce((sum, job) => sum + job.shortlistSize, 0);
-    const avgExperience = jobs.length
-      ? `${Math.round(
-          jobs.reduce((sum, job) => sum + job.experienceYears, 0) / jobs.length,
-        )} yrs`
-      : "—";
-    const jobsWithLocation = jobs.filter((job) => Boolean(job.location)).length;
-
-    return {
-      totalJobs: jobs.length,
-      shortlistCapacity,
-      avgExperience,
-      jobsWithLocation,
-    };
-  }, [jobs]);
-
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
@@ -69,38 +59,38 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatCard
-          title="Active Jobs"
-          value={stats.totalJobs}
-          subtext="Open roles currently configured"
+          title="Total Jobs"
+          value={analytics.totalJobs}
+          subtext="Roles configured in the screening pipeline"
           icon={<Briefcase size={20} />}
           iconBgColor="bg-[#260af5]"
         />
         <StatCard
-          title="Shortlist Capacity"
-          value={stats.shortlistCapacity}
-          subtext="Total top-candidate slots configured"
+          title="Candidates Screened"
+          value={analytics.totalScreened}
+          subtext="Applicants processed across screening runs"
           icon={<Users size={20} />}
           iconBgColor="bg-blue-500"
         />
         <StatCard
-          title="Avg. Experience"
-          value={stats.avgExperience}
-          subtext="Average experience requirement across jobs"
+          title="Avg Match Score"
+          value={`${analytics.avgMatchScore}%`}
+          subtext="Average shortlist quality across completed runs"
           icon={<TrendingUp size={20} />}
           iconBgColor="bg-green-500"
         />
         <StatCard
-          title="Locations Set"
-          value={stats.jobsWithLocation}
-          subtext="Jobs with a location configured"
-          icon={<MapPin size={20} />}
+          title="Top Skill In Demand"
+          value={analytics.topSkill}
+          subtext="Most requested skill across your job postings"
+          icon={<Sparkles size={20} />}
           iconBgColor="bg-yellow-500"
         />
       </div>
 
-      {error && (
+      {(error || analyticsError) && (
         <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
+          {error || analyticsError}
         </div>
       )}
 
@@ -124,18 +114,13 @@ export default function DashboardPage() {
           {loading ? (
             <div className="py-16 text-center text-gray-400">Loading jobs...</div>
           ) : jobs.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center">
-              <p className="text-base font-medium text-gray-700">No jobs yet.</p>
-              <p className="text-sm text-gray-400 mt-2">
-                Create your first role to start collecting candidates.
-              </p>
-              <Link
-                href="/dashboard/job-postings"
-                className="inline-flex mt-5 rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a05cc] transition-colors"
-              >
-                Create a Job
-              </Link>
-            </div>
+            <EmptyState
+              icon={<Briefcase className="h-6 w-6" />}
+              title="No jobs yet"
+              description="Create your first role to start collecting candidates and generating analytics."
+              actionLabel="Create a Job"
+              actionHref="/dashboard/job-postings"
+            />
           ) : (
             <div className="space-y-4">
               {jobs.slice(0, 4).map((job) => (

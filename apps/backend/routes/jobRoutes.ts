@@ -4,11 +4,13 @@ import {
   deleteJob,
   getJobById,
   getJobs,
+  parseJobDescription,
   updateJob,
 } from "../controllers/jobController";
 
 const router = Router();
 
+router.post("/parse", parseJobDescription);
 router.post("/", createJob);
 router.get("/", getJobs);
 router.get("/:id", getJobById);

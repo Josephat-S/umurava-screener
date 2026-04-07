@@ -4,6 +4,9 @@ import type { ScoredCandidate } from "@/types";
 
 interface ScreenedCandidateCardProps {
   candidate: ScoredCandidate;
+  selectable?: boolean;
+  selected?: boolean;
+  onToggleSelection?: (candidateId: string) => void;
 }
 
 function getScoreStyles(score: number) {
@@ -30,15 +33,57 @@ function getScoreStyles(score: number) {
   };
 }
 
+function getConfidenceStyles(candidate: ScoredCandidate) {
+  if (candidate.confidenceLevel === "high") {
+    return {
+      badge: "bg-green-50 text-green-700 border-green-200",
+      label: "High Confidence",
+      reason:
+        candidate.confidenceReason ||
+        "Structured profile data gives the AI strong matching signals.",
+    };
+  }
+
+  if (candidate.confidenceLevel === "low") {
+    return {
+      badge: "bg-orange-50 text-orange-700 border-orange-200",
+      label: "Low Confidence",
+      reason:
+        candidate.confidenceReason ||
+        "The score is based mostly on unstructured resume information.",
+    };
+  }
+
+  return {
+    badge: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    label: "Medium Confidence",
+    reason:
+      candidate.confidenceReason ||
+      "The AI had partial profile data, so recruiter review is recommended.",
+  };
+}
+
 export default function ScreenedCandidateCard({
   candidate,
+  selectable = false,
+  selected = false,
+  onToggleSelection,
 }: ScreenedCandidateCardProps) {
   const styles = getScoreStyles(candidate.matchScore);
+  const confidence = getConfidenceStyles(candidate);
 
   return (
     <article className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-4">
+          {selectable && (
+            <input
+              type="checkbox"
+              checked={selected}
+              onChange={() => onToggleSelection?.(candidate.candidateId)}
+              className="mt-3 h-4 w-4 rounded border-gray-300 text-[#260af5] focus:ring-[#260af5]"
+            />
+          )}
           <div className="h-11 w-11 shrink-0 rounded-full bg-[#260af5] text-white flex items-center justify-center text-sm font-bold shadow-sm">
             #{candidate.rank}
           </div>
@@ -66,6 +111,13 @@ export default function ScreenedCandidateCard({
             style={{ width: `${candidate.matchScore}%` }}
           />
         </div>
+      </div>
+
+      <div
+        className={`mt-4 inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${confidence.badge}`}
+      >
+        <span>{confidence.label}</span>
+        <span className="text-gray-500">{confidence.reason}</span>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">

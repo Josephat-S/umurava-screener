@@ -12,6 +12,21 @@ export interface Job {
   updatedAt: string;
 }
 
+export interface ScoringWeights {
+  skills: number;
+  experience: number;
+  education: number;
+  profile: number;
+}
+
+export type CandidateStatus =
+  | "shortlisted"
+  | "interview"
+  | "offer"
+  | "hired"
+  | "rejected";
+export type ConfidenceLevel = "high" | "medium" | "low";
+
 export interface Applicant {
   _id: string;
   jobId: string;
@@ -36,6 +51,18 @@ export interface ScoredCandidate {
   strengths: string;
   gaps: string;
   recommendation: string;
+  status?: CandidateStatus;
+  source?: Applicant["source"];
+  confidenceLevel?: ConfidenceLevel;
+  confidenceReason?: string;
+}
+
+export interface ScreeningHistoryEntry {
+  processedAt: string;
+  totalApplicants: number;
+  shortlistSize: number;
+  avgMatchScore: number;
+  weights: ScoringWeights;
 }
 
 export interface ScreeningResult {
@@ -45,7 +72,27 @@ export interface ScreeningResult {
   totalApplicants: number;
   shortlistSize: number;
   processedAt: string;
+  lastUsedWeights?: ScoringWeights;
+  history: ScreeningHistoryEntry[];
   createdAt: string;
+}
+
+export interface AnalyticsSummary {
+  totalJobs: number;
+  totalApplicants: number;
+  totalScreened: number;
+  avgMatchScore: number;
+  topSkill: string;
+}
+
+export interface ParsedJobDescription {
+  title: string;
+  description: string;
+  skills: string[];
+  requirements: string[];
+  experienceYears: number;
+  educationLevel: string;
+  location?: string;
 }
 
 export interface ApiResponse<T> {

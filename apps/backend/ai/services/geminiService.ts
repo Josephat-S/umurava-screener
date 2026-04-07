@@ -1,7 +1,12 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { z } from "zod";
 import { buildScreeningPrompt } from "../prompts/screeningPrompt";
-import { CandidateInput, JobInput, ScoredCandidate } from "../types/aiTypes";
+import { generateGeminiText } from "./geminiClient";
+import {
+  CandidateInput,
+  JobInput,
+  ScoredCandidate,
+  ScoringWeights,
+} from "../types/aiTypes";
 
 const ScoredCandidateSchema = z.object({
   rank: z.number().int().positive(),
@@ -15,29 +20,18 @@ const ScoredCandidateSchema = z.object({
 
 const ScreeningOutputSchema = z.array(ScoredCandidateSchema);
 
-function getGeminiClient(): GoogleGenerativeAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not defined in environment variables");
-  }
-
-  return new GoogleGenerativeAI(apiKey);
-}
-
 export async function runGeminiScreening(
   job: JobInput,
   candidates: CandidateInput[],
   shortlistSize = 10,
+  weights: ScoringWeights,
 ): Promise<ScoredCandidate[]> {
   if (candidates.length === 0) {
     return [];
   }
 
-  const model = getGeminiClient().getGenerativeModel({ model: "gemini-2.5-flash" });
-  const prompt = buildScreeningPrompt(job, candidates, shortlistSize);
-  const result = await model.generateContent(prompt);
-  const rawText = result.response.text();
+  const prompt = buildScreeningPrompt(job, candidates, shortlistSize, weights);
+  const { text: rawText } = await generateGeminiText(prompt);
   const cleaned = rawText.replace(/```json|```/g, "").trim();
 
   let parsed: unknown;

@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { jobService } from "@/services/jobService";
-import type { ApiError, Job, JobFormData } from "@/types";
+import type { ApiError, Job, JobFormData, ParsedJobDescription } from "@/types";
 
 interface JobState {
   jobs: Job[];
   selectedJob: Job | null;
   loading: boolean;
   saving: boolean;
+  parsing: boolean;
   deletingJobId: string | null;
   error: string | null;
 }
@@ -16,6 +17,7 @@ const initialState: JobState = {
   selectedJob: null,
   loading: false,
   saving: false,
+  parsing: false,
   deletingJobId: null,
   error: null,
 };
@@ -55,6 +57,18 @@ export const createJob = createAsyncThunk<Job, JobFormData, { rejectValue: strin
     }
   },
 );
+
+export const parseJobDescription = createAsyncThunk<
+  ParsedJobDescription,
+  string,
+  { rejectValue: string }
+>("jobs/parseDescription", async (description, { rejectWithValue }) => {
+  try {
+    return await jobService.parseDescription(description);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const updateJob = createAsyncThunk<
   Job,
@@ -129,6 +143,17 @@ const jobSlice = createSlice({
       .addCase(createJob.rejected, (state, action) => {
         state.saving = false;
         state.error = action.payload || "Failed to create job";
+      })
+      .addCase(parseJobDescription.pending, (state) => {
+        state.parsing = true;
+        state.error = null;
+      })
+      .addCase(parseJobDescription.fulfilled, (state) => {
+        state.parsing = false;
+      })
+      .addCase(parseJobDescription.rejected, (state, action) => {
+        state.parsing = false;
+        state.error = action.payload || "Failed to parse job description";
       })
       .addCase(updateJob.pending, (state) => {
         state.saving = true;

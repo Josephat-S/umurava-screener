@@ -1,10 +1,26 @@
-import { CandidateInput, JobInput, WeightedScore } from "../types/aiTypes";
+import {
+  CandidateInput,
+  JobInput,
+  ScoringWeights,
+  WeightedScore,
+} from "../types/aiTypes";
 
 const EDUCATION_LEVELS = ["high school", "diploma", "associate", "bachelor", "master", "phd"];
+export const DEFAULT_SCORING_WEIGHTS: ScoringWeights = {
+  skills: 40,
+  experience: 30,
+  education: 15,
+  profile: 15,
+};
+
+function scaleToWeight(baseScore: number, weight: number): number {
+  return Math.min(Math.max(baseScore, 0), 1) * weight;
+}
 
 export function scoreCandidate(
   candidate: CandidateInput,
   job: JobInput,
+  weights: ScoringWeights = DEFAULT_SCORING_WEIGHTS,
 ): WeightedScore {
   const requiredSkills = job.skills.map((skill) => skill.toLowerCase().trim()).filter(Boolean);
   const candidateSkills = candidate.skills
@@ -12,23 +28,25 @@ export function scoreCandidate(
     .filter(Boolean);
   const matchedSkills = requiredSkills.filter((skill) => candidateSkills.includes(skill));
   const skillsScore =
-    requiredSkills.length > 0 ? (matchedSkills.length / requiredSkills.length) * 40 : 40;
+    requiredSkills.length > 0
+      ? scaleToWeight(matchedSkills.length / requiredSkills.length, weights.skills)
+      : weights.skills;
 
   const expBase = Math.max(job.experienceYears, 1);
   const expRatio = Math.min(candidate.experienceYears / expBase, 1.2);
-  const experienceScore = Math.min(expRatio * 30, 30);
+  const experienceScore = Math.min(expRatio * weights.experience, weights.experience);
 
   const educationScore = meetsEducationRequirement(candidate.education, job.educationLevel)
-    ? 15
-    : 5;
+    ? weights.education
+    : Math.max(Math.round(weights.education * 0.35), 0);
 
-  const profileScore = assessProfileCompleteness(candidate);
+  const profileScore = assessProfileCompleteness(candidate, weights.profile);
   const total = skillsScore + experienceScore + educationScore + profileScore;
 
   return {
     skillsScore: Math.round(skillsScore),
     experienceScore: Math.round(experienceScore),
-    educationScore,
+    educationScore: Math.round(educationScore),
     profileScore: Math.round(profileScore),
     total: Math.round(total),
   };
@@ -50,7 +68,10 @@ function meetsEducationRequirement(candidateEdu: string, requiredEdu: string): b
   return candidateIndex >= requiredIndex;
 }
 
-function assessProfileCompleteness(candidate: CandidateInput): number {
+function assessProfileCompleteness(
+  candidate: CandidateInput,
+  weight: number,
+): number {
   let score = 0;
 
   if (candidate.name) score += 3;
@@ -59,13 +80,16 @@ function assessProfileCompleteness(candidate: CandidateInput): number {
   if (candidate.summary || candidate.resumeText) score += 4;
   if (candidate.currentRole) score += 3;
 
-  return Math.min(score, 15);
+  return scaleToWeight(Math.min(score, 15) / 15, weight);
 }
 
 export function filterCandidates(
   candidates: CandidateInput[],
   job: JobInput,
   minScore = Number(process.env.MIN_CANDIDATE_SCORE ?? 20),
+  weights: ScoringWeights = DEFAULT_SCORING_WEIGHTS,
 ): CandidateInput[] {
-  return candidates.filter((candidate) => scoreCandidate(candidate, job).total >= minScore);
+  return candidates.filter(
+    (candidate) => scoreCandidate(candidate, job, weights).total >= minScore,
+  );
 }

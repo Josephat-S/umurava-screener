@@ -1,10 +1,19 @@
 import api from "@/services/api";
-import type { ApiError, ApiResponse, ScoredCandidate, ScreeningResult } from "@/types";
+import type {
+  AnalyticsSummary,
+  ApiError,
+  ApiResponse,
+  CandidateStatus,
+  ScoredCandidate,
+  ScoringWeights,
+  ScreeningResult,
+} from "@/types";
 
 export const screeningService = {
-  async trigger(jobId: string): Promise<ScoredCandidate[]> {
+  async trigger(jobId: string, weights: ScoringWeights): Promise<ScoredCandidate[]> {
     const response = await api.post<ApiResponse<ScoredCandidate[]>>(
       `/api/screening/${jobId}`,
+      { weights },
     );
     return response.data.data || [];
   },
@@ -28,5 +37,24 @@ export const screeningService = {
 
   async clearResults(jobId: string): Promise<void> {
     await api.delete(`/api/screening/${jobId}`);
+  },
+
+  async updateCandidateStatus(
+    jobId: string,
+    candidateId: string,
+    status: CandidateStatus,
+  ): Promise<ScreeningResult> {
+    const response = await api.patch<ApiResponse<ScreeningResult>>(
+      `/api/screening/${jobId}/candidate/${candidateId}/status`,
+      { status },
+    );
+    return response.data.data as ScreeningResult;
+  },
+
+  async getAnalyticsSummary(): Promise<AnalyticsSummary> {
+    const response = await api.get<ApiResponse<AnalyticsSummary>>(
+      "/api/screening/analytics/summary",
+    );
+    return response.data.data as AnalyticsSummary;
   },
 };

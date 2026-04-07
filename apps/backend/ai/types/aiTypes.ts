@@ -10,6 +10,20 @@ export interface JobInput {
 }
 
 export type CandidateSource = "platform" | "upload";
+export type CandidateStatus =
+  | "shortlisted"
+  | "interview"
+  | "offer"
+  | "hired"
+  | "rejected";
+export type ConfidenceLevel = "high" | "medium" | "low";
+
+export interface ScoringWeights {
+  skills: number;
+  experience: number;
+  education: number;
+  profile: number;
+}
 
 export interface CandidateInput {
   _id?: string;
@@ -32,6 +46,10 @@ export interface ScoredCandidate {
   strengths: string;
   gaps: string;
   recommendation: string;
+  status?: CandidateStatus;
+  source?: CandidateSource;
+  confidenceLevel?: ConfidenceLevel;
+  confidenceReason?: string;
 }
 
 export interface ScreeningOutput {
@@ -42,10 +60,36 @@ export interface ScreeningOutput {
   processedAt: Date;
 }
 
+export interface ScreeningHistoryEntry {
+  processedAt: Date;
+  totalApplicants: number;
+  shortlistSize: number;
+  avgMatchScore: number;
+  weights: ScoringWeights;
+}
+
 export interface WeightedScore {
   skillsScore: number;
   experienceScore: number;
   educationScore: number;
   profileScore: number;
   total: number;
+}
+
+export interface ParsedJobDescription {
+  title: string;
+  description: string;
+  skills: string[];
+  requirements: string[];
+  experienceYears: number;
+  educationLevel: string;
+  location?: string;
+}
+
+export interface AnalyticsSummary {
+  totalJobs: number;
+  totalApplicants: number;
+  totalScreened: number;
+  avgMatchScore: number;
+  topSkill: string;
 }
