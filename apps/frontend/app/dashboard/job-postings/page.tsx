@@ -188,7 +188,8 @@ export default function CreateJobPostingPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Job Postings</h1>
+        {/* Changed header text-gray-800 to text-[#3b82f6] */}
+        <h1 className="text-2xl font-bold text-[#3b82f6]">Job Postings</h1>
         <p className="text-gray-500 text-sm mt-1">
           Create and update role requirements without changing your current workflow.
         </p>
@@ -204,7 +205,8 @@ export default function CreateJobPostingPage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
           <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-800">
+              {/* Changed header text-gray-800 to text-[#3b82f6] */}
+              <h2 className="text-lg font-bold text-[#3b82f6]">
                 {editingJobId ? "Edit Job Details" : "Job Details"}
               </h2>
               <p className="mt-1 text-sm text-gray-500">
@@ -482,7 +484,8 @@ export default function CreateJobPostingPage() {
         <aside className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-gray-800">Existing Roles</h2>
+              {/* Changed header text-gray-800 to text-[#3b82f6] */}
+              <h2 className="text-lg font-bold text-[#3b82f6]">Existing Roles</h2>
               <p className="text-sm text-gray-500 mt-1">
                 Manage the jobs already connected to your pipeline.
               </p>

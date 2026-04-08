@@ -412,7 +412,8 @@ function CandidatesPageContent() {
   const renderTable = (rows: Applicant[]) => (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in duration-300">
       <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
-        <h2 className="text-lg font-bold text-gray-800">
+        {/* Changed header text-gray-800 to text-[#3b82f6] */}
+        <h2 className="text-lg font-bold text-[#3b82f6]">
           {activeTab === "structured" ? "Structured Applicants" : "Uploaded Applicants"}
         </h2>
 
@@ -563,7 +564,8 @@ function CandidatesPageContent() {
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Candidates</h1>
+          {/* Changed header text-gray-800 to text-[#3b82f6] */}
+          <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>
           <p className="text-gray-500 text-sm mt-1">
             Manage and review all applicants across job postings.
           </p>
@@ -617,7 +619,8 @@ function CandidatesPageContent() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                   Selected Job
                 </p>
-                <h2 className="mt-2 text-lg font-semibold text-gray-800">
+                {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                <h2 className="mt-2 text-lg font-semibold text-[#3b82f6]">
                   {selectedJob?.title || "Choose a job"}
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
@@ -675,7 +678,8 @@ function CandidatesPageContent() {
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-lg font-bold text-gray-800">
+                    {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                    <h2 className="text-lg font-bold text-[#3b82f6]">
                       Add Structured Applicant
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
@@ -831,7 +835,8 @@ function CandidatesPageContent() {
           ) : (
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-10 animate-in fade-in duration-300">
-                <h2 className="text-lg font-bold text-gray-800 mb-2">
+                {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
                 </h2>
                 <p className="text-sm text-gray-500">
@@ -848,7 +853,8 @@ function CandidatesPageContent() {
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
                           Compare Against
                         </p>
-                        <h3 className="mt-1 text-lg font-semibold text-gray-800">
+                        {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                        <h3 className="mt-1 text-lg font-semibold text-[#3b82f6]">
                           {selectedJob?.title || "Selected job"}
                         </h3>
                         <p className="mt-1 text-sm text-blue-700">
