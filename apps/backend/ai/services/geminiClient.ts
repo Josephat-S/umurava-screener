@@ -2,10 +2,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const DEFAULT_GEMINI_MODELS = [
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
+  "gemini-2.5-flash-lite",
 ];
 const MAX_ATTEMPTS_PER_MODEL = 2;
+const GEMINI_MODEL_ALIASES: Record<string, string> = {
+  "gemini-1.5-flash": "gemini-2.5-flash-lite",
+  "gemini-1.5-pro": "gemini-2.5-pro",
+};
 
 function getGeminiClient(): GoogleGenerativeAI {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -23,6 +26,7 @@ function getGeminiModels(): string[] {
   )
     .split(",")
     .map((value) => value.trim())
+    .map((value) => GEMINI_MODEL_ALIASES[value] || value)
     .filter(Boolean);
 
   return configuredModels.length > 0
@@ -48,6 +52,17 @@ function isRetryableGeminiError(error: unknown): boolean {
   ].some((token) => message.includes(token));
 }
 
+function isUnsupportedModelError(error: unknown): boolean {
+  const message = (error as Error)?.message?.toLowerCase() || "";
+
+  return [
+    "404",
+    "not found",
+    "not supported for generatecontent",
+    "model",
+  ].every((token) => message.includes(token));
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -60,6 +75,7 @@ export async function generateGeminiText(
   const client = getGeminiClient();
   const models = getGeminiModels();
   let lastError: unknown = null;
+  const failedModels: string[] = [];
 
   for (const modelName of models) {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS_PER_MODEL; attempt += 1) {
@@ -73,11 +89,20 @@ export async function generateGeminiText(
         };
       } catch (error) {
         lastError = error;
+        const errorMessage =
+          (error as Error)?.message || "Unknown Gemini request failure";
 
         const shouldRetry =
           attempt < MAX_ATTEMPTS_PER_MODEL && isRetryableGeminiError(error);
 
         if (!shouldRetry) {
+          failedModels.push(
+            `${modelName}: ${
+              isUnsupportedModelError(error)
+                ? "unsupported or unavailable model"
+                : errorMessage
+            }`,
+          );
           break;
         }
 
@@ -88,10 +113,12 @@ export async function generateGeminiText(
 
   const lastMessage =
     (lastError as Error)?.message || "Unknown Gemini connectivity failure";
+  const failureSummary =
+    failedModels.length > 0 ? ` Failed models: ${failedModels.join(" | ")}.` : "";
 
   throw new Error(
-    `Unable to reach Gemini after retrying ${models.join(
+    `Gemini request failed after trying ${models.join(
       ", ",
-    )}. Check internet access, API key validity, Gemini API availability, or set GEMINI_MODELS to a working model. Last error: ${lastMessage}`,
+    )}. Check internet access, API key validity, Gemini API availability, or set GEMINI_MODELS to working model names.${failureSummary} Last error: ${lastMessage}`,
   );
 }

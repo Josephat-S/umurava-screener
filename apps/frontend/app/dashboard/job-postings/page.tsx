@@ -10,9 +10,10 @@ import {
   deleteJob,
   fetchJobs,
   parseJobDescription,
+  updateJob,
 } from "@/store/slices/jobSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type { JobFormData } from "@/types";
+import type { Job, JobFormData } from "@/types";
 
 const INITIAL_FORM: JobFormData = {
   title: "",
@@ -24,6 +25,17 @@ const INITIAL_FORM: JobFormData = {
   location: "",
   shortlistSize: 10,
 };
+
+const mapJobToForm = (job: Job): JobFormData => ({
+  title: job.title,
+  description: job.description,
+  requirements: job.requirements,
+  skills: job.skills,
+  experienceYears: job.experienceYears,
+  educationLevel: job.educationLevel,
+  location: job.location || "",
+  shortlistSize: job.shortlistSize,
+});
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
@@ -43,6 +55,7 @@ export default function CreateJobPostingPage() {
   const [skillInput, setSkillInput] = useState("");
   const [requirementInput, setRequirementInput] = useState("");
   const [rawDescription, setRawDescription] = useState("");
+  const [editingJobId, setEditingJobId] = useState<string | null>(null);
 
   useEffect(() => {
     void dispatch(fetchJobs());
@@ -92,32 +105,54 @@ export default function CreateJobPostingPage() {
     setForm(INITIAL_FORM);
     setSkillInput("");
     setRequirementInput("");
+    setRawDescription("");
+    setEditingJobId(null);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (form.skills.length === 0) {
-      toast.error("Add at least one required skill before creating the job.");
+      toast.error("Add at least one required skill before saving the job.");
       return;
     }
 
     try {
-      await dispatch(createJob(form)).unwrap();
-      toast.success("Job created successfully.");
+      if (editingJobId) {
+        await dispatch(updateJob({ id: editingJobId, data: form })).unwrap();
+        toast.success("Job updated successfully.");
+      } else {
+        await dispatch(createJob(form)).unwrap();
+        toast.success("Job created successfully.");
+      }
       resetForm();
     } catch (submitError) {
-      toast.error((submitError as Error).message || "Failed to create job");
+      toast.error(
+        (submitError as Error).message ||
+          (editingJobId ? "Failed to update job" : "Failed to create job"),
+      );
     }
   };
 
   const handleDelete = async (jobId: string) => {
     try {
       await dispatch(deleteJob(jobId)).unwrap();
+      if (editingJobId === jobId) {
+        resetForm();
+      }
       toast.success("Job deleted successfully.");
     } catch (deleteError) {
       toast.error((deleteError as Error).message || "Failed to delete job");
     }
+  };
+
+  const handleStartEdit = (job: Job) => {
+    setForm(mapJobToForm(job));
+    setSkillInput("");
+    setRequirementInput("");
+    setRawDescription("");
+    setEditingJobId(job._id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleParseDescription = async () => {
@@ -153,9 +188,9 @@ export default function CreateJobPostingPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Create Job Posting</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Job Postings</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Define the ideal candidate profile without changing your current workflow.
+          Create and update role requirements without changing your current workflow.
         </p>
       </div>
 
@@ -167,7 +202,24 @@ export default function CreateJobPostingPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
-          <h2 className="text-lg font-bold text-gray-800 mb-6">Job Details</h2>
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-gray-800">
+                {editingJobId ? "Edit Job Details" : "Job Details"}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {editingJobId
+                  ? "Update the role requirements, shortlist size, or AI-ready criteria."
+                  : "Define the ideal candidate profile for AI screening."}
+              </p>
+            </div>
+
+            {editingJobId && (
+              <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                Editing existing role
+              </span>
+            )}
+          </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
@@ -396,19 +448,32 @@ export default function CreateJobPostingPage() {
             </div>
 
             <div className="pt-8 mt-6 border-t border-gray-100 flex justify-end gap-4">
+              {editingJobId && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel Edit
+                </button>
+              )}
               <button
                 type="button"
                 onClick={resetForm}
                 className="px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Reset
+                {editingJobId ? "Clear Form" : "Reset"}
               </button>
               <button
                 type="submit"
                 disabled={saving}
                 className="px-8 py-2 text-sm font-medium text-white bg-[#260af5] rounded-lg hover:bg-[#1a05cc] disabled:bg-[#260af5]/40 transition-colors"
               >
-                {saving ? "Saving..." : "Create Job"}
+                {saving
+                  ? "Saving..."
+                  : editingJobId
+                    ? "Save Changes"
+                    : "Create Job"}
               </button>
             </div>
           </form>
@@ -440,24 +505,42 @@ export default function CreateJobPostingPage() {
               {sortedJobs.map((job) => (
                 <article
                   key={job._id}
-                  className="rounded-xl border border-gray-100 bg-gray-50/70 p-4"
+                  className={`rounded-xl border p-4 ${
+                    editingJobId === job._id
+                      ? "border-blue-200 bg-blue-50/60"
+                      : "border-gray-100 bg-gray-50/70"
+                  }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-800">{job.title}</h3>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-sm font-semibold text-gray-800">{job.title}</h3>
+                        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-blue-700 border border-blue-100">
+                          Top {job.shortlistSize}
+                        </span>
+                      </div>
                       <p className="text-xs text-gray-400 mt-1">
                         {formatDate(job.createdAt)}
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(job._id)}
-                      disabled={deletingJobId === job._id}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-white hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleStartEdit(job)}
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(job._id)}
+                        disabled={deletingJobId === job._id}
+                        className="rounded-lg p-2 text-gray-400 hover:bg-white hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-sm text-gray-500 mt-3 line-clamp-2">
