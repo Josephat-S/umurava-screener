@@ -49,8 +49,8 @@ export default function AIScreeningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 p-8">
-          <div className="rounded-xl border border-gray-100 bg-white px-6 py-16 text-center text-gray-400 shadow-sm">
+        <div className="min-h-screen bg-gray-100 p-8">
+          <div className="rounded-xl border border-gray-100 bg-white px-6 py-16 text-center text-gray-400 shadow-md">
             Loading screening view...
           </div>
         </div>
@@ -213,10 +213,9 @@ function AIScreeningPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          {/* Changed header text-gray-800 to text-[#3b82f6] */}
           <h1 className="text-2xl font-bold text-[#3b82f6]">AI Screening</h1>
           <p className="mt-1 text-sm text-gray-500">
             Tune the rubric, run the AI, compare finalists, and move candidates through hiring stages.
@@ -228,7 +227,7 @@ function AIScreeningPageContent() {
             <select
               value={activeJobId}
               onChange={(event) => setSelectedJobId(event.target.value)}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="w-full appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
             >
               {jobs.map((job) => (
                 <option key={job._id} value={job._id}>
@@ -272,7 +271,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleClear}
             disabled={!result || clearing}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 shadow-sm"
           >
             <Trash2 className="h-4 w-4" />
             Clear Results
@@ -281,7 +280,7 @@ function AIScreeningPageContent() {
       </div>
 
       {jobsLoading ? (
-        <div className="rounded-xl border border-gray-100 bg-white px-6 py-14 text-center text-gray-400 shadow-sm">
+        <div className="rounded-xl border border-gray-100 bg-white px-6 py-14 text-center text-gray-400 shadow-md">
           Loading jobs...
         </div>
       ) : jobs.length === 0 ? (
@@ -295,13 +294,13 @@ function AIScreeningPageContent() {
       ) : (
         <div className="space-y-6">
           {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-md">
               {error}
             </div>
           )}
 
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
               <p className="text-sm text-gray-500">Selected Role</p>
               <p className="mt-2 text-lg font-bold text-gray-800">
                 {selectedJob?.title || "Choose a role"}
@@ -311,7 +310,7 @@ function AIScreeningPageContent() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
               <p className="text-sm text-gray-500">Applicant Pool</p>
               <p className="mt-2 text-3xl font-bold text-gray-800">{totalApplicants}</p>
               <p className="mt-2 text-xs text-gray-400">
@@ -321,7 +320,7 @@ function AIScreeningPageContent() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
               <p className="text-sm text-gray-500">Shortlist Snapshot</p>
               <p className="mt-2 text-3xl font-bold text-gray-800">{shortlist.length}</p>
               <p className="mt-2 text-xs text-gray-400">
@@ -360,12 +359,11 @@ function AIScreeningPageContent() {
             onRerun={handleRunScreening}
           />
 
-          <div className="rounded-xl border border-gray-100 bg-white shadow-sm">
+          <div className="rounded-xl border border-gray-100 bg-white shadow-md">
             <div className="flex flex-col gap-4 border-b border-gray-100 p-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-[#3b82f6]" />
                 <div>
-                  {/* Changed header text-gray-800 to text-[#3b82f6] */}
                   <h2 className="text-lg font-bold text-[#3b82f6]">Ranked Candidates</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Compare finalists and export recruiter-ready shortlist outputs.
@@ -378,7 +376,7 @@ function AIScreeningPageContent() {
                   <button
                     type="button"
                     onClick={() => setIsComparing(true)}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] shadow-sm"
                   >
                     <GitCompareArrows className="h-4 w-4" />
                     Compare {selectedCandidates.length}
@@ -430,11 +428,10 @@ function AIScreeningPageContent() {
           </div>
 
           {shortlist.length > 0 && (
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
               <div className="mb-5 flex items-center gap-2">
                 <Columns3 className="h-5 w-5 text-[#3b82f6]" />
                 <div>
-                  {/* Changed header text-gray-800 to text-[#3b82f6] */}
                   <h2 className="text-lg font-bold text-[#3b82f6]">Hiring Workflow Board</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Move candidates from shortlist to interview, offer, hired, or rejected.

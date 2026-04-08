@@ -93,8 +93,9 @@ export default function CandidatesPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-8 bg-gray-50 min-h-screen">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-16 text-center text-gray-400">
+        /* Upgraded background to bg-gray-100 */
+        <div className="p-8 bg-gray-100 min-h-screen">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
             Loading candidates...
           </div>
         </div>
@@ -410,9 +411,9 @@ function CandidatesPageContent() {
   };
 
   const renderTable = (rows: Applicant[]) => (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in duration-300">
+    /* Upgraded to shadow-md */
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
       <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
-        {/* Changed header text-gray-800 to text-[#3b82f6] */}
         <h2 className="text-lg font-bold text-[#3b82f6]">
           {activeTab === "structured" ? "Structured Applicants" : "Uploaded Applicants"}
         </h2>
@@ -425,11 +426,11 @@ function CandidatesPageContent() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search candidates..."
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors w-full sm:w-64"
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors w-full sm:w-64 shadow-sm"
             />
           </div>
 
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
             <Filter className="w-4 h-4" />
             {totalFilteredApplicants} Results
           </button>
@@ -496,7 +497,7 @@ function CandidatesPageContent() {
                           deletingApplicantId === applicant._id ||
                           clearingJobId === activeJobId
                         }
-                        className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         {deletingApplicantId === applicant._id ? "Deleting..." : "Delete"}
@@ -517,7 +518,7 @@ function CandidatesPageContent() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="hidden rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:inline-flex">
+            <span className="hidden rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:inline-flex shadow-sm">
               {APPLICANTS_PER_PAGE} per page
             </span>
 
@@ -530,13 +531,13 @@ function CandidatesPageContent() {
                 })
               }
               disabled={normalizedCurrentPage === 1}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
             >
               <ChevronLeft className="h-4 w-4" />
               Previous
             </button>
 
-            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700">
+            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 shadow-sm">
               Page {normalizedCurrentPage} of {totalPages}
             </div>
 
@@ -549,7 +550,7 @@ function CandidatesPageContent() {
                 })
               }
               disabled={normalizedCurrentPage === totalPages}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
             >
               Next
               <ChevronRight className="h-4 w-4" />
@@ -561,10 +562,10 @@ function CandidatesPageContent() {
   );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    /* Upgraded background to bg-gray-100 */
+    <div className="p-8 bg-gray-100 min-h-screen">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          {/* Changed header text-gray-800 to text-[#3b82f6] */}
           <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>
           <p className="text-gray-500 text-sm mt-1">
             Manage and review all applicants across job postings.
@@ -579,7 +580,7 @@ function CandidatesPageContent() {
             <select
               value={activeJobId}
               onChange={(event) => setSelectedJobId(event.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600 shadow-sm"
             >
               {jobs.map((job) => (
                 <option key={job._id} value={job._id}>
@@ -593,14 +594,15 @@ function CandidatesPageContent() {
       </div>
 
       {!jobsLoading && jobs.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-sm">
+        /* Upgraded to shadow-md */
+        <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-md">
           <p className="text-lg font-medium text-gray-700">You need a job first.</p>
           <p className="text-sm text-gray-400 mt-2">
             Create a job posting before adding or uploading applicants.
           </p>
           <Link
             href="/dashboard/job-postings"
-            className="inline-flex mt-5 rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563eb]"
+            className="inline-flex mt-5 rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563eb] shadow-sm"
           >
             Create Job Posting
           </Link>
@@ -608,18 +610,18 @@ function CandidatesPageContent() {
       ) : (
         <>
           {error && (
-            <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-md">
               {error}
             </div>
           )}
 
-          <div className="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+          {/* Upgraded to shadow-md */}
+          <div className="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-md">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                   Selected Job
                 </p>
-                {/* Changed header text-gray-800 to text-[#3b82f6] */}
                 <h2 className="mt-2 text-lg font-semibold text-[#3b82f6]">
                   {selectedJob?.title || "Choose a job"}
                 </h2>
@@ -629,17 +631,17 @@ function CandidatesPageContent() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
                   Structured {structuredApplicantsCount}
                 </span>
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
                   Uploaded {uploadedApplicantsCount}
                 </span>
                 <button
                   type="button"
                   onClick={() => void handleClearApplicants()}
                   disabled={totalJobApplicants === 0 || clearingJobId === activeJobId}
-                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
                 >
                   <Trash2 className="h-4 w-4" />
                   {clearingJobId === activeJobId
@@ -675,10 +677,10 @@ function CandidatesPageContent() {
 
           {activeTab === "structured" ? (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+              {/* Upgraded to shadow-md */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    {/* Changed header text-gray-800 to text-[#3b82f6] */}
                     <h2 className="text-lg font-bold text-[#3b82f6]">
                       Add Structured Applicant
                     </h2>
@@ -703,7 +705,7 @@ function CandidatesPageContent() {
                         }))
                       }
                       placeholder="Candidate name"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                       required
                     />
                     <input
@@ -716,7 +718,7 @@ function CandidatesPageContent() {
                         }))
                       }
                       placeholder="Email address"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                       required
                     />
                   </div>
@@ -732,7 +734,7 @@ function CandidatesPageContent() {
                         }))
                       }
                       placeholder="Current role"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                     />
                     <input
                       type="number"
@@ -745,7 +747,7 @@ function CandidatesPageContent() {
                         }))
                       }
                       placeholder="Years of experience"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                     />
                     <input
                       type="text"
@@ -757,7 +759,7 @@ function CandidatesPageContent() {
                         }))
                       }
                       placeholder="Education"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                       required
                     />
                   </div>
@@ -775,12 +777,12 @@ function CandidatesPageContent() {
                           }
                         }}
                         placeholder="Add skill and press Enter"
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm"
+                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                       />
                       <button
                         type="button"
                         onClick={addSkill}
-                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center"
+                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center shadow-sm"
                       >
                         <Plus className="w-5 h-5" />
                       </button>
@@ -809,14 +811,14 @@ function CandidatesPageContent() {
                       }))
                     }
                     placeholder="Candidate summary"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y shadow-sm"
                   />
 
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={adding}
-                      className="px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-medium hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors"
+                      className="px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-medium hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors shadow-sm"
                     >
                       {adding ? "Saving..." : "Add Applicant"}
                     </button>
@@ -825,7 +827,7 @@ function CandidatesPageContent() {
               </div>
 
               {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-16 text-center text-gray-400">
+                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
                   Loading applicants...
                 </div>
               ) : (
@@ -834,8 +836,8 @@ function CandidatesPageContent() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-10 animate-in fade-in duration-300">
-                {/* Changed header text-gray-800 to text-[#3b82f6] */}
+              {/* Upgraded to shadow-md */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 sm:p-10 animate-in fade-in duration-300">
                 <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
                 </h2>
@@ -853,7 +855,6 @@ function CandidatesPageContent() {
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
                           Compare Against
                         </p>
-                        {/* Changed header text-gray-800 to text-[#3b82f6] */}
                         <h3 className="mt-1 text-lg font-semibold text-[#3b82f6]">
                           {selectedJob?.title || "Selected job"}
                         </h3>
@@ -865,7 +866,7 @@ function CandidatesPageContent() {
 
                     <Link
                       href={`/dashboard/ai-screening?jobId=${activeJobId}`}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] shadow-sm"
                     >
                       Open AI Screening
                       <ArrowRight className="h-4 w-4" />
@@ -873,13 +874,13 @@ function CandidatesPageContent() {
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700 shadow-sm">
                       Up to {MAX_UPLOAD_FILES} files per batch
                     </span>
-                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700 shadow-sm">
                       Bulk PDF resume support
                     </span>
-                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700 shadow-sm">
                       Linked directly to the active job
                     </span>
                   </div>
@@ -935,7 +936,7 @@ function CandidatesPageContent() {
                     />
                   </div>
 
-                  <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-6">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-6 shadow-sm">
                     <div className="flex items-start gap-3">
                       <div className="rounded-full bg-blue-50 p-3 text-blue-700">
                         <Link2 className="h-5 w-5" />
@@ -957,7 +958,7 @@ function CandidatesPageContent() {
                       placeholder={
                         "https://example.com/candidates/aline-uwase.pdf\nhttps://example.com/candidates/daniel-ntaganda.pdf"
                       }
-                      className="mt-5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
+                      className="mt-5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
                     />
 
                     <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -968,7 +969,7 @@ function CandidatesPageContent() {
                         type="button"
                         onClick={() => void handleResumeLinkUpload()}
                         disabled={uploading || !resumeLinksInput.trim()}
-                        className="inline-flex items-center justify-center rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40"
+                        className="inline-flex items-center justify-center rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 shadow-sm"
                       >
                         {uploading ? "Importing..." : "Import Links"}
                       </button>
@@ -978,7 +979,7 @@ function CandidatesPageContent() {
               </div>
 
               {latestImport?.jobId === activeJobId && latestImport.count > 0 && (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm">
+                <div className="rounded-xl border border-green-200 bg-green-50 p-5 shadow-md">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <h3 className="text-base font-semibold text-green-900">
@@ -991,7 +992,7 @@ function CandidatesPageContent() {
 
                     <Link
                       href={`/dashboard/ai-screening?jobId=${activeJobId}`}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-800 transition-colors hover:bg-green-100"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-800 transition-colors hover:bg-green-100 shadow-sm"
                     >
                       Compare To Job
                       <ArrowRight className="h-4 w-4" />
@@ -1001,7 +1002,7 @@ function CandidatesPageContent() {
               )}
 
               {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-16 text-center text-gray-400">
+                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
                   Loading applicants...
                 </div>
               ) : (

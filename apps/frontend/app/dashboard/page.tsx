@@ -32,10 +32,10 @@ export default function DashboardPage() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    /* Increased gray background to bg-gray-100 */
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          {/* Changed header text-gray-800 to text-[#3b82f6] */}
           <h1 className="text-2xl font-bold text-[#3b82f6]">Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">
             Manage jobs, applicants, and screening decisions from one place.
@@ -45,13 +45,13 @@ export default function DashboardPage() {
         <div className="flex gap-3">
           <Link
             href="/dashboard/candidates"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
             View Candidates
           </Link>
           <Link
             href="/dashboard/job-postings"
-            className="px-5 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] transition-colors"
+            className="px-5 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] transition-colors shadow-sm"
           >
             Create Job
           </Link>
@@ -90,16 +90,15 @@ export default function DashboardPage() {
       </div>
 
       {(error || analyticsError) && (
-        <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
           {error || analyticsError}
         </div>
       )}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <section className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              {/* Changed header text-gray-800 to text-[#3b82f6] */}
               <h2 className="text-lg font-bold text-[#3b82f6]">Recent Job Postings</h2>
               <p className="text-sm text-gray-500 mt-1">
                 Your latest roles ready for applicants and screening.
@@ -128,7 +127,7 @@ export default function DashboardPage() {
               {jobs.slice(0, 4).map((job) => (
                 <article
                   key={job._id}
-                  className="rounded-xl border border-gray-100 bg-gray-50/70 p-5"
+                  className="rounded-xl border border-gray-100 bg-gray-50/70 p-5 hover:bg-white hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
@@ -165,13 +164,13 @@ export default function DashboardPage() {
                       <div className="mt-4 flex flex-wrap gap-2 md:justify-end">
                         <Link
                           href={`/dashboard/candidates?jobId=${job._id}`}
-                          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
                         >
                           Candidates
                         </Link>
                         <Link
                           href={`/dashboard/ai-screening?jobId=${job._id}`}
-                          className="rounded-lg bg-[#3b82f6] px-3 py-2 text-sm font-medium text-white hover:bg-[#2563eb]"
+                          className="rounded-lg bg-[#3b82f6] px-3 py-2 text-sm font-medium text-white hover:bg-[#2563eb] shadow-sm"
                         >
                           Screen
                         </Link>

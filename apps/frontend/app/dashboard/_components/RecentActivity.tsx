@@ -51,8 +51,7 @@ export default function RecentActivity({ jobs }: RecentActivityProps) {
   });
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm mt-6 p-6">
-      {/* Changed header text-gray-800 to text-[#3b82f6] */}
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md mt-6 p-6">
       <h2 className="text-lg font-semibold text-[#3b82f6] mb-6">Recent Activity</h2>
       {activities.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center">
