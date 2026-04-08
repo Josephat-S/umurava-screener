@@ -93,8 +93,7 @@ export default function CandidatesPage() {
   return (
     <Suspense
       fallback={
-        /* Upgraded background to bg-gray-100 */
-        <div className="p-8 bg-gray-100 min-h-screen">
+        <div className="p-8 bg-gray-200 min-h-screen">
           <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
             Loading candidates...
           </div>
@@ -562,8 +561,7 @@ function CandidatesPageContent() {
   );
 
   return (
-    /* Upgraded background to bg-gray-100 */
-    <div className="p-8 bg-gray-100 min-h-screen">
+    <div className="p-8 bg-gray-200 min-h-screen">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>

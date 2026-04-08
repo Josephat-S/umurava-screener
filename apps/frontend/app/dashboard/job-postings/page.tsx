@@ -186,7 +186,7 @@ export default function CreateJobPostingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#3b82f6]">Job Postings</h1>
         <p className="text-gray-500 text-sm mt-1">
