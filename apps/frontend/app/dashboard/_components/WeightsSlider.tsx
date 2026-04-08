@@ -27,10 +27,9 @@ export default function WeightsSlider({
   };
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          {/* Changed header text-gray-800 to text-[#3b82f6] */}
           <h2 className="text-lg font-bold text-[#3b82f6]">Adjustable Scoring Weights</h2>
           <p className="mt-1 text-sm text-gray-500">
             Tune how much the AI values skills, experience, education, and profile quality.

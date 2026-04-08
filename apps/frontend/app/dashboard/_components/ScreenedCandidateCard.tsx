@@ -73,7 +73,7 @@ export default function ScreenedCandidateCard({
   const confidence = getConfidenceStyles(candidate);
 
   return (
-    <article className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <article className="bg-white rounded-xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-4">
           {selectable && (
@@ -118,21 +118,21 @@ export default function ScreenedCandidateCard({
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
-        <section className="rounded-xl bg-green-50 p-4 border border-green-100">
+        <section className="rounded-xl bg-green-50 p-4 border border-green-100 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-green-700 mb-2">
             Strengths
           </p>
           <p className="text-sm leading-6 text-gray-700">{candidate.strengths}</p>
         </section>
 
-        <section className="rounded-xl bg-orange-50 p-4 border border-orange-100">
+        <section className="rounded-xl bg-orange-50 p-4 border border-orange-100 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-orange-700 mb-2">
             Gaps
           </p>
           <p className="text-sm leading-6 text-gray-700">{candidate.gaps}</p>
         </section>
 
-        <section className="rounded-xl bg-blue-50 p-4 border border-blue-100">
+        <section className="rounded-xl bg-blue-50 p-4 border border-blue-100 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-blue-700 mb-2">
             Recommendation
           </p>

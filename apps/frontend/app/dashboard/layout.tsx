@@ -14,7 +14,8 @@ export default function DashboardLayout({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    /* Increased gray background to bg-gray-100 to make white cards pop */
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
       <Sidebar 
         isCollapsed={isCollapsed} 
         isMobileOpen={isMobileOpen} 

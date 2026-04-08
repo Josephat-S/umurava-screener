@@ -186,9 +186,8 @@ export default function CreateJobPostingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="mb-6">
-        {/* Changed header text-gray-800 to text-[#3b82f6] */}
         <h1 className="text-2xl font-bold text-[#3b82f6]">Job Postings</h1>
         <p className="text-gray-500 text-sm mt-1">
           Create and update role requirements without changing your current workflow.
@@ -196,16 +195,15 @@ export default function CreateJobPostingPage() {
       </div>
 
       {error && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-md">
           {error}
         </div>
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 sm:p-8">
           <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              {/* Changed header text-gray-800 to text-[#3b82f6] */}
               <h2 className="text-lg font-bold text-[#3b82f6]">
                 {editingJobId ? "Edit Job Details" : "Job Details"}
               </h2>
@@ -249,7 +247,7 @@ export default function CreateJobPostingPage() {
                 value={rawDescription}
                 onChange={(event) => setRawDescription(event.target.value)}
                 placeholder="Paste the full job description here..."
-                className="mt-4 w-full rounded-lg border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
+                className="mt-4 w-full rounded-lg border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
               />
             </div>
 
@@ -481,10 +479,9 @@ export default function CreateJobPostingPage() {
           </form>
         </div>
 
-        <aside className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <aside className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              {/* Changed header text-gray-800 to text-[#3b82f6] */}
               <h2 className="text-lg font-bold text-[#3b82f6]">Existing Roles</h2>
               <p className="text-sm text-gray-500 mt-1">
                 Manage the jobs already connected to your pipeline.
@@ -508,7 +505,7 @@ export default function CreateJobPostingPage() {
               {sortedJobs.map((job) => (
                 <article
                   key={job._id}
-                  className={`rounded-xl border p-4 ${
+                  className={`rounded-xl border p-4 hover:shadow-md transition-shadow duration-200 ${
                     editingJobId === job._id
                       ? "border-blue-200 bg-blue-50/60"
                       : "border-gray-100 bg-gray-50/70"
@@ -531,7 +528,7 @@ export default function CreateJobPostingPage() {
                       <button
                         type="button"
                         onClick={() => handleStartEdit(job)}
-                        className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 shadow-sm"
                       >
                         Edit
                       </button>
@@ -564,13 +561,13 @@ export default function CreateJobPostingPage() {
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link
                       href={`/dashboard/candidates?jobId=${job._id}`}
-                      className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                      className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
                     >
                       Manage Candidates
                     </Link>
                     <Link
                       href={`/dashboard/ai-screening?jobId=${job._id}`}
-                      className="rounded-lg bg-[#3b82f6] px-3 py-2 text-xs font-medium text-white hover:bg-[#2563eb]"
+                      className="rounded-lg bg-[#3b82f6] px-3 py-2 text-xs font-medium text-white hover:bg-[#2563eb] shadow-sm"
                     >
                       Open Screening
                     </Link>
