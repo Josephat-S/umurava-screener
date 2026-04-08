@@ -3,12 +3,16 @@
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
+  ArrowRight,
+  Briefcase,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Filter,
+  Link2,
   Plus,
   Search,
+  Trash2,
   Upload,
 } from "lucide-react";
 import {
@@ -24,6 +28,8 @@ import {
 import { useSearchParams } from "next/navigation";
 import {
   addStructuredApplicants,
+  clearApplicantsForJob,
+  deleteApplicant,
   fetchApplicants,
   uploadApplicantFiles,
 } from "@/store/slices/applicantSlice";
@@ -43,6 +49,7 @@ const INITIAL_APPLICANT_FORM: StructuredApplicantInput = {
 };
 
 const APPLICANTS_PER_PAGE = 10;
+const MAX_UPLOAD_FILES = 50;
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
@@ -104,9 +111,15 @@ function CandidatesPageContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { jobs, loading: jobsLoading } = useAppSelector((state) => state.jobs);
-  const { applicants, loading, uploading, adding, error } = useAppSelector(
-    (state) => state.applicants,
-  );
+  const {
+    applicants,
+    loading,
+    uploading,
+    adding,
+    deletingApplicantId,
+    clearingJobId,
+    error,
+  } = useAppSelector((state) => state.applicants);
   const shortlist = useAppSelector((state) => state.screening.shortlist);
 
   const [activeTab, setActiveTab] = useState<"structured" | "external">("structured");
@@ -119,6 +132,11 @@ function CandidatesPageContent() {
     page: 1,
   });
   const [skillsInput, setSkillsInput] = useState("");
+  const [resumeLinksInput, setResumeLinksInput] = useState("");
+  const [latestImport, setLatestImport] = useState<{
+    jobId: string;
+    count: number;
+  } | null>(null);
   const [structuredForm, setStructuredForm] =
     useState<StructuredApplicantInput>(INITIAL_APPLICANT_FORM);
 
@@ -153,6 +171,13 @@ function CandidatesPageContent() {
   }, [activeJobId, dispatch]);
 
   const selectedJob = jobs.find((job) => job._id === activeJobId) || null;
+  const totalJobApplicants = applicants.length;
+  const structuredApplicantsCount = applicants.filter(
+    (applicant) => applicant.source === "platform",
+  ).length;
+  const uploadedApplicantsCount = applicants.filter(
+    (applicant) => applicant.source === "upload",
+  ).length;
 
   const screeningMap = useMemo(
     () =>
@@ -265,25 +290,122 @@ function CandidatesPageContent() {
     }
   };
 
-  const handleUpload = async (files: FileList | null) => {
+  const handleUploadSubmission = async ({
+    files,
+    resumeLinks = [],
+  }: {
+    files?: FileList | null;
+    resumeLinks?: string[];
+  }) => {
     if (!activeJobId) {
-      toast.error("Select a job before uploading files.");
+      toast.error("Select a job before importing applicants.");
       return;
     }
 
-    if (!files || files.length === 0) {
+    const filePayload = files ? Array.from(files) : [];
+
+    if (filePayload.length === 0 && resumeLinks.length === 0) {
       return;
     }
 
     try {
-      const payload = Array.from(files);
       const result = await dispatch(
-        uploadApplicantFiles({ jobId: activeJobId, files: payload }),
+        uploadApplicantFiles({
+          jobId: activeJobId,
+          files: filePayload,
+          resumeLinks,
+        }),
       ).unwrap();
       setPaginationState({ key: paginationKey, page: 1 });
-      toast.success(`${result.length} applicants uploaded successfully.`);
+      setLatestImport({
+        jobId: activeJobId,
+        count: result.length,
+      });
+      if (resumeLinks.length > 0) {
+        setResumeLinksInput("");
+      }
+      toast.success(
+        `${result.length} applicants imported to ${selectedJob?.title || "the selected job"}.`,
+      );
     } catch (uploadError) {
-      toast.error((uploadError as Error).message || "Upload failed");
+      toast.error((uploadError as Error).message || "Import failed");
+    }
+  };
+
+  const handleResumeLinkUpload = async () => {
+    const resumeLinks = Array.from(
+      new Set(
+        resumeLinksInput
+          .split("\n")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      ),
+    );
+
+    if (resumeLinks.length === 0) {
+      toast.error("Paste at least one resume link before importing.");
+      return;
+    }
+
+    await handleUploadSubmission({ resumeLinks });
+  };
+
+  const handleDeleteApplicant = async (applicant: Applicant) => {
+    if (!activeJobId) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      `Delete ${applicant.name} from ${selectedJob?.title || "this job"}?`,
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      await dispatch(
+        deleteApplicant({ jobId: activeJobId, applicantId: applicant._id }),
+      ).unwrap();
+      await dispatch(fetchScreeningResults(activeJobId)).unwrap();
+      toast.success("Applicant deleted successfully.");
+    } catch (deleteError) {
+      toast.error((deleteError as Error).message || "Failed to delete applicant");
+    }
+  };
+
+  const handleClearApplicants = async () => {
+    if (!activeJobId) {
+      return;
+    }
+
+    if (totalJobApplicants === 0) {
+      toast.error("There are no applicants to delete for this job.");
+      return;
+    }
+
+    const shouldClear = window.confirm(
+      `Delete all ${totalJobApplicants} applicants from ${selectedJob?.title || "this job"}? This cannot be undone.`,
+    );
+
+    if (!shouldClear) {
+      return;
+    }
+
+    try {
+      const deletedCount = await dispatch(clearApplicantsForJob(activeJobId)).unwrap();
+      await dispatch(fetchScreeningResults(activeJobId)).unwrap();
+      setPaginationState({ key: paginationKey, page: 1 });
+      setLatestImport((previous) =>
+        previous?.jobId === activeJobId ? null : previous,
+      );
+      toast.success(
+        deletedCount > 0
+          ? `${deletedCount} applicants deleted from ${selectedJob?.title || "the selected job"}.`
+          : "No applicants were deleted.",
+      );
+    } catch (clearError) {
+      toast.error((clearError as Error).message || "Failed to clear applicants");
     }
   };
 
@@ -317,17 +439,12 @@ function CandidatesPageContent() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-white text-sm text-gray-500 border-b border-gray-100">
-              <th className="py-4 pl-6 pr-4 w-12">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                />
-              </th>
-              <th className="py-4 px-4 font-medium">Name</th>
+              <th className="py-4 pl-6 pr-4 font-medium">Name</th>
               <th className="py-4 px-4 font-medium">Match Score</th>
               <th className="py-4 px-4 font-medium">Job Applied</th>
               <th className="py-4 px-4 font-medium">Applied Date</th>
-              <th className="py-4 px-6 font-medium">Status</th>
+              <th className="py-4 px-4 font-medium">Status</th>
+              <th className="py-4 pl-4 pr-6 font-medium text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -353,12 +470,6 @@ function CandidatesPageContent() {
                     className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group"
                   >
                     <td className="py-4 pl-6 pr-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                      />
-                    </td>
-                    <td className="py-4 px-4">
                       <div>
                         <p className="text-sm font-medium text-gray-800">{applicant.name}</p>
                         <p className="text-xs text-gray-400 mt-1">{applicant.email}</p>
@@ -373,8 +484,22 @@ function CandidatesPageContent() {
                     <td className="py-4 px-4 text-sm text-gray-500">
                       {formatDate(applicant.createdAt)}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4">
                       <StatusBadge status={status} />
+                    </td>
+                    <td className="py-4 pl-4 pr-6 text-right">
+                      <button
+                        type="button"
+                        onClick={() => void handleDeleteApplicant(applicant)}
+                        disabled={
+                          deletingApplicantId === applicant._id ||
+                          clearingJobId === activeJobId
+                        }
+                        className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        {deletingApplicantId === applicant._id ? "Deleting..." : "Delete"}
+                      </button>
                     </td>
                   </tr>
                 );
@@ -485,6 +610,42 @@ function CandidatesPageContent() {
               {error}
             </div>
           )}
+
+          <div className="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+                  Selected Job
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-gray-800">
+                  {selectedJob?.title || "Choose a job"}
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  {totalJobApplicants} total applicants linked to this job.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
+                  Structured {structuredApplicantsCount}
+                </span>
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
+                  Uploaded {uploadedApplicantsCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void handleClearApplicants()}
+                  disabled={totalJobApplicants === 0 || clearingJobId === activeJobId}
+                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {clearingJobId === activeJobId
+                    ? "Clearing Applicants..."
+                    : "Delete All Applicants"}
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div className="flex gap-6 border-b border-gray-200 mb-6">
             <button
@@ -670,57 +831,168 @@ function CandidatesPageContent() {
           ) : (
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-10 animate-in fade-in duration-300">
-                <h2 className="text-lg font-bold text-gray-800 mb-6">Upload CVs or CSV</h2>
+                <h2 className="text-lg font-bold text-gray-800 mb-2">
+                  Import Applicants from External Sources
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Bring in spreadsheets, PDF resumes, or direct resume links for {selectedJob?.title || "the selected role"}.
+                </p>
 
-                <div
-                  className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${
-                    dragOver
-                      ? "border-[#260af5] bg-blue-50"
-                      : "border-gray-300 hover:bg-gray-50/50"
-                  }`}
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    setDragOver(false);
-                    void handleUpload(event.dataTransfer.files);
-                  }}
-                >
-                  <Upload
-                    className="w-10 h-10 text-gray-500 mb-4 group-hover:text-blue-600 transition-colors"
-                    strokeWidth={1.5}
-                  />
-                  <h3 className="text-base font-semibold text-gray-800 mb-1">
-                    Drag & Drop Files Here
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-6">
-                    Support for PDF, CSV, XLS, and XLSX files
-                  </p>
+                <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-full bg-white p-3 text-[#260af5] shadow-sm">
+                        <Briefcase className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+                          Compare Against
+                        </p>
+                        <h3 className="mt-1 text-lg font-semibold text-gray-800">
+                          {selectedJob?.title || "Selected job"}
+                        </h3>
+                        <p className="mt-1 text-sm text-blue-700">
+                          Every imported resume is attached to the active job above. After import, open AI Screening to compare the batch against this role.
+                        </p>
+                      </div>
+                    </div>
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    className="px-6 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+                    <Link
+                      href={`/dashboard/ai-screening?jobId=${activeJobId}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#260af5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc]"
+                    >
+                      Open AI Screening
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                      Up to {MAX_UPLOAD_FILES} files per batch
+                    </span>
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                      Bulk PDF resume support
+                    </span>
+                    <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-blue-700">
+                      Linked directly to the active job
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                  <div
+                    className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${
+                      dragOver
+                        ? "border-[#260af5] bg-blue-50"
+                        : "border-gray-300 hover:bg-gray-50/50"
+                    }`}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      setDragOver(true);
+                    }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      setDragOver(false);
+                      void handleUploadSubmission({ files: event.dataTransfer.files });
+                    }}
                   >
-                    {uploading ? "Uploading..." : "Browse Files"}
-                  </button>
+                    <Upload
+                      className="w-10 h-10 text-gray-500 mb-4 group-hover:text-blue-600 transition-colors"
+                      strokeWidth={1.5}
+                    />
+                    <h3 className="text-base font-semibold text-gray-800 mb-1">
+                      Drag & Drop Files Here
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-6">
+                      Support for PDF, CSV, XLS, and XLSX files
+                    </p>
 
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    className="hidden"
-                    accept=".pdf,.csv,.xlsx,.xls"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      void handleUpload(event.target.files)
-                    }
-                  />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="px-6 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+                    >
+                      {uploading ? "Uploading..." : "Browse Files"}
+                    </button>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      className="hidden"
+                      accept=".pdf,.csv,.xlsx,.xls"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                        void handleUploadSubmission({ files: event.target.files })
+                      }
+                    />
+                  </div>
+
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-6">
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-full bg-blue-50 p-3 text-blue-700">
+                        <Link2 className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-semibold text-gray-800">
+                          Import Resume Links
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Paste one public PDF resume URL per line and let the parser ingest them in bulk.
+                        </p>
+                      </div>
+                    </div>
+
+                    <textarea
+                      rows={8}
+                      value={resumeLinksInput}
+                      onChange={(event) => setResumeLinksInput(event.target.value)}
+                      placeholder={
+                        "https://example.com/candidates/aline-uwase.pdf\nhttps://example.com/candidates/daniel-ntaganda.pdf"
+                      }
+                      className="mt-5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20"
+                    />
+
+                    <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <p className="text-xs leading-5 text-gray-400">
+                        Use direct PDF links so the backend can fetch and parse the resume text reliably.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => void handleResumeLinkUpload()}
+                        disabled={uploading || !resumeLinksInput.trim()}
+                        className="inline-flex items-center justify-center rounded-lg bg-[#260af5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc] disabled:cursor-not-allowed disabled:bg-[#260af5]/40"
+                      >
+                        {uploading ? "Importing..." : "Import Links"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {latestImport?.jobId === activeJobId && latestImport.count > 0 && (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h3 className="text-base font-semibold text-green-900">
+                        Ready to compare against the selected job
+                      </h3>
+                      <p className="mt-1 text-sm text-green-800">
+                        {latestImport.count} applicants were added to {selectedJob?.title || "the selected job"}. Open AI Screening to compare them against this role.
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/dashboard/ai-screening?jobId=${activeJobId}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-800 transition-colors hover:bg-green-100"
+                    >
+                      Compare To Job
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
 
               {loading ? (
                 <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-6 py-16 text-center text-gray-400">

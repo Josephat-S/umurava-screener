@@ -53,6 +53,39 @@ const parseExperienceYears = (row: Record<string, unknown>): number => {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 };
 
+const normalizeResumeLabel = (value: string, fallback: string): string => {
+  const cleaned = value
+    .replace(/\.pdf$/i, "")
+    .replace(/[-_]+/g, " ")
+    .trim();
+
+  return cleaned || fallback;
+};
+
+const decodeResumeLabel = (value: string): string => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+const buildResumeCandidate = (
+  label: string,
+  resumeText: string,
+  index: number,
+): CandidateInput => ({
+  _id: `resume_${Date.now()}_${index}`,
+  name: label,
+  email: `resume-${index + 1}@placeholder.local`,
+  skills: [],
+  experienceYears: 0,
+  education: "Not provided",
+  summary: resumeText.slice(0, 500) || undefined,
+  resumeText,
+  source: "upload" as const,
+});
+
 export async function parsePDF(buffer: Buffer): Promise<string> {
   const data = await pdfParse(buffer);
   return data.text.replace(/\s+/g, " ").trim();
@@ -148,22 +181,47 @@ export async function parsePDFResumes(
   const parsed = await Promise.all(
     files.map(async (file, index) => {
       const resumeText = await parsePDF(file.buffer);
-      const baseName = file.originalname.replace(/\.pdf$/i, "").trim();
-      const candidateName = baseName || `Resume ${index + 1}`;
+      const candidateName = normalizeResumeLabel(
+        file.originalname,
+        `Resume ${index + 1}`,
+      );
 
-      return {
-        _id: `pdf_${Date.now()}_${index}`,
-        name: candidateName,
-        email: `resume-${index + 1}@placeholder.local`,
-        skills: [],
-        experienceYears: 0,
-        education: "Not provided",
-        summary: resumeText.slice(0, 500) || undefined,
-        resumeText,
-        source: "upload" as const,
-      };
+      return buildResumeCandidate(candidateName, resumeText, index);
     }),
   );
 
   return parsed;
+}
+
+export async function parseResumeLinks(
+  resumeLinks: string[],
+): Promise<CandidateInput[]> {
+  return Promise.all(
+    resumeLinks.map(async (resumeLink, index) => {
+      const response = await fetch(resumeLink);
+
+      if (!response.ok) {
+        throw new Error(`Unable to download resume link: ${resumeLink}`);
+      }
+
+      const contentType = response.headers.get("content-type")?.toLowerCase() || "";
+      const url = new URL(resumeLink);
+
+      if (!contentType.includes("pdf") && !url.pathname.toLowerCase().endsWith(".pdf")) {
+        throw new Error(`Resume links must point to PDF files: ${resumeLink}`);
+      }
+
+      const resumeBuffer = Buffer.from(await response.arrayBuffer());
+      const resumeText = await parsePDF(resumeBuffer);
+      const rawLabel =
+        url.pathname.split("/").filter(Boolean).pop() || `Resume Link ${index + 1}`;
+      const decodedLabel = decodeResumeLabel(rawLabel);
+      const candidateName = normalizeResumeLabel(
+        decodedLabel,
+        `Resume Link ${index + 1}`,
+      );
+
+      return buildResumeCandidate(candidateName, resumeText, index);
+    }),
+  );
 }

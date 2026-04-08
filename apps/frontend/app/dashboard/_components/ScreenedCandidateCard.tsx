@@ -91,9 +91,6 @@ export default function ScreenedCandidateCard({
             <h3 className="text-lg font-bold text-gray-800">
               {candidate.candidateName}
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Candidate ID: {candidate.candidateId}
-            </p>
           </div>
         </div>
 
