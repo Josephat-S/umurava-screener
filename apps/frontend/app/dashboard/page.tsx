@@ -6,6 +6,7 @@ import { Briefcase, Sparkles, TrendingUp, Users } from "lucide-react";
 import EmptyState from "./_components/EmptyState";
 import RecentActivity from "./_components/RecentActivity";
 import StatCard from "./_components/StatCard";
+import OverviewChart from "./_components/OverviewChart";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchAnalyticsSummary } from "@/store/slices/analyticsSlice";
 import { fetchJobs } from "@/store/slices/jobSlice";
@@ -58,37 +59,37 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {/* Card 1: Default White */}
+        {/* Card 1: Primary Blue Focus */}
         <StatCard
           title="Total Jobs"
           value={analytics.totalJobs}
           subtext="Roles configured in the screening pipeline"
           icon={<Briefcase size={20} />}
-          iconBgColor="bg-[#3b82f6]"
+          isPrimary={true}
         />
-        {/* Card 2: Primary Blue Focus */}
+        {/* Card 2: Default White */}
         <StatCard
           title="Candidates Screened"
           value={analytics.totalScreened}
           subtext="Applicants processed across screening runs"
           icon={<Users size={20} />}
-          isPrimary={true}
+          iconBgColor="bg-blue-500"
         />
-        {/* Card 3: Default White */}
+        {/* Card 3: Primary Blue Focus */}
         <StatCard
           title="Avg Match Score"
           value={`${analytics.avgMatchScore}%`}
           subtext="Average shortlist quality across completed runs"
           icon={<TrendingUp size={20} />}
-          iconBgColor="bg-green-500"
+          isPrimary={true}
         />
-        {/* Card 4 (Last): Primary Blue Focus */}
+        {/* Card 4: Default White */}
         <StatCard
           title="Top Skill In Demand"
           value={analytics.topSkill}
           subtext="Most requested skill across your job postings"
           icon={<Sparkles size={20} />}
-          isPrimary={true}
+          iconBgColor="bg-yellow-500"
         />
       </div>
 
@@ -186,7 +187,15 @@ export default function DashboardPage() {
           )}
         </section>
 
-        <RecentActivity jobs={jobs} />
+        <div className="flex flex-col gap-6">
+          {/* Passing the jobs from Redux directly into our new dynamic chart */}
+          <OverviewChart jobs={jobs} />
+          
+          <div className="mt-0">
+             <RecentActivity jobs={jobs} />
+          </div>
+        </div>
+
       </div>
     </div>
   );
