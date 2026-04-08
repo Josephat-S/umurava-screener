@@ -33,7 +33,8 @@ export default function ScreeningHistory({
     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Screening History</h2>
+          {/* Changed header text-gray-800 to text-[#3b82f6] */}
+          <h2 className="text-lg font-bold text-[#3b82f6]">Screening History</h2>
           <p className="mt-1 text-sm text-gray-500">
             Keep track of reruns as new applicants arrive.
           </p>

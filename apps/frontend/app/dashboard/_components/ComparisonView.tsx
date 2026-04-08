@@ -31,7 +31,8 @@ export default function ComparisonView({
       <div className="max-h-[90vh] w-full max-w-6xl overflow-auto rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Candidate Comparison</h2>
+            {/* Changed header text-gray-800 to text-[#3b82f6] */}
+            <h2 className="text-xl font-bold text-[#3b82f6]">Candidate Comparison</h2>
             <p className="mt-1 text-sm text-gray-500">
               Compare the finalists side by side before making the next hiring move.
             </p>
