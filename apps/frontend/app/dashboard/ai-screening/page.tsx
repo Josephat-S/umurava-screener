@@ -216,7 +216,8 @@ function AIScreeningPageContent() {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">AI Screening</h1>
+          {/* Changed header text-gray-800 to text-[#3b82f6] */}
+          <h1 className="text-2xl font-bold text-[#3b82f6]">AI Screening</h1>
           <p className="mt-1 text-sm text-gray-500">
             Tune the rubric, run the AI, compare finalists, and move candidates through hiring stages.
           </p>
@@ -364,7 +365,8 @@ function AIScreeningPageContent() {
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-[#3b82f6]" />
                 <div>
-                  <h2 className="text-lg font-bold text-gray-800">Ranked Candidates</h2>
+                  {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                  <h2 className="text-lg font-bold text-[#3b82f6]">Ranked Candidates</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Compare finalists and export recruiter-ready shortlist outputs.
                   </p>
@@ -432,7 +434,8 @@ function AIScreeningPageContent() {
               <div className="mb-5 flex items-center gap-2">
                 <Columns3 className="h-5 w-5 text-[#3b82f6]" />
                 <div>
-                  <h2 className="text-lg font-bold text-gray-800">Hiring Workflow Board</h2>
+                  {/* Changed header text-gray-800 to text-[#3b82f6] */}
+                  <h2 className="text-lg font-bold text-[#3b82f6]">Hiring Workflow Board</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Move candidates from shortlist to interview, offer, hired, or rejected.
                   </p>

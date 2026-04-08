@@ -35,7 +35,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          {/* Changed header text-gray-800 to text-[#3b82f6] */}
+          <h1 className="text-2xl font-bold text-[#3b82f6]">Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">
             Manage jobs, applicants, and screening decisions from one place.
           </p>
@@ -98,7 +99,8 @@ export default function DashboardPage() {
         <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-gray-800">Recent Job Postings</h2>
+              {/* Changed header text-gray-800 to text-[#3b82f6] */}
+              <h2 className="text-lg font-bold text-[#3b82f6]">Recent Job Postings</h2>
               <p className="text-sm text-gray-500 mt-1">
                 Your latest roles ready for applicants and screening.
               </p>
