@@ -9,6 +9,18 @@ import screeningRoutes from "./routes/screeningRoutes";
 
 const app = express();
 const port = Number(process.env.PORT) || 8000;
+let dbInitPromise: Promise<void> | null = null;
+
+const ensureDbConnection = async (): Promise<void> => {
+  if (!dbInitPromise) {
+    dbInitPromise = connectDB().catch((error) => {
+      dbInitPromise = null;
+      throw error;
+    });
+  }
+
+  await dbInitPromise;
+};
 
 const configuredFrontendUrls = [
   process.env.FRONTEND_URLS,
@@ -61,6 +73,15 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 
+app.use("/api", async (_req, _res, next) => {
+  try {
+    await ensureDbConnection();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applicants", applicantRoutes);
 app.use("/api/screening", screeningRoutes);
@@ -75,7 +96,7 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 export const startServer = async (): Promise<void> => {
-  await connectDB();
+  await ensureDbConnection();
 
   app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
