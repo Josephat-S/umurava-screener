@@ -32,7 +32,6 @@ export default function DashboardPage() {
   }, [dispatch]);
 
   return (
-    /* Increased gray background to bg-gray-100 */
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -59,6 +58,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* Card 1: Default White */}
         <StatCard
           title="Total Jobs"
           value={analytics.totalJobs}
@@ -66,13 +66,15 @@ export default function DashboardPage() {
           icon={<Briefcase size={20} />}
           iconBgColor="bg-[#3b82f6]"
         />
+        {/* Card 2: Primary Blue Focus */}
         <StatCard
           title="Candidates Screened"
           value={analytics.totalScreened}
           subtext="Applicants processed across screening runs"
           icon={<Users size={20} />}
-          iconBgColor="bg-blue-500"
+          isPrimary={true}
         />
+        {/* Card 3: Default White */}
         <StatCard
           title="Avg Match Score"
           value={`${analytics.avgMatchScore}%`}
@@ -80,12 +82,13 @@ export default function DashboardPage() {
           icon={<TrendingUp size={20} />}
           iconBgColor="bg-green-500"
         />
+        {/* Card 4 (Last): Primary Blue Focus */}
         <StatCard
           title="Top Skill In Demand"
           value={analytics.topSkill}
           subtext="Most requested skill across your job postings"
           icon={<Sparkles size={20} />}
-          iconBgColor="bg-yellow-500"
+          isPrimary={true}
         />
       </div>
 

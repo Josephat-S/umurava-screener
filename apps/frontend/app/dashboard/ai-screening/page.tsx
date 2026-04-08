@@ -300,16 +300,18 @@ function AIScreeningPageContent() {
           )}
 
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
-              <p className="text-sm text-gray-500">Selected Role</p>
-              <p className="mt-2 text-lg font-bold text-gray-800">
+            {/* Card 1: Primary Blue Focus */}
+            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-6 shadow-md text-white">
+              <p className="text-sm font-medium text-blue-100">Selected Role</p>
+              <p className="mt-2 text-lg font-bold text-white">
                 {selectedJob?.title || "Choose a role"}
               </p>
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-blue-100">
                 {selectedJob?.experienceYears || 0}+ years • {selectedJob?.educationLevel || "No education level"}
               </p>
             </div>
 
+            {/* Card 2: Default White */}
             <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
               <p className="text-sm text-gray-500">Applicant Pool</p>
               <p className="mt-2 text-3xl font-bold text-gray-800">{totalApplicants}</p>
@@ -320,10 +322,11 @@ function AIScreeningPageContent() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
-              <p className="text-sm text-gray-500">Shortlist Snapshot</p>
-              <p className="mt-2 text-3xl font-bold text-gray-800">{shortlist.length}</p>
-              <p className="mt-2 text-xs text-gray-400">
+            {/* Card 3: Primary Blue Focus */}
+            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-6 shadow-md text-white">
+              <p className="text-sm font-medium text-blue-100">Shortlist Snapshot</p>
+              <p className="mt-2 text-3xl font-bold text-white">{shortlist.length}</p>
+              <p className="mt-2 text-xs text-blue-100">
                 {recommendationSummary.strong} strong • {recommendationSummary.moderate} moderate • {recommendationSummary.weak} weak
               </p>
             </div>
