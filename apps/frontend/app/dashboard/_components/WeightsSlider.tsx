@@ -52,7 +52,7 @@ export default function WeightsSlider({
           <div key={key} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="mb-2 flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-gray-700">{label}</span>
-              <span className="text-sm font-semibold text-[#260af5]">{weights[key]}%</span>
+              <span className="text-sm font-semibold text-[#3b82f6]">{weights[key]}%</span>
             </div>
             <input
               type="range"
@@ -61,7 +61,7 @@ export default function WeightsSlider({
               step={5}
               value={weights[key]}
               onChange={(event) => updateWeight(key, Number(event.target.value))}
-              className="w-full accent-[#260af5]"
+              className="w-full accent-[#3b82f6]"
             />
           </div>
         ))}

@@ -290,7 +290,7 @@ export default function ExportButton({
       <button
         type="button"
         onClick={exportCSV}
-        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-[#260af5]"
+        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-[#3b82f6]"
       >
         <Download className="h-4 w-4" />
         Export CSV
@@ -298,7 +298,7 @@ export default function ExportButton({
       <button
         type="button"
         onClick={exportPDF}
-        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-[#260af5]"
+        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-[#3b82f6]"
       >
         <FileText className="h-4 w-4" />
         Export PDF

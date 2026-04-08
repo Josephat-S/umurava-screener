@@ -242,7 +242,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleRunScreening}
             disabled={screening || !activeJobId || !hasApplicants || weightsTotal !== 100}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#260af5] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#1a05cc] disabled:cursor-not-allowed disabled:bg-[#260af5]/40"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40"
           >
             {screening ? (
               <>
@@ -362,7 +362,7 @@ function AIScreeningPageContent() {
           <div className="rounded-xl border border-gray-100 bg-white shadow-sm">
             <div className="flex flex-col gap-4 border-b border-gray-100 p-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-[#260af5]" />
+                <Award className="h-5 w-5 text-[#3b82f6]" />
                 <div>
                   <h2 className="text-lg font-bold text-gray-800">Ranked Candidates</h2>
                   <p className="mt-1 text-sm text-gray-500">
@@ -376,7 +376,7 @@ function AIScreeningPageContent() {
                   <button
                     type="button"
                     onClick={() => setIsComparing(true)}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#260af5] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc]"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
                   >
                     <GitCompareArrows className="h-4 w-4" />
                     Compare {selectedCandidates.length}
@@ -430,7 +430,7 @@ function AIScreeningPageContent() {
           {shortlist.length > 0 && (
             <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
               <div className="mb-5 flex items-center gap-2">
-                <Columns3 className="h-5 w-5 text-[#260af5]" />
+                <Columns3 className="h-5 w-5 text-[#3b82f6]" />
                 <div>
                   <h2 className="text-lg font-bold text-gray-800">Hiring Workflow Board</h2>
                   <p className="mt-1 text-sm text-gray-500">

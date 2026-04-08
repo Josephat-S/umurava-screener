@@ -22,23 +22,23 @@ export default function RecentActivity({ jobs }: RecentActivityProps) {
   const activities = jobs.slice(0, 4).map((job, index) => {
     const variants = [
       {
-        icon: <Briefcase size={18} className="text-[#260af5]" />,
-        iconBg: "bg-[#260af5]/10",
+        icon: <Briefcase size={18} className="text-[#3b82f6]" />,
+        iconBg: "bg-[#3b82f6]/10",
         title: `Job posting '${job.title}' created`,
       },
       {
-        icon: <Users size={18} className="text-[#260af5]" />,
-        iconBg: "bg-[#260af5]/10",
+        icon: <Users size={18} className="text-[#3b82f6]" />,
+        iconBg: "bg-[#3b82f6]/10",
         title: `'${job.title}' is ready for applicants`,
       },
       {
-        icon: <Zap size={18} className="text-[#260af5]" />,
-        iconBg: "bg-[#260af5]/10",
+        icon: <Zap size={18} className="text-[#3b82f6]" />,
+        iconBg: "bg-[#3b82f6]/10",
         title: `AI screening can now be run for '${job.title}'`,
       },
       {
-        icon: <Sparkles size={18} className="text-[#260af5]" />,
-        iconBg: "bg-[#260af5]/10",
+        icon: <Sparkles size={18} className="text-[#3b82f6]" />,
+        iconBg: "bg-[#3b82f6]/10",
         title: `'${job.title}' shortlist set to top ${job.shortlistSize}`,
       },
     ];

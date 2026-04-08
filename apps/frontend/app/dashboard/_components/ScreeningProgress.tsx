@@ -60,7 +60,7 @@ export default function ScreeningProgress() {
                   isDone
                     ? "bg-green-600 text-white"
                     : isActive
-                      ? "bg-[#260af5] text-white"
+                      ? "bg-[#3b82f6] text-white"
                       : "bg-white text-blue-500"
                 }`}
               >

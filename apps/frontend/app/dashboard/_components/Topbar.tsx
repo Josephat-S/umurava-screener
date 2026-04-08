@@ -9,15 +9,12 @@ interface TopbarProps {
 }
 
 export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
-  // State to manage if the profile dropdown is open
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
     <div className="h-[72px] bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10">
       
-      {/* Left side: Toggles */}
       <div className="flex items-center">
-        {/* Desktop Toggle */}
         <button 
           onClick={toggleSidebar} 
           className="hidden md:block text-gray-500 hover:bg-gray-100 p-2 rounded-md transition-colors"
@@ -25,7 +22,6 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Mobile Toggle */}
         <button 
           onClick={toggleMobile} 
           className="md:hidden text-gray-500 hover:bg-gray-100 p-2 rounded-md transition-colors"
@@ -34,50 +30,33 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
         </button>
       </div>
 
-      {/* Right side: Notifications & User Profile */}
       <div className="flex items-center gap-2 ml-auto">
-        
-        {/* Notification Bell */}
         <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors mr-2">
           <Bell className="w-5 h-5" />
-          {/* Optional: Red dot for unread notifications */}
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
         </button>
 
-        {/* User Profile Container with relative positioning for the dropdown */}
         <div className="relative">
-          
-          {/* Clickable Profile Area */}
           <div 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors select-none"
           >
-            <div className="w-8 h-8 rounded-full bg-[#260af5] text-white flex items-center justify-center text-xs font-bold tracking-wider">
+            {/* Updated Avatar Color */}
+            <div className="w-8 h-8 rounded-full bg-[#3b82f6] text-white flex items-center justify-center text-xs font-bold tracking-wider">
               RA
             </div>
             <span className="text-sm font-medium text-gray-700 hidden sm:block">Recruiter Admin</span>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
           </div>
 
-          {/* Profile Dropdown Card */}
           {isProfileOpen && (
             <>
-              {/* Invisible overlay to close the dropdown when clicking outside */}
-              <div 
-                className="fixed inset-0 z-40" 
-                onClick={() => setIsProfileOpen(false)}
-              ></div>
-
-              {/* The actual dropdown menu */}
+              <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                
-                {/* User Info Header */}
                 <div className="px-4 py-3 border-b border-gray-100 mb-1">
                   <p className="text-sm font-semibold text-gray-800">Recruiter Admin</p>
                   <p className="text-xs text-gray-500 mt-0.5 truncate">admin@umurava.africa</p>
                 </div>
-
-                {/* Menu Actions */}
                 <button 
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
@@ -85,7 +64,6 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
                   <User className="w-4 h-4 text-gray-400" /> 
                   My Profile
                 </button>
-                
                 <button 
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors mt-1"
@@ -96,7 +74,6 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
               </div>
             </>
           )}
-
         </div>
       </div>
     </div>

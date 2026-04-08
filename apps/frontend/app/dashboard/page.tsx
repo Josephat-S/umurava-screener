@@ -50,7 +50,7 @@ export default function DashboardPage() {
           </Link>
           <Link
             href="/dashboard/job-postings"
-            className="px-5 py-2 text-sm font-medium text-white bg-[#260af5] rounded-lg hover:bg-[#1a05cc] transition-colors"
+            className="px-5 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] transition-colors"
           >
             Create Job
           </Link>
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           value={analytics.totalJobs}
           subtext="Roles configured in the screening pipeline"
           icon={<Briefcase size={20} />}
-          iconBgColor="bg-[#260af5]"
+          iconBgColor="bg-[#3b82f6]"
         />
         <StatCard
           title="Candidates Screened"
@@ -105,7 +105,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/dashboard/job-postings"
-              className="text-sm font-medium text-[#260af5] hover:text-[#1a05cc]"
+              className="text-sm font-medium text-[#3b82f6] hover:text-[#2563eb]"
             >
               Manage Jobs
             </Link>
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                         </Link>
                         <Link
                           href={`/dashboard/ai-screening?jobId=${job._id}`}
-                          className="rounded-lg bg-[#260af5] px-3 py-2 text-sm font-medium text-white hover:bg-[#1a05cc]"
+                          className="rounded-lg bg-[#3b82f6] px-3 py-2 text-sm font-medium text-white hover:bg-[#2563eb]"
                         >
                           Screen
                         </Link>

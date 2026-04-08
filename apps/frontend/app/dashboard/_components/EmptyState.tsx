@@ -22,7 +22,7 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-sm">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#260af5]">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#3b82f6]">
         {icon}
       </div>
       <h3 className="mt-5 text-lg font-semibold text-gray-800">{title}</h3>
@@ -31,7 +31,7 @@ export default function EmptyState({
       {actionLabel && actionHref && (
         <Link
           href={actionHref}
-          className="mt-5 inline-flex rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc]"
+          className="mt-5 inline-flex rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
         >
           {actionLabel}
         </Link>
@@ -41,7 +41,7 @@ export default function EmptyState({
         <button
           type="button"
           onClick={onAction}
-          className="mt-5 inline-flex rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc]"
+          className="mt-5 inline-flex rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
         >
           {actionLabel}
         </button>

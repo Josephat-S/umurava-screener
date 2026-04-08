@@ -81,10 +81,10 @@ export default function ScreenedCandidateCard({
               type="checkbox"
               checked={selected}
               onChange={() => onToggleSelection?.(candidate.candidateId)}
-              className="mt-3 h-4 w-4 rounded border-gray-300 text-[#260af5] focus:ring-[#260af5]"
+              className="mt-3 h-4 w-4 rounded border-gray-300 text-[#3b82f6] focus:ring-[#3b82f6]"
             />
           )}
-          <div className="h-11 w-11 shrink-0 rounded-full bg-[#260af5] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+          <div className="h-11 w-11 shrink-0 rounded-full bg-[#3b82f6] text-white flex items-center justify-center text-sm font-bold shadow-sm">
             #{candidate.rank}
           </div>
           <div>
@@ -112,7 +112,7 @@ export default function ScreenedCandidateCard({
 
       <div
         className={`mt-4 inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${confidence.badge}`}
-      >
+        >
         <span>{confidence.label}</span>
         <span className="text-gray-500">{confidence.reason}</span>
       </div>

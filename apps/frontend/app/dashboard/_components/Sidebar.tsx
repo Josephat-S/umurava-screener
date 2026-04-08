@@ -8,10 +8,11 @@ import { BarChart2, Briefcase, Users, Zap, X } from 'lucide-react';
 import umuravaLogo from '../../umuravalogo.png'; 
 
 const navItems = [
-  { name: 'DASHBOARD', desc: 'Overview & metrics', icon: BarChart2, path: '/dashboard' },
-  { name: 'JOB POSTINGS', desc: 'Create & manage jobs', icon: Briefcase, path: '/dashboard/job-postings' },
-  { name: 'CANDIDATES', desc: 'Applicant management', icon: Users, path: '/dashboard/candidates' },
-  { name: 'AI SCREENING', desc: 'Evaluate & rank', icon: Zap, path: '/dashboard/ai-screening' },
+  // Changed to Title Case to match your image reference
+  { name: 'Dashboard', icon: BarChart2, path: '/dashboard' },
+  { name: 'Job Postings', icon: Briefcase, path: '/dashboard/job-postings' },
+  { name: 'Candidates', icon: Users, path: '/dashboard/candidates' },
+  { name: 'AI Screening', icon: Zap, path: '/dashboard/ai-screening' },
 ];
 
 interface SidebarProps {
@@ -29,9 +30,9 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
         <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsMobileOpen(false)} />
       )}
 
-      {/* Changed background to #260af5 */}
+      {/* Changed background from #260af5 to #3b82f6 (Tailwind blue-500) to perfectly match the image's vibrant blue */}
       <div 
-        className={`fixed left-0 top-0 h-screen bg-[#260af5] text-white flex flex-col z-30 transition-all duration-300 ease-in-out
+        className={`fixed left-0 top-0 h-screen bg-[#3b82f6] text-white flex flex-col z-30 transition-all duration-300 ease-in-out
         ${isCollapsed ? 'w-20' : 'w-72'}
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
@@ -41,14 +42,15 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
             <div className="shrink-0 flex items-center justify-center">
               <Image src={umuravaLogo} alt="Umurava Logo" width={32} height={32} className="object-contain" />
             </div>
-            {!isCollapsed && <span className="text-xl font-bold">Umurava</span>}
+            {/* Added your reference text from the image */}
+            {!isCollapsed && <span className="text-2xl font-black tracking-tight lowercase">umurava.Ai</span>}
           </div>
           <button className="md:hidden p-1 hover:bg-white/10 rounded-lg" onClick={() => setIsMobileOpen(false)}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-3 space-y-2 mt-4 overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 px-4 space-y-2 mt-6 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path; 
@@ -58,20 +60,19 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
                 key={item.name}
                 href={item.path}
                 onClick={() => setIsMobileOpen(false)}
-                className={`p-3 rounded-xl flex items-center transition-colors ${
-                  isActive ? 'bg-white/10' : 'hover:bg-white/5'
-                } ${isCollapsed ? 'justify-center' : 'justify-start gap-3'}`}
+                className={`px-4 py-3 rounded-xl flex items-center transition-all duration-200 ${
+                  isActive 
+                    ? 'bg-white text-[#3b82f6] shadow-sm font-semibold' // Active state: White bg, blue text
+                    : 'text-white hover:bg-white/10 font-medium'        // Inactive state: White text, soft hover
+                } ${isCollapsed ? 'justify-center' : 'justify-start gap-4'}`}
                 title={isCollapsed ? item.name : undefined}
               >
-                {/* Changed text-purple-200 to text-blue-200 */}
-                <Icon className={`shrink-0 w-5 h-5 text-blue-200`} />
+                <Icon className={`shrink-0 w-5 h-5 ${isActive ? 'text-[#3b82f6]' : 'text-white'}`} />
                 
                 {!isCollapsed && (
-                  <div className="whitespace-nowrap">
-                    <div className="font-bold text-sm tracking-wide">{item.name}</div>
-                    {/* Changed text-purple-200 to text-blue-200 */}
-                    <div className="text-xs text-blue-200 mt-0.5">{item.desc}</div>
-                  </div>
+                  <span className="whitespace-nowrap text-[15px]">
+                    {item.name}
+                  </span>
                 )}
               </Link>
             );
