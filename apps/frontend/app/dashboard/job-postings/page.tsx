@@ -236,7 +236,7 @@ export default function CreateJobPostingPage() {
                   type="button"
                   onClick={handleParseDescription}
                   disabled={parsing || !rawDescription.trim()}
-                  className="inline-flex rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc] disabled:cursor-not-allowed disabled:bg-[#260af5]/40"
+                  className="inline-flex rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40"
                 >
                   {parsing ? "Parsing..." : "Parse with AI"}
                 </button>
@@ -467,7 +467,7 @@ export default function CreateJobPostingPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-8 py-2 text-sm font-medium text-white bg-[#260af5] rounded-lg hover:bg-[#1a05cc] disabled:bg-[#260af5]/40 transition-colors"
+                className="px-8 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors"
               >
                 {saving
                   ? "Saving..."
@@ -567,7 +567,7 @@ export default function CreateJobPostingPage() {
                     </Link>
                     <Link
                       href={`/dashboard/ai-screening?jobId=${job._id}`}
-                      className="rounded-lg bg-[#260af5] px-3 py-2 text-xs font-medium text-white hover:bg-[#1a05cc]"
+                      className="rounded-lg bg-[#3b82f6] px-3 py-2 text-xs font-medium text-white hover:bg-[#2563eb]"
                     >
                       Open Screening
                     </Link>

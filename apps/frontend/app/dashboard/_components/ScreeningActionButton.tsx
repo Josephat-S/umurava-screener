@@ -34,7 +34,7 @@ export default function ScreeningActionButton({
       type="button"
       onClick={handleClick}
       disabled={screening || disabled}
-      className="flex items-center gap-2 bg-[#260af5] hover:bg-[#1a05cc] disabled:bg-[#260af5]/40 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+      className="flex items-center gap-2 bg-[#3b82f6] hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
     >
       {screening ? (
         <>

@@ -21,7 +21,7 @@ export default function ScreeningSummary({
   const strongMatches = shortlist.filter((candidate) => candidate.matchScore >= 70).length;
 
   return (
-    <div className="rounded-xl bg-gradient-to-r from-[#260af5] to-blue-700 p-6 text-white shadow-sm">
+    <div className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-blue-700 p-6 text-white shadow-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-200">

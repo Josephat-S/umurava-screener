@@ -598,7 +598,7 @@ function CandidatesPageContent() {
           </p>
           <Link
             href="/dashboard/job-postings"
-            className="inline-flex mt-5 rounded-lg bg-[#260af5] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a05cc]"
+            className="inline-flex mt-5 rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563eb]"
           >
             Create Job Posting
           </Link>
@@ -652,7 +652,7 @@ function CandidatesPageContent() {
               onClick={() => setActiveTab("structured")}
               className={`pb-3 text-sm font-medium transition-colors ${
                 activeTab === "structured"
-                  ? "text-[#260af5] border-b-2 border-[#260af5]"
+                  ? "text-[#3b82f6] border-b-2 border-[#3b82f6]"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -662,7 +662,7 @@ function CandidatesPageContent() {
               onClick={() => setActiveTab("external")}
               className={`pb-3 text-sm font-medium transition-colors ${
                 activeTab === "external"
-                  ? "text-[#260af5] border-b-2 border-[#260af5]"
+                  ? "text-[#3b82f6] border-b-2 border-[#3b82f6]"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -812,7 +812,7 @@ function CandidatesPageContent() {
                     <button
                       type="submit"
                       disabled={adding}
-                      className="px-6 py-2.5 rounded-lg bg-[#260af5] text-white text-sm font-medium hover:bg-[#1a05cc] disabled:bg-[#260af5]/40 transition-colors"
+                      className="px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-medium hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors"
                     >
                       {adding ? "Saving..." : "Add Applicant"}
                     </button>
@@ -841,7 +841,7 @@ function CandidatesPageContent() {
                 <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-start gap-3">
-                      <div className="rounded-full bg-white p-3 text-[#260af5] shadow-sm">
+                      <div className="rounded-full bg-white p-3 text-[#3b82f6] shadow-sm">
                         <Briefcase className="h-5 w-5" />
                       </div>
                       <div>
@@ -859,7 +859,7 @@ function CandidatesPageContent() {
 
                     <Link
                       href={`/dashboard/ai-screening?jobId=${activeJobId}`}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#260af5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc]"
+                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb]"
                     >
                       Open AI Screening
                       <ArrowRight className="h-4 w-4" />
@@ -883,7 +883,7 @@ function CandidatesPageContent() {
                   <div
                     className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${
                       dragOver
-                        ? "border-[#260af5] bg-blue-50"
+                        ? "border-[#3b82f6] bg-blue-50"
                         : "border-gray-300 hover:bg-gray-50/50"
                     }`}
                     onDragOver={(event) => {
@@ -962,7 +962,7 @@ function CandidatesPageContent() {
                         type="button"
                         onClick={() => void handleResumeLinkUpload()}
                         disabled={uploading || !resumeLinksInput.trim()}
-                        className="inline-flex items-center justify-center rounded-lg bg-[#260af5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a05cc] disabled:cursor-not-allowed disabled:bg-[#260af5]/40"
+                        className="inline-flex items-center justify-center rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40"
                       >
                         {uploading ? "Importing..." : "Import Links"}
                       </button>

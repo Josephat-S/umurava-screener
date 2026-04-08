@@ -42,7 +42,7 @@ export default function ScreeningHistory({
           type="button"
           onClick={onRerun}
           disabled={screening}
-          className="inline-flex rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-[#260af5] transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300"
+          className="inline-flex rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-[#3b82f6] transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300"
         >
           Re-run screening
         </button>
