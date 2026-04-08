@@ -10,7 +10,37 @@ import screeningRoutes from "./routes/screeningRoutes";
 const app = express();
 const port = Number(process.env.PORT) || 8000;
 
-app.use(cors());
+const configuredFrontendUrls = [
+  process.env.FRONTEND_URLS,
+  process.env.FRONTEND_URL,
+]
+  .filter(Boolean)
+  .flatMap((value) => (value as string).split(","))
+  .map((url) => url.trim())
+  .filter(Boolean);
+
+const allowedOrigins = new Set(
+  configuredFrontendUrls.length > 0
+    ? configuredFrontendUrls
+    : ["http://localhost:3000"],
+);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow non-browser requests (no Origin header) like curl/Postman.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+  }),
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
