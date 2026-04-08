@@ -33,7 +33,7 @@ export default function DashboardPage() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">Dashboard</h1>

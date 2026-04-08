@@ -49,7 +49,7 @@ export default function AIScreeningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-100 p-8">
+        <div className="min-h-screen bg-gray-200 p-8">
           <div className="rounded-xl border border-gray-100 bg-white px-6 py-16 text-center text-gray-400 shadow-md">
             Loading screening view...
           </div>
@@ -213,7 +213,7 @@ function AIScreeningPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">AI Screening</h1>
