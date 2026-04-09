@@ -33,7 +33,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
       {/* Changed background from #260af5 to #3b82f6 (Tailwind blue-500) to perfectly match the image's vibrant blue */}
       <div 
         className={`fixed left-0 top-0 h-screen bg-[#3b82f6] text-white flex flex-col z-30 transition-all duration-300 ease-in-out
-        ${isCollapsed ? 'w-20' : 'w-72'}
+        ${isCollapsed ? 'w-20' : 'w-[84vw] max-w-72 md:w-72'}
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >

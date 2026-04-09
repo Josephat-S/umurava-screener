@@ -49,7 +49,7 @@ export default function AIScreeningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-200 p-8">
+        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
           <div className="rounded-xl border border-gray-100 bg-white px-6 py-16 text-center text-gray-400 shadow-md">
             Loading screening view...
           </div>
@@ -299,9 +299,9 @@ function AIScreeningPageContent() {
             </div>
           )}
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {/* Card 1: Primary Blue Focus */}
-            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-6 shadow-md text-white">
+            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
               <p className="text-sm font-medium text-blue-100">Selected Role</p>
               <p className="mt-2 text-lg font-bold text-white">
                 {selectedJob?.title || "Choose a role"}
@@ -312,7 +312,7 @@ function AIScreeningPageContent() {
             </div>
 
             {/* Card 2: Default White */}
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
+            <div className="rounded-xl border border-gray-100 bg-white p-5 sm:p-6 shadow-md">
               <p className="text-sm text-gray-500">Applicant Pool</p>
               <p className="mt-2 text-3xl font-bold text-gray-800">{totalApplicants}</p>
               <p className="mt-2 text-xs text-gray-400">
@@ -323,7 +323,7 @@ function AIScreeningPageContent() {
             </div>
 
             {/* Card 3: Primary Blue Focus */}
-            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-6 shadow-md text-white">
+            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
               <p className="text-sm font-medium text-blue-100">Shortlist Snapshot</p>
               <p className="mt-2 text-3xl font-bold text-white">{shortlist.length}</p>
               <p className="mt-2 text-xs text-blue-100">
@@ -363,7 +363,7 @@ function AIScreeningPageContent() {
           />
 
           <div className="rounded-xl border border-gray-100 bg-white shadow-md">
-            <div className="flex flex-col gap-4 border-b border-gray-100 p-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-4 border-b border-gray-100 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-[#3b82f6]" />
                 <div>
@@ -397,7 +397,7 @@ function AIScreeningPageContent() {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {loading ? (
                 <div className="py-16 text-center text-gray-400">
                   Loading screening results...
@@ -431,7 +431,7 @@ function AIScreeningPageContent() {
           </div>
 
           {shortlist.length > 0 && (
-            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-md">
+            <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md">
               <div className="mb-5 flex items-center gap-2">
                 <Columns3 className="h-5 w-5 text-[#3b82f6]" />
                 <div>

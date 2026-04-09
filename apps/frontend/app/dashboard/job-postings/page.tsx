@@ -201,7 +201,7 @@ export default function CreateJobPostingPage() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 sm:p-8">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 lg:p-8">
           <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-lg font-bold text-[#3b82f6]">
@@ -321,7 +321,7 @@ export default function CreateJobPostingPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Required Skills <span className="text-red-500">*</span>
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   type="text"
                   value={skillInput}
@@ -356,7 +356,7 @@ export default function CreateJobPostingPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Key Requirements
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   type="text"
                   value={requirementInput}
@@ -447,12 +447,12 @@ export default function CreateJobPostingPage() {
               </div>
             </div>
 
-            <div className="pt-8 mt-6 border-t border-gray-100 flex justify-end gap-4">
+            <div className="pt-8 mt-6 border-t border-gray-100 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-4">
               {editingJobId && (
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors sm:w-auto"
                 >
                   Cancel Edit
                 </button>
@@ -460,14 +460,14 @@ export default function CreateJobPostingPage() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors sm:w-auto"
               >
                 {editingJobId ? "Clear Form" : "Reset"}
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-8 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors"
+                className="w-full px-8 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors sm:w-auto"
               >
                 {saving
                   ? "Saving..."
@@ -479,7 +479,7 @@ export default function CreateJobPostingPage() {
           </form>
         </div>
 
-        <aside className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
+        <aside className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-lg font-bold text-[#3b82f6]">Existing Roles</h2>
