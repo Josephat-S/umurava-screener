@@ -66,6 +66,14 @@ function getScoreColor(score?: number): string {
   return "text-gray-800";
 }
 
+function truncateSelectLabel(value: string, maxLength = 30): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxLength - 1)}...`;
+}
+
 function StatusBadge({ status }: { status: "Screened" | "Parsed" | "New" }) {
   switch (status) {
     case "Screened":
@@ -93,7 +101,7 @@ export default function CandidatesPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-8 bg-gray-200 min-h-screen">
+        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
           <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
             Loading candidates...
           </div>
@@ -124,6 +132,7 @@ function CandidatesPageContent() {
 
   const [activeTab, setActiveTab] = useState<"structured" | "external">("structured");
   const [selectedJobId, setSelectedJobId] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -143,6 +152,17 @@ function CandidatesPageContent() {
   useEffect(() => {
     void dispatch(fetchJobs());
   }, [dispatch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isDropdownOpen) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isDropdownOpen]);
 
   const queryJobId = searchParams.get("jobId");
   const defaultJobId = useMemo(() => {
@@ -413,7 +433,7 @@ function CandidatesPageContent() {
     /* Upgraded to shadow-md */
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
-        <h2 className="text-lg font-bold text-[#3b82f6]">
+        <h2 className="min-w-0 break-words text-lg font-bold text-[#3b82f6]">
           {activeTab === "structured" ? "Structured Applicants" : "Uploaded Applicants"}
         </h2>
 
@@ -436,79 +456,135 @@ function CandidatesPageContent() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-[720px] w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-white text-sm text-gray-500 border-b border-gray-100">
-              <th className="py-4 pl-6 pr-4 font-medium">Name</th>
-              <th className="py-4 px-4 font-medium">Match Score</th>
-              <th className="py-4 px-4 font-medium">Job Applied</th>
-              <th className="py-4 px-4 font-medium">Applied Date</th>
-              <th className="py-4 px-4 font-medium">Status</th>
-              <th className="py-4 pl-4 pr-6 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-16 text-center text-gray-400">
-                  No applicants in this view yet.
-                </td>
-              </tr>
-            ) : (
-              rows.map((applicant) => {
-                const score = screeningMap.get(applicant._id);
-                const status =
-                  typeof score === "number"
-                    ? "Screened"
-                    : applicant.source === "upload"
-                      ? "Parsed"
-                      : "New";
+      {rows.length === 0 ? (
+        <div className="px-6 py-16 text-center text-gray-400">
+          No applicants in this view yet.
+        </div>
+      ) : (
+        <>
+          <div className="space-y-3 p-4 md:hidden">
+            {rows.map((applicant) => {
+              const score = screeningMap.get(applicant._id);
+              const status =
+                typeof score === "number"
+                  ? "Screened"
+                  : applicant.source === "upload"
+                    ? "Parsed"
+                    : "New";
 
-                return (
-                  <tr
-                    key={applicant._id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group"
-                  >
-                    <td className="py-4 pl-6 pr-4">
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">{applicant.name}</p>
-                        <p className="text-xs text-gray-400 mt-1">{applicant.email}</p>
-                      </div>
-                    </td>
-                    <td className={`py-4 px-4 text-sm ${getScoreColor(score)}`}>
+              return (
+                <article
+                  key={applicant._id}
+                  className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="break-words text-sm font-semibold text-gray-800">{applicant.name}</p>
+                      <p className="mt-1 break-all text-xs text-gray-400">{applicant.email}</p>
+                    </div>
+                    <span className={`shrink-0 text-sm ${getScoreColor(score)}`}>
                       {typeof score === "number" ? `${score}%` : "—"}
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-600">
-                      {selectedJob?.title || "Selected job"}
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-500">
-                      {formatDate(applicant.createdAt)}
-                    </td>
-                    <td className="py-4 px-4">
-                      <StatusBadge status={status} />
-                    </td>
-                    <td className="py-4 pl-4 pr-6 text-right">
-                      <button
-                        type="button"
-                        onClick={() => void handleDeleteApplicant(applicant)}
-                        disabled={
-                          deletingApplicantId === applicant._id ||
-                          clearingJobId === activeJobId
-                        }
-                        className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        {deletingApplicantId === applicant._id ? "Deleting..." : "Delete"}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                    </span>
+                  </div>
+
+                  <div className="mt-3 space-y-2 text-xs text-gray-600">
+                    <p className="break-words">
+                      <span className="font-medium text-gray-700">Job:</span> {selectedJob?.title || "Selected job"}
+                    </p>
+                    <p>
+                      <span className="font-medium text-gray-700">Applied:</span> {formatDate(applicant.createdAt)}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <StatusBadge status={status} />
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteApplicant(applicant)}
+                      disabled={
+                        deletingApplicantId === applicant._id ||
+                        clearingJobId === activeJobId
+                      }
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:w-auto"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {deletingApplicantId === applicant._id ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="hidden w-full overflow-x-auto md:block">
+            <table className="w-full min-w-[640px] text-left border-collapse">
+              <thead>
+                <tr className="bg-white text-sm text-gray-500 border-b border-gray-100">
+                  <th className="py-4 pl-6 pr-4 font-medium">Name</th>
+                  <th className="py-4 px-4 font-medium">Match Score</th>
+                  <th className="py-4 px-4 font-medium">Job Applied</th>
+                  <th className="py-4 px-4 font-medium">Applied Date</th>
+                  <th className="py-4 px-4 font-medium">Status</th>
+                  <th className="py-4 pl-4 pr-6 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((applicant) => {
+                  const score = screeningMap.get(applicant._id);
+                  const status =
+                    typeof score === "number"
+                      ? "Screened"
+                      : applicant.source === "upload"
+                        ? "Parsed"
+                        : "New";
+
+                  return (
+                    <tr
+                      key={applicant._id}
+                      className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group"
+                    >
+                      <td className="py-4 pl-6 pr-4">
+                        <div className="min-w-0 max-w-[14rem] sm:max-w-[18rem]">
+                          <p className="truncate text-sm font-medium text-gray-800" title={applicant.name}>{applicant.name}</p>
+                          <p className="mt-1 truncate text-xs text-gray-400" title={applicant.email}>{applicant.email}</p>
+                        </div>
+                      </td>
+                      <td className={`py-4 px-4 text-sm ${getScoreColor(score)}`}>
+                        {typeof score === "number" ? `${score}%` : "—"}
+                      </td>
+                      <td className="max-w-[12rem] py-4 px-4 text-sm text-gray-600 sm:max-w-[16rem]">
+                        <span className="block truncate" title={selectedJob?.title || "Selected job"}>
+                          {selectedJob?.title || "Selected job"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-500">
+                        {formatDate(applicant.createdAt)}
+                      </td>
+                      <td className="py-4 px-4">
+                        <StatusBadge status={status} />
+                      </td>
+                      <td className="py-4 pl-4 pr-6 text-right">
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteApplicant(applicant)}
+                          disabled={
+                            deletingApplicantId === applicant._id ||
+                            clearingJobId === activeJobId
+                          }
+                          className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          {deletingApplicantId === applicant._id ? "Deleting..." : "Delete"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {shouldPaginate && totalFilteredApplicants > 0 && (
         <div className="flex flex-col gap-4 border-t border-gray-100 px-4 py-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between">
@@ -516,7 +592,7 @@ function CandidatesPageContent() {
             Showing {pageStart}-{pageEnd} of {totalFilteredApplicants} {currentViewLabel}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <span className="hidden rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:inline-flex shadow-sm">
               {APPLICANTS_PER_PAGE} per page
             </span>
@@ -530,13 +606,13 @@ function CandidatesPageContent() {
                 })
               }
               disabled={normalizedCurrentPage === 1}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:w-auto"
             >
               <ChevronLeft className="h-4 w-4" />
               Previous
             </button>
 
-            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 shadow-sm">
+            <div className="rounded-lg border border-gray-200 px-3 py-2 text-center text-sm font-medium text-gray-700 shadow-sm">
               Page {normalizedCurrentPage} of {totalPages}
             </div>
 
@@ -549,7 +625,7 @@ function CandidatesPageContent() {
                 })
               }
               disabled={normalizedCurrentPage === totalPages}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:w-auto"
             >
               Next
               <ChevronRight className="h-4 w-4" />
@@ -561,32 +637,46 @@ function CandidatesPageContent() {
   );
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-7xl bg-gray-200 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto min-h-screen w-full max-w-7xl overflow-x-hidden bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="mt-1 break-words text-sm text-gray-500">
             Manage and review all applicants across job postings.
           </p>
         </div>
 
-        <div className="w-full max-w-full sm:max-w-xs md:max-w-sm">
+        <div className="w-full min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Active Job
           </label>
-          <div className="relative">
-            <select
-              value={activeJobId}
-              onChange={(event) => setSelectedJobId(event.target.value)}
-              className="w-full px-3.5 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600 shadow-sm"
+          <div className="relative min-w-0 max-w-full">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="block w-full min-w-0 max-w-full truncate appearance-none rounded-lg border border-gray-200 bg-white px-3.5 py-2 pr-10 text-sm text-gray-600 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-left"
             >
-              {jobs.map((job) => (
-                <option key={job._id} value={job._id}>
-                  {job.title}
-                </option>
-              ))}
-            </select>
+              {selectedJob?.title || "Select a job"}
+            </button>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                {jobs.map((job) => (
+                  <button
+                    key={job._id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedJobId(job._id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full px-3.5 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 truncate"
+                  >
+                    {truncateSelectLabel(job.title)}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -614,21 +704,21 @@ function CandidatesPageContent() {
           )}
 
           {/* Upgraded to shadow-md */}
-          <div className="mb-6 w-full max-w-4xl rounded-xl border border-gray-100 bg-white p-4 shadow-md sm:p-5">
+          <div className="mb-6 w-full min-w-0 rounded-xl border border-gray-100 bg-white p-4 shadow-md sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                   Selected Job
                 </p>
-                <h2 className="mt-2 text-lg font-semibold text-[#3b82f6]">
+                <h2 className="mt-2 break-words text-lg font-semibold text-[#3b82f6]">
                   {selectedJob?.title || "Choose a job"}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 break-words text-sm text-gray-500">
                   {totalJobApplicants} total applicants linked to this job.
                 </p>
               </div>
 
-              <div className="flex w-full flex-wrap items-center gap-1.5 sm:gap-2 lg:w-auto lg:justify-end">
+              <div className="flex w-full min-w-0 flex-wrap items-center gap-1.5 sm:gap-2 lg:w-auto lg:justify-end">
                 <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600 shadow-sm sm:px-2.5 sm:text-[11px]">
                   Structured {structuredApplicantsCount}
                 </span>
@@ -650,7 +740,7 @@ function CandidatesPageContent() {
             </div>
           </div>
 
-          <div className="mb-6 flex gap-6 overflow-x-auto border-b border-gray-200 pb-1">
+          <div className="mb-6 flex w-full min-w-0 gap-6 overflow-x-auto border-b border-gray-200 pb-1">
             <button
               onClick={() => setActiveTab("structured")}
               className={`pb-3 text-sm font-medium transition-colors whitespace-nowrap ${
@@ -678,11 +768,11 @@ function CandidatesPageContent() {
               {/* Upgraded to shadow-md */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
                 <div className="mb-6 flex items-start justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-lg font-bold text-[#3b82f6]">
                       Add Structured Applicant
                     </h2>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="mt-1 break-words text-sm text-gray-500">
                       Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
                     </p>
                   </div>
@@ -763,7 +853,7 @@ function CandidatesPageContent() {
                   </div>
 
                   <div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
                       <input
                         type="text"
                         value={skillsInput}
@@ -816,7 +906,7 @@ function CandidatesPageContent() {
                     <button
                       type="submit"
                       disabled={adding}
-                      className="px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-medium hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 transition-colors shadow-sm"
+                      className="w-full rounded-lg bg-[#3b82f6] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 shadow-sm sm:w-auto"
                     >
                       {adding ? "Saving..." : "Add Applicant"}
                     </button>
@@ -839,24 +929,24 @@ function CandidatesPageContent() {
                 <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="break-words text-sm text-gray-500">
                   Bring in spreadsheets, PDF resumes, or direct resume links for {selectedJob?.title || "the selected role"}.
                 </p>
 
                 <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="flex items-start gap-3">
+                    <div className="flex min-w-0 items-start gap-3">
                       <div className="rounded-full bg-white p-3 text-[#3b82f6] shadow-sm">
                         <Briefcase className="h-5 w-5" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
                           Compare Against
                         </p>
-                        <h3 className="mt-1 text-lg font-semibold text-[#3b82f6]">
+                        <h3 className="mt-1 break-words text-lg font-semibold text-[#3b82f6]">
                           {selectedJob?.title || "Selected job"}
                         </h3>
-                        <p className="mt-1 text-sm text-blue-700">
+                        <p className="mt-1 break-words text-sm text-blue-700">
                           Every imported resume is attached to the active job above. After import, open AI Screening to compare the batch against this role.
                         </p>
                       </div>
@@ -864,7 +954,7 @@ function CandidatesPageContent() {
 
                     <Link
                       href={`/dashboard/ai-screening?jobId=${activeJobId}`}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] shadow-sm"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] shadow-sm sm:w-auto"
                     >
                       Open AI Screening
                       <ArrowRight className="h-4 w-4" />
@@ -917,7 +1007,7 @@ function CandidatesPageContent() {
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploading}
-                      className="px-6 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+                      className="w-full rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 shadow-sm sm:w-auto"
                     >
                       {uploading ? "Uploading..." : "Browse Files"}
                     </button>
@@ -935,15 +1025,15 @@ function CandidatesPageContent() {
                   </div>
 
                   <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-6 shadow-sm">
-                    <div className="flex items-start gap-3">
+                    <div className="flex min-w-0 items-start gap-3">
                       <div className="rounded-full bg-blue-50 p-3 text-blue-700">
                         <Link2 className="h-5 w-5" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <h3 className="text-base font-semibold text-gray-800">
                           Import Resume Links
                         </h3>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 break-words text-sm text-gray-500">
                           Paste one public PDF resume URL per line and let the parser ingest them in bulk.
                         </p>
                       </div>
@@ -967,7 +1057,7 @@ function CandidatesPageContent() {
                         type="button"
                         onClick={() => void handleResumeLinkUpload()}
                         disabled={uploading || !resumeLinksInput.trim()}
-                        className="inline-flex items-center justify-center rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 shadow-sm"
+                        className="inline-flex w-full items-center justify-center rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 shadow-sm md:w-auto"
                       >
                         {uploading ? "Importing..." : "Import Links"}
                       </button>
@@ -979,18 +1069,18 @@ function CandidatesPageContent() {
               {latestImport?.jobId === activeJobId && latestImport.count > 0 && (
                 <div className="rounded-xl border border-green-200 bg-green-50 p-5 shadow-md">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
+                    <div className="min-w-0">
                       <h3 className="text-base font-semibold text-green-900">
                         Ready to compare against the selected job
                       </h3>
-                      <p className="mt-1 text-sm text-green-800">
+                      <p className="mt-1 break-words text-sm text-green-800">
                         {latestImport.count} applicants were added to {selectedJob?.title || "the selected job"}. Open AI Screening to compare them against this role.
                       </p>
                     </div>
 
                     <Link
                       href={`/dashboard/ai-screening?jobId=${activeJobId}`}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-800 transition-colors hover:bg-green-100 shadow-sm"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-800 transition-colors hover:bg-green-100 shadow-sm md:w-auto"
                     >
                       Compare To Job
                       <ArrowRight className="h-4 w-4" />

@@ -122,21 +122,21 @@ export default function ScreenedCandidateCard({
           <p className="text-xs font-semibold uppercase tracking-wide text-green-700 mb-2">
             Strengths
           </p>
-          <p className="text-sm leading-6 text-gray-700">{candidate.strengths}</p>
+          <p className="break-words text-sm leading-6 text-gray-700">{candidate.strengths}</p>
         </section>
 
         <section className="rounded-xl bg-orange-50 p-4 border border-orange-100 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-orange-700 mb-2">
             Gaps
           </p>
-          <p className="text-sm leading-6 text-gray-700">{candidate.gaps}</p>
+          <p className="break-words text-sm leading-6 text-gray-700">{candidate.gaps}</p>
         </section>
 
         <section className="rounded-xl bg-blue-50 p-4 border border-blue-100 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-blue-700 mb-2">
             Recommendation
           </p>
-          <p className="text-sm leading-6 text-gray-700">
+          <p className="break-words text-sm leading-6 text-gray-700">
             {candidate.recommendation}
           </p>
         </section>

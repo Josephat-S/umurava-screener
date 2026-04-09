@@ -14,7 +14,7 @@ export default function DashboardLayout({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-200 overflow-hidden">
+    <div className="flex h-screen bg-gray-200 overflow-x-hidden">
       <Sidebar 
         isCollapsed={isCollapsed} 
         isMobileOpen={isMobileOpen} 
@@ -31,7 +31,7 @@ export default function DashboardLayout({
           toggleMobile={() => setIsMobileOpen(!isMobileOpen)} 
         />
         
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
           {children}
         </main>
       </div>
