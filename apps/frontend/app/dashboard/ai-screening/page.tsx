@@ -458,7 +458,7 @@ function AIScreeningPageContent() {
                   actionHref={hasApplicants ? undefined : `/dashboard/candidates?jobId=${activeJobId}`}
                 />
               ) : (
-                <div className="space-y-4">
+                <div className="min-w-0 max-w-full space-y-4">
                   {shortlist.map((candidate) => (
                     <ScreenedCandidateCard
                       key={candidate.candidateId}

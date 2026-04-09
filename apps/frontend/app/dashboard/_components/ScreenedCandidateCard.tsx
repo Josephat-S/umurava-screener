@@ -73,7 +73,7 @@ export default function ScreenedCandidateCard({
   const confidence = getConfidenceStyles(candidate);
 
   return (
-    <article className="w-full max-w-full rounded-xl border border-gray-100 bg-white p-3 shadow-md transition-shadow duration-200 hover:shadow-lg sm:p-5">
+    <article className="w-full max-w-full overflow-hidden rounded-xl border border-gray-100 bg-white p-3 shadow-md transition-shadow duration-200 hover:shadow-lg sm:p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
           {selectable && (
@@ -95,9 +95,11 @@ export default function ScreenedCandidateCard({
         </div>
 
         <div
-          className={`inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-xs font-semibold sm:px-3 sm:text-sm ${styles.badge}`}
+          className={`flex w-full min-w-0 flex-wrap items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold sm:w-auto sm:px-3 sm:text-sm ${styles.badge}`}
         >
-          {candidate.matchScore}% • {styles.label}
+          <span className="shrink-0">{candidate.matchScore}%</span>
+          <span className="shrink-0">•</span>
+          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{styles.label}</span>
         </div>
       </div>
 
@@ -111,32 +113,32 @@ export default function ScreenedCandidateCard({
       </div>
 
       <div
-        className={`mt-3 inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[11px] font-medium sm:mt-4 sm:gap-2 sm:px-3 sm:text-xs ${confidence.badge}`}
-        >
-        <span>{confidence.label}</span>
-        <span className="break-words [overflow-wrap:anywhere] text-gray-500">{confidence.reason}</span>
+        className={`mt-3 flex w-full min-w-0 flex-col gap-1 rounded-xl border px-2.5 py-2 text-[11px] font-medium sm:mt-4 sm:px-3 sm:text-xs ${confidence.badge}`}
+      >
+        <span className="shrink-0 font-semibold">{confidence.label}</span>
+        <span className="min-w-0 break-words [overflow-wrap:anywhere] text-gray-500">{confidence.reason}</span>
       </div>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-3 sm:mt-5 sm:gap-4">
-        <section className="rounded-xl border border-green-100 bg-green-50 p-3 shadow-sm sm:p-4">
+      <div className="mt-4 min-w-0 max-w-full grid gap-3 lg:grid-cols-3 sm:mt-5 sm:gap-4">
+        <section className="min-w-0 rounded-xl border border-green-100 bg-green-50 p-3 shadow-sm sm:p-4">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-green-700 sm:text-xs">
             Strengths
           </p>
-          <p className="break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">{candidate.strengths}</p>
+          <p className="min-w-0 break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">{candidate.strengths}</p>
         </section>
 
-        <section className="rounded-xl border border-orange-100 bg-orange-50 p-3 shadow-sm sm:p-4">
+        <section className="min-w-0 rounded-xl border border-orange-100 bg-orange-50 p-3 shadow-sm sm:p-4">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-orange-700 sm:text-xs">
             Gaps
           </p>
-          <p className="break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">{candidate.gaps}</p>
+          <p className="min-w-0 break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">{candidate.gaps}</p>
         </section>
 
-        <section className="rounded-xl border border-blue-100 bg-blue-50 p-3 shadow-sm sm:p-4">
+        <section className="min-w-0 rounded-xl border border-blue-100 bg-blue-50 p-3 shadow-sm sm:p-4">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-blue-700 sm:text-xs">
             Recommendation
           </p>
-          <p className="break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">
+          <p className="min-w-0 break-words [overflow-wrap:anywhere] text-xs leading-5 text-gray-700 sm:text-sm sm:leading-6">
             {candidate.recommendation}
           </p>
         </section>

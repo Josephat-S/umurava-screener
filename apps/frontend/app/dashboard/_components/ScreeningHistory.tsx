@@ -51,14 +51,14 @@ export default function ScreeningHistory({
 
       <div className="mt-5 min-w-0 max-w-full grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {recentRuns.map((run) => (
-          <div key={run.processedAt} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <p className="break-words [overflow-wrap:anywhere] text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div key={run.processedAt} className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <p className="min-w-0 break-words [overflow-wrap:anywhere] text-xs font-semibold uppercase tracking-wide text-gray-400">
               {timeAgo(run.processedAt)}
             </p>
-            <p className="mt-2 break-words [overflow-wrap:anywhere] text-sm font-semibold text-gray-800">
+            <p className="mt-2 min-w-0 break-words [overflow-wrap:anywhere] text-sm font-semibold text-gray-800">
               {run.totalApplicants} applicants screened
             </p>
-            <p className="mt-1 break-words [overflow-wrap:anywhere] text-sm text-gray-500">
+            <p className="mt-1 min-w-0 break-words [overflow-wrap:anywhere] text-sm text-gray-500">
               {run.shortlistSize} shortlisted • Avg {run.avgMatchScore}%
             </p>
           </div>

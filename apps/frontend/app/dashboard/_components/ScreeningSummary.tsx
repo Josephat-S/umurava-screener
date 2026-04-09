@@ -35,28 +35,28 @@ export default function ScreeningSummary({
       </div>
 
       <div className="mt-4 min-w-0 max-w-full grid grid-cols-1 gap-3 sm:mt-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
+        <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-wide text-blue-200 sm:text-xs">Total Screened</p>
           <p className="mt-1 text-2xl font-bold sm:text-3xl">{result.totalApplicants}</p>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-wide text-blue-200 sm:text-xs">Shortlisted</p>
           <p className="mt-1 text-2xl font-bold sm:text-3xl">{shortlist.length}</p>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-wide text-blue-200 sm:text-xs">Avg Match Score</p>
           <p className="mt-1 text-2xl font-bold sm:text-3xl">{avgScore}%</p>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-wide text-blue-200 sm:text-xs">Strong Matches</p>
           <p className="mt-1 text-2xl font-bold text-green-300 sm:text-3xl">{strongMatches}</p>
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-white/10 bg-white/10 p-3 sm:mt-6 sm:p-4">
-        <p className="text-xs text-blue-100 sm:text-sm">
+      <div className="mt-4 min-w-0 max-w-full rounded-xl border border-white/10 bg-white/10 p-3 sm:mt-6 sm:p-4">
+        <p className="min-w-0 text-xs text-blue-100 sm:text-sm">
           Top candidate:
-          <span className="ml-2 break-words [overflow-wrap:anywhere] font-semibold text-white">
+          <span className="ml-2 block break-words [overflow-wrap:anywhere] font-semibold text-white">
             {topCandidate.candidateName}
           </span>
         </p>
