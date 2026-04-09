@@ -24,7 +24,7 @@ export default function ScreeningProgress() {
 
   return (
     <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-6 sm:p-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-blue-900">
             AI screening is in progress

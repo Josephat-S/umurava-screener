@@ -54,7 +54,7 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
       <div className="flex items-center gap-2 mb-8">
         <BarChart3 className="h-5 w-5 text-[#3b82f6]" />
         <div>
@@ -62,7 +62,7 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
         </div>
       </div>
       
-      <div className="relative h-64 mt-4">
+      <div className="relative mt-4 h-52 sm:h-64">
         {/* Grid Lines & Y-Axis (Background) */}
         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
           {ticks.map((tick, i) => {
@@ -107,7 +107,7 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
       <div className="flex items-center justify-between pl-12 mt-4">
         {data.map((item) => (
           <div key={item.label} className="w-full flex justify-center text-center group cursor-pointer">
-             <span className="text-xs font-medium text-gray-500 group-hover:text-[#3b82f6] transition-colors truncate px-1">
+             <span className="max-w-[72px] truncate px-1 text-[11px] font-medium text-gray-500 transition-colors group-hover:text-[#3b82f6] sm:max-w-none sm:text-xs">
                {item.label}
              </span>
           </div>

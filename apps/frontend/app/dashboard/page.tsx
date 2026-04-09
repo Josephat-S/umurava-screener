@@ -42,16 +42,16 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
           <Link
             href="/dashboard/candidates"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm text-center"
           >
             View Candidates
           </Link>
           <Link
             href="/dashboard/job-postings"
-            className="px-5 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] transition-colors shadow-sm"
+            className="px-5 py-2 text-sm font-medium text-white bg-[#3b82f6] rounded-lg hover:bg-[#2563eb] transition-colors shadow-sm text-center"
           >
             Create Job
           </Link>
@@ -101,7 +101,7 @@ export default function DashboardPage() {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <section className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-bold text-[#3b82f6]">Recent Job Postings</h2>
               <p className="text-sm text-gray-500 mt-1">

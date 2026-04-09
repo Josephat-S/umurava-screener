@@ -67,7 +67,7 @@ export default function WeightsSlider({
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-gray-400">
           The total must stay at 100% before screening can run.
         </p>

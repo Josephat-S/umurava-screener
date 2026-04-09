@@ -412,24 +412,24 @@ function CandidatesPageContent() {
   const renderTable = (rows: Applicant[]) => (
     /* Upgraded to shadow-md */
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
-      <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
+      <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
         <h2 className="text-lg font-bold text-[#3b82f6]">
           {activeTab === "structured" ? "Structured Applicants" : "Uploaded Applicants"}
         </h2>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+          <div className="relative w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search candidates..."
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors w-full sm:w-64 shadow-sm"
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors w-full sm:w-48 md:w-64 shadow-sm"
             />
           </div>
 
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+          <button className="flex w-full items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors shadow-sm sm:w-auto">
             <Filter className="w-4 h-4" />
             {totalFilteredApplicants} Results
           </button>
@@ -437,7 +437,7 @@ function CandidatesPageContent() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="min-w-[720px] w-full text-left border-collapse">
           <thead>
             <tr className="bg-white text-sm text-gray-500 border-b border-gray-100">
               <th className="py-4 pl-6 pr-4 font-medium">Name</th>
@@ -511,12 +511,12 @@ function CandidatesPageContent() {
       </div>
 
       {shouldPaginate && totalFilteredApplicants > 0 && (
-        <div className="flex flex-col gap-4 border-t border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-gray-100 px-4 py-4 sm:px-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-gray-500">
             Showing {pageStart}-{pageEnd} of {totalFilteredApplicants} {currentViewLabel}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="hidden rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-400 sm:inline-flex shadow-sm">
               {APPLICANTS_PER_PAGE} per page
             </span>
@@ -561,7 +561,7 @@ function CandidatesPageContent() {
   );
 
   return (
-    <div className="p-8 bg-gray-200 min-h-screen">
+    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>
@@ -570,7 +570,7 @@ function CandidatesPageContent() {
           </p>
         </div>
 
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-full sm:max-w-sm">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Active Job
           </label>
@@ -650,10 +650,10 @@ function CandidatesPageContent() {
             </div>
           </div>
 
-          <div className="flex gap-6 border-b border-gray-200 mb-6">
+          <div className="mb-6 flex gap-6 overflow-x-auto border-b border-gray-200 pb-1">
             <button
               onClick={() => setActiveTab("structured")}
-              className={`pb-3 text-sm font-medium transition-colors ${
+              className={`pb-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === "structured"
                   ? "text-[#3b82f6] border-b-2 border-[#3b82f6]"
                   : "text-gray-500 hover:text-gray-700"
@@ -663,7 +663,7 @@ function CandidatesPageContent() {
             </button>
             <button
               onClick={() => setActiveTab("external")}
-              className={`pb-3 text-sm font-medium transition-colors ${
+              className={`pb-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === "external"
                   ? "text-[#3b82f6] border-b-2 border-[#3b82f6]"
                   : "text-gray-500 hover:text-gray-700"
@@ -676,8 +676,8 @@ function CandidatesPageContent() {
           {activeTab === "structured" ? (
             <div className="space-y-6">
               {/* Upgraded to shadow-md */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
+                <div className="mb-6 flex items-start justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-bold text-[#3b82f6]">
                       Add Structured Applicant
@@ -835,7 +835,7 @@ function CandidatesPageContent() {
           ) : (
             <div className="space-y-6">
               {/* Upgraded to shadow-md */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-6 sm:p-10 animate-in fade-in duration-300">
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 lg:p-10 animate-in fade-in duration-300">
                 <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
                 </h2>
@@ -886,7 +886,7 @@ function CandidatesPageContent() {
 
                 <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
                   <div
-                    className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${
+                    className={`border-2 border-dashed rounded-xl p-6 sm:p-12 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${
                       dragOver
                         ? "border-[#3b82f6] bg-blue-50"
                         : "border-gray-300 hover:bg-gray-50/50"
