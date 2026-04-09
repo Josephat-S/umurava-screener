@@ -23,7 +23,7 @@ export default function KanbanBoard({
 }: KanbanBoardProps) {
   return (
     <div className="overflow-x-auto">
-      <div className="flex min-w-max gap-4 pb-2">
+      <div className="flex min-w-max gap-3 pb-2 sm:gap-4">
         {COLUMNS.map((column) => {
           const candidates = shortlist.filter(
             (candidate) => (candidate.status || "shortlisted") === column.id,
@@ -32,9 +32,9 @@ export default function KanbanBoard({
           return (
             <section
               key={column.id}
-              className={`w-64 rounded-xl border p-4 ${column.styles}`}
+              className={`w-60 rounded-xl border p-4 sm:w-64 ${column.styles}`}
             >
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-gray-800">{column.label}</h3>
                 <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-500">
                   {candidates.length}
@@ -47,12 +47,12 @@ export default function KanbanBoard({
                     key={candidate.candidateId}
                     className="rounded-xl border border-white bg-white p-3 shadow-sm"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
+                    <div className="flex min-w-0 items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold text-gray-800">
                           {candidate.candidateName}
                         </p>
-                        <p className="mt-1 text-xs text-gray-400">
+                        <p className="mt-1 break-words text-xs text-gray-400">
                           Rank #{candidate.rank} • {candidate.matchScore}%
                         </p>
                       </div>
@@ -76,7 +76,7 @@ export default function KanbanBoard({
                 ))}
 
                 {candidates.length === 0 && (
-                  <div className="rounded-xl border border-dashed border-white/70 px-3 py-6 text-center text-xs text-gray-400">
+                  <div className="rounded-xl border border-dashed border-white/70 px-3 py-6 text-center text-xs text-gray-400 break-words">
                     No candidates in this stage yet.
                   </div>
                 )}

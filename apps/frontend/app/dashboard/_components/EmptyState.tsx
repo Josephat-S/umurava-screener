@@ -21,13 +21,15 @@ export default function EmptyState({
   onAction,
 }: EmptyStateProps) {
   return (
-    <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-sm">
+    <div className="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-10 text-center shadow-sm sm:px-6 sm:py-14">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#3b82f6]">
         {icon}
       </div>
       {/* Changed header text-gray-800 to text-[#3b82f6] */}
       <h3 className="mt-5 text-lg font-semibold text-[#3b82f6]">{title}</h3>
-      <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">{description}</p>
+      <p className="mx-auto mt-2 max-w-md break-words text-sm text-gray-500">
+        {description}
+      </p>
 
       {actionLabel && actionHref && (
         <Link

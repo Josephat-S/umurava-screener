@@ -37,20 +37,20 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
-        <div className={`p-6 flex items-center h-[72px] ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
+        <div className={`flex h-[72px] items-center p-4 sm:p-6 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          <div className="flex min-w-0 items-center gap-3 overflow-hidden whitespace-nowrap">
             <div className="shrink-0 flex items-center justify-center">
               <Image src={umuravaLogo} alt="Umurava Logo" width={32} height={32} className="object-contain" />
             </div>
             {/* Added your reference text from the image */}
-            {!isCollapsed && <span className="text-2xl font-black tracking-tight lowercase">umurava.Ai</span>}
+            {!isCollapsed && <span className="min-w-0 truncate text-2xl font-black tracking-tight lowercase">umurava.Ai</span>}
           </div>
           <button className="md:hidden p-1 hover:bg-white/10 rounded-lg" onClick={() => setIsMobileOpen(false)}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-6 overflow-y-auto overflow-x-hidden">
+        <nav className="mt-6 flex-1 space-y-2 overflow-y-auto overflow-x-hidden px-3 sm:px-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path; 
@@ -60,7 +60,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
                 key={item.name}
                 href={item.path}
                 onClick={() => setIsMobileOpen(false)}
-                className={`px-4 py-3 rounded-xl flex items-center transition-all duration-200 ${
+                className={`flex items-center rounded-xl px-3 py-3 transition-all duration-200 sm:px-4 ${
                   isActive 
                     ? 'bg-white text-[#3b82f6] shadow-sm font-semibold' // Active state: White bg, blue text
                     : 'text-white hover:bg-white/10 font-medium'        // Inactive state: White text, soft hover
@@ -70,7 +70,7 @@ export default function Sidebar({ isCollapsed, isMobileOpen, setIsMobileOpen }: 
                 <Icon className={`shrink-0 w-5 h-5 ${isActive ? 'text-[#3b82f6]' : 'text-white'}`} />
                 
                 {!isCollapsed && (
-                  <span className="whitespace-nowrap text-[15px]">
+                  <span className="min-w-0 truncate whitespace-nowrap text-[15px]">
                     {item.name}
                   </span>
                 )}

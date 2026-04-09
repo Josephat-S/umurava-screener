@@ -30,7 +30,7 @@ export default function ScreeningHistory({
   const recentRuns = result.history.slice(0, 4);
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           {/* Changed header text-gray-800 to text-[#3b82f6] */}
@@ -43,7 +43,7 @@ export default function ScreeningHistory({
           type="button"
           onClick={onRerun}
           disabled={screening}
-          className="inline-flex rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-[#3b82f6] transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300"
+          className="inline-flex w-full justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-[#3b82f6] transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-gray-300 sm:w-auto sm:px-4 sm:text-sm"
         >
           Re-run screening
         </button>
@@ -52,13 +52,13 @@ export default function ScreeningHistory({
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {recentRuns.map((run) => (
           <div key={run.processedAt} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+            <p className="break-words text-xs font-semibold uppercase tracking-wide text-gray-400">
               {timeAgo(run.processedAt)}
             </p>
-            <p className="mt-2 text-sm font-semibold text-gray-800">
+            <p className="mt-2 break-words text-sm font-semibold text-gray-800">
               {run.totalApplicants} applicants screened
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 break-words text-sm text-gray-500">
               {run.shortlistSize} shortlisted • Avg {run.avgMatchScore}%
             </p>
           </div>

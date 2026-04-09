@@ -55,22 +55,22 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
-      <div className="flex items-center gap-2 mb-8">
+      <div className="mb-6 flex items-center gap-2 sm:mb-8">
         <BarChart3 className="h-5 w-5 text-[#3b82f6]" />
         <div>
-          <h2 className="text-lg font-bold text-[#3b82f6]">Trending Skills</h2>
+          <h2 className="text-base font-bold text-[#3b82f6] sm:text-lg">Trending Skills</h2>
         </div>
       </div>
       
-      <div className="relative mt-4 h-52 sm:h-64">
+      <div className="relative mt-4 h-44 overflow-hidden sm:h-56 lg:h-64">
         {/* Grid Lines & Y-Axis (Background) */}
         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
           {ticks.map((tick, i) => {
             // Prevent showing duplicate numbers if the max value is very small
             const isDuplicate = i > 0 && tick === ticks[i - 1];
             return (
-              <div key={i} className="flex items-center w-full h-0">
-                <span className="w-8 text-right text-xs font-medium text-gray-400 mr-4 transform -translate-y-1/2">
+              <div key={i} className="flex h-0 w-full items-center">
+                <span className="mr-3 w-7 -translate-y-1/2 text-right text-[10px] font-medium text-gray-400 sm:mr-4 sm:w-8 sm:text-xs">
                   {!isDuplicate ? tick : ""}
                 </span>
                 <div className={`flex-1 border-b ${i === ticks.length - 1 ? 'border-gray-300' : 'border-gray-100 border-dashed'}`}></div>
@@ -80,18 +80,18 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
         </div>
 
         {/* Interactive Bars Area (Foreground) */}
-        <div className="absolute inset-0 flex items-end justify-between pl-12 z-10 pb-[1px]">
+        <div className="absolute inset-0 z-10 flex items-end justify-between pb-[1px] pl-9 sm:pl-12">
           {data.map((item) => (
-             <div key={item.label} className="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+             <div key={item.label} className="group flex h-full w-full flex-col items-center justify-end cursor-pointer">
                 
                 {/* Number directly above the bar (Matching your reference image) */}
-                <span className={`text-xs font-bold text-gray-700 mb-2 transition-all duration-200 group-hover:text-[#3b82f6] group-hover:-translate-y-1 ${item.value > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                <span className={`mb-2 text-[10px] font-bold text-gray-700 transition-all duration-200 group-hover:-translate-y-1 group-hover:text-[#3b82f6] sm:text-xs ${item.value > 0 ? 'opacity-100' : 'opacity-0'}`}>
                   {item.value}
                 </span>
                 
                 {/* The Bar (Fully rounded top and bottom) */}
                 <div
-                  className="w-full max-w-[48px] bg-[#3b82f6]/85 rounded-xl relative transition-all duration-300 group-hover:bg-[#3b82f6]"
+                  className="relative w-full max-w-[36px] rounded-xl bg-[#3b82f6]/85 transition-all duration-300 group-hover:bg-[#3b82f6] sm:max-w-[48px]"
                   style={{ 
                     height: `${(item.value / max) * 100}%`, 
                     minHeight: item.value > 0 ? '12px' : '0' 
@@ -104,10 +104,10 @@ export default function OverviewChart({ jobs }: OverviewChartProps) {
       </div>
 
       {/* X-Axis Labels (Bottom) */}
-      <div className="flex items-center justify-between pl-12 mt-4">
+      <div className="mt-4 flex items-center justify-between pl-9 sm:pl-12">
         {data.map((item) => (
-          <div key={item.label} className="w-full flex justify-center text-center group cursor-pointer">
-             <span className="max-w-[72px] truncate px-1 text-[11px] font-medium text-gray-500 transition-colors group-hover:text-[#3b82f6] sm:max-w-none sm:text-xs">
+          <div key={item.label} className="group flex w-full cursor-pointer justify-center text-center">
+             <span className="max-w-[52px] truncate px-1 text-[10px] font-medium text-gray-500 transition-colors group-hover:text-[#3b82f6] sm:max-w-none sm:text-xs">
                {item.label}
              </span>
           </div>

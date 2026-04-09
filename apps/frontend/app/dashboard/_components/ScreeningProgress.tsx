@@ -23,17 +23,17 @@ export default function ScreeningProgress() {
   }, []);
 
   return (
-    <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-6 sm:p-8">
+    <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 sm:p-6 sm:p-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-blue-900">
             AI screening is in progress
           </h3>
-          <p className="mt-1 text-sm text-blue-700">
+          <p className="mt-1 break-words text-sm text-blue-700">
             We are making the ranking steps visible so the process feels transparent.
           </p>
         </div>
-        <div className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
+        <div className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700 whitespace-nowrap">
           Step {currentStep}/{STEPS.length}
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function ScreeningProgress() {
           return (
             <div
               key={step}
-              className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
+              className={`flex items-start gap-3 rounded-xl border px-4 py-3 transition-all ${
                 isDone
                   ? "border-green-200 bg-green-50"
                   : isActive
@@ -80,7 +80,7 @@ export default function ScreeningProgress() {
                 </p>
               </div>
               {isActive && (
-                <svg className="h-4 w-4 animate-spin text-blue-500" viewBox="0 0 24 24" fill="none">
+                <svg className="mt-0.5 h-4 w-4 shrink-0 animate-spin text-blue-500" viewBox="0 0 24 24" fill="none">
                   <circle
                     className="opacity-25"
                     cx="12"

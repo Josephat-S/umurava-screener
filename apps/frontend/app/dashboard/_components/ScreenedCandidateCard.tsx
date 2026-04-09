@@ -73,9 +73,9 @@ export default function ScreenedCandidateCard({
   const confidence = getConfidenceStyles(candidate);
 
   return (
-    <article className="bg-white rounded-xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
+    <article className="bg-white rounded-xl border border-gray-100 p-4 shadow-md transition-shadow duration-200 hover:shadow-lg sm:p-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="flex items-start gap-4">
+        <div className="flex min-w-0 items-start gap-4">
           {selectable && (
             <input
               type="checkbox"
@@ -87,15 +87,15 @@ export default function ScreenedCandidateCard({
           <div className="h-11 w-11 shrink-0 rounded-full bg-[#3b82f6] text-white flex items-center justify-center text-sm font-bold shadow-sm">
             #{candidate.rank}
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-gray-800">
+          <div className="min-w-0">
+            <h3 className="break-words text-lg font-bold text-gray-800">
               {candidate.candidateName}
             </h3>
           </div>
         </div>
 
         <div
-          className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${styles.badge}`}
+          className={`inline-flex max-w-full items-center rounded-full border px-3 py-1 text-sm font-semibold ${styles.badge}`}
         >
           {candidate.matchScore}% • {styles.label}
         </div>
@@ -111,10 +111,10 @@ export default function ScreenedCandidateCard({
       </div>
 
       <div
-        className={`mt-4 inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${confidence.badge}`}
+        className={`mt-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${confidence.badge}`}
         >
         <span>{confidence.label}</span>
-        <span className="text-gray-500">{confidence.reason}</span>
+        <span className="break-words text-gray-500">{confidence.reason}</span>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
