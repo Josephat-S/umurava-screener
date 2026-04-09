@@ -28,12 +28,12 @@ export default function ComparisonView({
 }: ComparisonViewProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-auto rounded-2xl bg-white shadow-2xl">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-x-hidden overflow-y-auto rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-5 sm:px-6">
-          <div>
+          <div className="min-w-0">
             {/* Changed header text-gray-800 to text-[#3b82f6] */}
             <h2 className="text-xl font-bold text-[#3b82f6]">Candidate Comparison</h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 break-words text-sm text-gray-500">
               Compare the finalists side by side before making the next hiring move.
             </p>
           </div>
@@ -46,7 +46,7 @@ export default function ComparisonView({
           </button>
         </div>
 
-        <div className="overflow-x-auto p-4 sm:p-6">
+        <div className="w-full overflow-x-auto p-4 sm:p-6">
           <table className="min-w-[680px] w-full">
             <thead>
               <tr>
@@ -55,7 +55,7 @@ export default function ComparisonView({
                 </th>
                 {candidates.map((candidate) => (
                   <th key={candidate.candidateId} className="px-4 pb-4 text-left">
-                    <div className="text-base font-semibold text-gray-800">
+                    <div className="max-w-[14rem] break-words text-base font-semibold text-gray-800 sm:max-w-[18rem]">
                       {candidate.candidateName}
                     </div>
                     <div className="mt-1 text-xs text-gray-400">
@@ -78,7 +78,7 @@ export default function ComparisonView({
                 <td className="py-4 text-sm font-medium text-gray-500">Strengths</td>
                 {candidates.map((candidate) => (
                   <td key={candidate.candidateId} className="px-4 py-4 align-top">
-                    <div className="rounded-xl bg-green-50 p-3 text-sm text-gray-700">
+                    <div className="rounded-xl bg-green-50 p-3 text-sm text-gray-700 break-words">
                       {candidate.strengths}
                     </div>
                   </td>
@@ -88,7 +88,7 @@ export default function ComparisonView({
                 <td className="py-4 text-sm font-medium text-gray-500">Gaps</td>
                 {candidates.map((candidate) => (
                   <td key={candidate.candidateId} className="px-4 py-4 align-top">
-                    <div className="rounded-xl bg-orange-50 p-3 text-sm text-gray-700">
+                    <div className="rounded-xl bg-orange-50 p-3 text-sm text-gray-700 break-words">
                       {candidate.gaps}
                     </div>
                   </td>
@@ -98,7 +98,7 @@ export default function ComparisonView({
                 <td className="py-4 text-sm font-medium text-gray-500">Recommendation</td>
                 {candidates.map((candidate) => (
                   <td key={candidate.candidateId} className="px-4 py-4 align-top">
-                    <div className="rounded-xl bg-blue-50 p-3 text-sm text-gray-700">
+                    <div className="rounded-xl bg-blue-50 p-3 text-sm text-gray-700 break-words">
                       {candidate.recommendation}
                     </div>
                   </td>

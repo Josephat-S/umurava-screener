@@ -45,6 +45,14 @@ function formatDate(value: string): string {
   }).format(new Date(value));
 }
 
+function truncateSelectLabel(value: string, maxLength = 48): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxLength - 1)}...`;
+}
+
 export default function AIScreeningPage() {
   return (
     <Suspense
@@ -213,25 +221,25 @@ function AIScreeningPageContent() {
   };
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-7xl bg-gray-200 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto min-h-screen w-full max-w-7xl overflow-x-hidden bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-[#3b82f6]">AI Screening</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 break-words text-sm text-gray-500">
             Tune the rubric, run the AI, compare finalists, and move candidates through hiring stages.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 md:flex-row md:items-center">
-          <div className="relative min-w-0 md:min-w-72">
+        <div className="flex w-full min-w-0 flex-col gap-3 md:w-auto md:flex-row md:items-center">
+          <div className="relative w-full min-w-0 md:w-auto md:min-w-64 lg:min-w-72">
             <select
               value={activeJobId}
               onChange={(event) => setSelectedJobId(event.target.value)}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+              className="block w-full min-w-0 max-w-full truncate appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-4 pr-10 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
             >
               {jobs.map((job) => (
                 <option key={job._id} value={job._id}>
-                  {job.title}
+                  {truncateSelectLabel(job.title)}
                 </option>
               ))}
             </select>
@@ -242,7 +250,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleRunScreening}
             disabled={screening || !activeJobId || !hasApplicants || weightsTotal !== 100}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 sm:px-5 sm:py-2.5 sm:text-sm"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm"
           >
             {screening ? (
               <>
@@ -271,7 +279,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleClear}
             disabled={!result || clearing}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 shadow-sm sm:px-4 sm:py-2.5 sm:text-sm"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 shadow-sm sm:w-auto sm:px-4 sm:py-2.5 sm:text-sm"
           >
             <Trash2 className="h-4 w-4" />
             Clear Results
@@ -301,18 +309,18 @@ function AIScreeningPageContent() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {/* Card 1: Primary Blue Focus */}
-            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
+            <div className="min-w-0 rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
               <p className="text-sm font-medium text-blue-100">Selected Role</p>
-              <p className="mt-2 text-lg font-bold text-white">
+              <p className="mt-2 break-words text-lg font-bold text-white">
                 {selectedJob?.title || "Choose a role"}
               </p>
-              <p className="mt-2 text-xs text-blue-100">
+              <p className="mt-2 break-words text-xs text-blue-100">
                 {selectedJob?.experienceYears || 0}+ years • {selectedJob?.educationLevel || "No education level"}
               </p>
             </div>
 
             {/* Card 2: Default White */}
-            <div className="rounded-xl border border-gray-100 bg-white p-5 sm:p-6 shadow-md">
+            <div className="min-w-0 rounded-xl border border-gray-100 bg-white p-5 sm:p-6 shadow-md">
               <p className="text-sm text-gray-500">Applicant Pool</p>
               <p className="mt-2 text-3xl font-bold text-gray-800">{totalApplicants}</p>
               <p className="mt-2 text-xs text-gray-400">
@@ -323,10 +331,10 @@ function AIScreeningPageContent() {
             </div>
 
             {/* Card 3: Primary Blue Focus */}
-            <div className="rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
+            <div className="min-w-0 rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-5 sm:p-6 shadow-md text-white">
               <p className="text-sm font-medium text-blue-100">Shortlist Snapshot</p>
               <p className="mt-2 text-3xl font-bold text-white">{shortlist.length}</p>
-              <p className="mt-2 text-xs text-blue-100">
+              <p className="mt-2 break-words text-xs text-blue-100">
                 {recommendationSummary.strong} strong • {recommendationSummary.moderate} moderate • {recommendationSummary.weak} weak
               </p>
             </div>
@@ -364,11 +372,11 @@ function AIScreeningPageContent() {
 
           <div className="rounded-xl border border-gray-100 bg-white shadow-md">
             <div className="flex flex-col gap-4 border-b border-gray-100 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <Award className="h-5 w-5 text-[#3b82f6]" />
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-lg font-bold text-[#3b82f6]">Ranked Candidates</h2>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 break-words text-sm text-gray-500">
                     Compare finalists and export recruiter-ready shortlist outputs.
                   </p>
                 </div>
@@ -390,7 +398,7 @@ function AIScreeningPageContent() {
                   jobTitle={selectedJob?.title || "screening"}
                 />
                 {result?.processedAt && (
-                  <p className="text-sm text-gray-400">
+                  <p className="break-words text-sm text-gray-400">
                     Last processed {formatDate(result.processedAt)}
                   </p>
                 )}
@@ -431,12 +439,12 @@ function AIScreeningPageContent() {
           </div>
 
           {shortlist.length > 0 && (
-            <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md">
+            <div className="min-w-0 rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-md">
               <div className="mb-5 flex items-center gap-2">
                 <Columns3 className="h-5 w-5 text-[#3b82f6]" />
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-lg font-bold text-[#3b82f6]">Hiring Workflow Board</h2>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 break-words text-sm text-gray-500">
                     Move candidates from shortlist to interview, offer, hired, or rejected.
                   </p>
                 </div>
