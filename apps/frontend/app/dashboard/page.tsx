@@ -33,7 +33,7 @@ export default function DashboardPage() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto min-h-screen w-full max-w-7xl bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">Dashboard</h1>
@@ -100,7 +100,7 @@ export default function DashboardPage() {
       )}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="bg-white rounded-xl border border-gray-100 shadow-md p-6">
+        <section className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-bold text-[#3b82f6]">Recent Job Postings</h2>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
               {jobs.slice(0, 4).map((job) => (
                 <article
                   key={job._id}
-                  className="rounded-xl border border-gray-100 bg-gray-50/70 p-5 hover:bg-white hover:shadow-md transition-all duration-200"
+                  className="rounded-xl border border-gray-100 bg-gray-50/70 p-4 sm:p-5 hover:bg-white hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
@@ -168,13 +168,13 @@ export default function DashboardPage() {
                       <div className="mt-4 flex flex-wrap gap-2 md:justify-end">
                         <Link
                           href={`/dashboard/candidates?jobId=${job._id}`}
-                          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm"
+                          className="rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-sm sm:px-3 sm:text-sm"
                         >
                           Candidates
                         </Link>
                         <Link
                           href={`/dashboard/ai-screening?jobId=${job._id}`}
-                          className="rounded-lg bg-[#3b82f6] px-3 py-2 text-sm font-medium text-white hover:bg-[#2563eb] shadow-sm"
+                          className="rounded-lg bg-[#3b82f6] px-2.5 py-2 text-xs font-medium text-white hover:bg-[#2563eb] shadow-sm sm:px-3 sm:text-sm"
                         >
                           Screen
                         </Link>

@@ -561,8 +561,8 @@ function CandidatesPageContent() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="mx-auto min-h-screen w-full max-w-7xl bg-gray-200 p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">Candidates</h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -570,7 +570,7 @@ function CandidatesPageContent() {
           </p>
         </div>
 
-        <div className="w-full max-w-full sm:max-w-sm">
+        <div className="w-full max-w-full sm:max-w-xs md:max-w-sm">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Active Job
           </label>
@@ -578,7 +578,7 @@ function CandidatesPageContent() {
             <select
               value={activeJobId}
               onChange={(event) => setSelectedJobId(event.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600 shadow-sm"
+              className="w-full px-3.5 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm appearance-none bg-white text-gray-600 shadow-sm"
             >
               {jobs.map((job) => (
                 <option key={job._id} value={job._id}>
@@ -614,7 +614,7 @@ function CandidatesPageContent() {
           )}
 
           {/* Upgraded to shadow-md */}
-          <div className="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-md">
+          <div className="mb-6 w-full max-w-4xl rounded-xl border border-gray-100 bg-white p-4 shadow-md sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
@@ -628,20 +628,20 @@ function CandidatesPageContent() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
+              <div className="flex w-full flex-wrap items-center gap-1.5 sm:gap-2 lg:w-auto lg:justify-end">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600 shadow-sm sm:px-2.5 sm:text-[11px]">
                   Structured {structuredApplicantsCount}
                 </span>
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] font-medium text-gray-600 shadow-sm sm:px-2.5 sm:text-[11px]">
                   Uploaded {uploadedApplicantsCount}
                 </span>
                 <button
                   type="button"
                   onClick={() => void handleClearApplicants()}
                   disabled={totalJobApplicants === 0 || clearingJobId === activeJobId}
-                  className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                  className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:w-auto sm:px-3"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3" />
                   {clearingJobId === activeJobId
                     ? "Clearing Applicants..."
                     : "Delete All Applicants"}

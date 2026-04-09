@@ -213,7 +213,7 @@ function AIScreeningPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto min-h-screen w-full max-w-7xl bg-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#3b82f6]">AI Screening</h1>
@@ -242,7 +242,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleRunScreening}
             disabled={screening || !activeJobId || !hasApplicants || weightsTotal !== 100}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/40 sm:px-5 sm:py-2.5 sm:text-sm"
           >
             {screening ? (
               <>
@@ -271,7 +271,7 @@ function AIScreeningPageContent() {
             type="button"
             onClick={handleClear}
             disabled={!result || clearing}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 shadow-sm"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 shadow-sm sm:px-4 sm:py-2.5 sm:text-sm"
           >
             <Trash2 className="h-4 w-4" />
             Clear Results

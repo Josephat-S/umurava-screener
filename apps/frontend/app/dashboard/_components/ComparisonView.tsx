@@ -28,7 +28,7 @@ export default function ComparisonView({
 }: ComparisonViewProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-      <div className="max-h-[90vh] w-full max-w-6xl overflow-auto rounded-2xl bg-white shadow-2xl">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-auto rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-5 sm:px-6">
           <div>
             {/* Changed header text-gray-800 to text-[#3b82f6] */}
@@ -47,7 +47,7 @@ export default function ComparisonView({
         </div>
 
         <div className="overflow-x-auto p-4 sm:p-6">
-          <table className="min-w-[720px] w-full">
+          <table className="min-w-[680px] w-full">
             <thead>
               <tr>
                 <th className="w-40 pb-4 text-left text-sm font-semibold text-gray-500">

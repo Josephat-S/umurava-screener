@@ -51,8 +51,8 @@ export default function RecentActivity({ jobs }: RecentActivityProps) {
   });
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-md mt-6 p-6">
-      <h2 className="text-lg font-semibold text-[#3b82f6] mb-6">Recent Activity</h2>
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md mt-6 p-4 sm:p-6">
+      <h2 className="mb-6 text-lg font-semibold text-[#3b82f6]">Recent Activity</h2>
       {activities.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center">
           <p className="text-sm font-medium text-gray-600">No recent activity yet.</p>
@@ -63,13 +63,15 @@ export default function RecentActivity({ jobs }: RecentActivityProps) {
       ) : (
         <div className="space-y-6">
           {activities.map((activity) => (
-            <div key={activity.id} className="flex items-start gap-4">
-              <div className={`p-2 rounded-lg ${activity.iconBg}`}>
+            <div key={activity.id} className="flex min-w-0 items-start gap-3 sm:gap-4">
+              <div className={`shrink-0 rounded-lg p-2 ${activity.iconBg}`}>
                 {activity.icon}
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-800">{activity.title}</p>
-                <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+              <div className="min-w-0">
+                <p className="break-words text-sm font-medium text-gray-800">
+                  {activity.title}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">{activity.time}</p>
               </div>
             </div>
           ))}

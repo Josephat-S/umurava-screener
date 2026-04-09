@@ -21,7 +21,7 @@ export default function ScreeningSummary({
   const strongMatches = shortlist.filter((candidate) => candidate.matchScore >= 70).length;
 
   return (
-    <div className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-blue-700 p-4 sm:p-6 text-white shadow-md hover:shadow-lg transition-shadow duration-200">
+    <div className="rounded-xl bg-gradient-to-r from-[#3b82f6] to-blue-700 p-4 text-white shadow-md transition-shadow duration-200 hover:shadow-lg sm:p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-200">
@@ -56,7 +56,7 @@ export default function ScreeningSummary({
       <div className="mt-6 rounded-xl border border-white/10 bg-white/10 p-4">
         <p className="text-sm text-blue-100">
           Top candidate:
-          <span className="ml-2 font-semibold text-white">
+          <span className="ml-2 break-words font-semibold text-white">
             {topCandidate.candidateName}
           </span>
         </p>
