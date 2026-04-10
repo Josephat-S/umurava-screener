@@ -22,8 +22,8 @@ export default function KanbanBoard({
   onMove,
 }: KanbanBoardProps) {
   return (
-    <div className="overflow-x-auto">
-      <div className="flex min-w-max gap-3 pb-2 sm:gap-4">
+    <div className="w-full max-w-full">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 sm:gap-4">
         {COLUMNS.map((column) => {
           const candidates = shortlist.filter(
             (candidate) => (candidate.status || "shortlisted") === column.id,
@@ -32,7 +32,7 @@ export default function KanbanBoard({
           return (
             <section
               key={column.id}
-              className={`w-60 rounded-xl border p-4 sm:w-64 ${column.styles}`}
+              className={`min-w-0 rounded-xl border p-4 ${column.styles}`}
             >
               <div className="mb-4 flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-gray-800">{column.label}</h3>
