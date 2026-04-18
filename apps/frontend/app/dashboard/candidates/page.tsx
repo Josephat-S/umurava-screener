@@ -102,10 +102,16 @@ export default function CandidatesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-            Loading candidates...
+        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8 animate-pulse">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
+              <div className="h-4 w-64 bg-gray-300 rounded"></div>
+            </div>
+            <div className="h-10 w-full sm:w-64 bg-gray-300 rounded-lg"></div>
           </div>
+          <div className="w-full h-24 bg-gray-300 rounded-xl mb-6"></div>
+          <div className="w-full h-96 bg-gray-300 rounded-xl"></div>
         </div>
       }
     >
@@ -431,6 +437,72 @@ function CandidatesPageContent() {
       toast.error((clearError as Error).message || "Failed to clear applicants");
     }
   };
+
+  const renderTableSkeleton = () => (
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-pulse">
+      <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
+        <div className="h-6 w-48 bg-gray-200 rounded"></div>
+        <div className="flex w-full sm:w-auto gap-3">
+          <div className="h-9 w-full sm:w-48 md:w-64 bg-gray-200 rounded-lg"></div>
+          <div className="h-9 w-full sm:w-24 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+      
+      {/* Mobile Skeleton */}
+      <div className="space-y-3 p-4 md:hidden">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-gray-100 p-4">
+            <div className="flex justify-between gap-3 mb-3">
+              <div>
+                <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 w-40 bg-gray-200 rounded"></div>
+              </div>
+              <div className="h-4 w-10 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-2 mb-3">
+              <div className="h-3 w-3/4 bg-gray-200 rounded"></div>
+              <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+              <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Skeleton */}
+      <div className="hidden w-full overflow-x-auto md:block">
+        <table className="w-full min-w-[640px] text-left border-collapse">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="py-4 pl-6 pr-4"><div className="h-4 w-24 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-20 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-32 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-24 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-16 bg-gray-200 rounded"></div></th>
+              <th className="py-4 pl-4 pr-6"><div className="h-4 w-16 bg-gray-200 rounded ml-auto"></div></th>
+            </tr>
+          </thead>
+          <tbody>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <tr key={i} className="border-b border-gray-50">
+                <td className="py-4 pl-6 pr-4">
+                  <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-3 w-40 bg-gray-200 rounded"></div>
+                </td>
+                <td className="py-4 px-4"><div className="h-4 w-12 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-4 w-48 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-4 w-20 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-6 w-16 bg-gray-200 rounded-full"></div></td>
+                <td className="py-4 pl-4 pr-6"><div className="h-8 w-20 bg-gray-200 rounded-lg ml-auto"></div></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 
   const renderTable = (rows: Applicant[]) => (
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
@@ -952,13 +1024,7 @@ function CandidatesPageContent() {
                 </div>
               )}
 
-              {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-                  Loading applicants...
-                </div>
-              ) : (
-                renderTable(visibleApplicants)
-              )}
+              {loading ? renderTableSkeleton() : renderTable(visibleApplicants)}
             </div>
           ) : (
             <div className="space-y-6">
@@ -1126,13 +1192,7 @@ function CandidatesPageContent() {
                 </div>
               )}
 
-              {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-                  Loading applicants...
-                </div>
-              ) : (
-                renderTable(visibleApplicants)
-              )}
+              {loading ? renderTableSkeleton() : renderTable(visibleApplicants)}
             </div>
           )}
         </>
