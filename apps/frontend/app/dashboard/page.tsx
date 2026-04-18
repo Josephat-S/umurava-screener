@@ -89,7 +89,7 @@ export default function DashboardPage() {
           value={analytics.topSkill}
           subtext="Most requested skill across your job postings"
           icon={<Sparkles size={20} />}
-          iconBgColor="bg-yellow-500"
+          iconBgColor="bg-blue-500"
         />
       </div>
 

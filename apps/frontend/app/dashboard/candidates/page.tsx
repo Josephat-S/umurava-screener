@@ -14,6 +14,7 @@ import {
   Search,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import {
   ChangeEvent,
@@ -133,6 +134,7 @@ function CandidatesPageContent() {
   const [activeTab, setActiveTab] = useState<"structured" | "external">("structured");
   const [selectedJobId, setSelectedJobId] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -305,6 +307,7 @@ function CandidatesPageContent() {
       setStructuredForm(INITIAL_APPLICANT_FORM);
       setSkillsInput("");
       setPaginationState({ key: paginationKey, page: 1 });
+      setIsAddModalOpen(false); // Close the modal on success
     } catch (submitError) {
       toast.error((submitError as Error).message || "Failed to add applicant");
     }
@@ -430,7 +433,6 @@ function CandidatesPageContent() {
   };
 
   const renderTable = (rows: Applicant[]) => (
-    /* Upgraded to shadow-md */
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
         <h2 className="min-w-0 break-words text-lg font-bold text-[#3b82f6]">
@@ -682,7 +684,6 @@ function CandidatesPageContent() {
       </div>
 
       {!jobsLoading && jobs.length === 0 ? (
-        /* Upgraded to shadow-md */
         <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-md">
           <p className="text-lg font-medium text-gray-700">You need a job first.</p>
           <p className="text-sm text-gray-400 mt-2">
@@ -703,7 +704,6 @@ function CandidatesPageContent() {
             </div>
           )}
 
-          {/* Upgraded to shadow-md */}
           <div className="mb-6 w-full min-w-0 rounded-xl border border-gray-100 bg-white p-4 shadow-md sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0">
@@ -765,154 +765,192 @@ function CandidatesPageContent() {
 
           {activeTab === "structured" ? (
             <div className="space-y-6">
-              {/* Upgraded to shadow-md */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
-                <div className="mb-6 flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-bold text-[#3b82f6]">
-                      Add Structured Applicant
-                    </h2>
-                    <p className="mt-1 break-words text-sm text-gray-500">
-                      Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
-                    </p>
-                  </div>
-                  <div className="rounded-full bg-blue-50 p-3 text-blue-700">
-                    <Plus className="h-5 w-5" />
+              
+              {/* Trigger Card for the Modal */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-bold text-[#3b82f6]">
+                    Add Structured Applicant
+                  </h2>
+                  <p className="mt-1 break-words text-sm text-gray-500">
+                    Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="shrink-0 rounded-full bg-blue-50 p-3 text-blue-700 hover:bg-blue-100 transition-colors"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Popup Modal for Add Applicant Form */}
+              {isAddModalOpen && (
+                <div 
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/60 p-4 sm:p-6"
+                  onClick={() => setIsAddModalOpen(false)}
+                >
+                  <div 
+                    className="w-full max-w-3xl max-h-full sm:max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl p-6 relative flex flex-col"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button 
+                      onClick={() => setIsAddModalOpen(false)}
+                      className="absolute top-6 right-6 p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-lg transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+
+                    <div className="mb-6 pr-8 shrink-0">
+                      <h2 className="text-xl font-bold text-[#3b82f6]">
+                        Add Structured Applicant
+                      </h2>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
+                      </p>
+                    </div>
+
+                    <form className="space-y-4" onSubmit={handleStructuredSubmit}>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <input
+                          type="text"
+                          value={structuredForm.name}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              name: event.target.value,
+                            }))
+                          }
+                          placeholder="Candidate name"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                        <input
+                          type="email"
+                          value={structuredForm.email}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              email: event.target.value,
+                            }))
+                          }
+                          placeholder="Email address"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <input
+                          type="text"
+                          value={structuredForm.currentRole || ""}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              currentRole: event.target.value,
+                            }))
+                          }
+                          placeholder="Current role"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                        />
+                        <input
+                          type="number"
+                          min={0}
+                          value={structuredForm.experienceYears}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              experienceYears: Number(event.target.value),
+                            }))
+                          }
+                          placeholder="Years of experience"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                        />
+                        <input
+                          type="text"
+                          value={structuredForm.education}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              education: event.target.value,
+                            }))
+                          }
+                          placeholder="Education"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <input
+                            type="text"
+                            value={skillsInput}
+                            onChange={(event) => setSkillsInput(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                addSkill();
+                              }
+                            }}
+                            placeholder="Add skill and press Enter"
+                            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={addSkill}
+                            className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center shadow-sm"
+                          >
+                            <Plus className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {structuredForm.skills.map((skill) => (
+                            <button
+                              key={skill}
+                              type="button"
+                              onClick={() => removeSkill(skill)}
+                              className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100"
+                            >
+                              {skill} ×
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <textarea
+                        rows={4}
+                        value={structuredForm.summary || ""}
+                        onChange={(event) =>
+                          setStructuredForm((previous) => ({
+                            ...previous,
+                            summary: event.target.value,
+                          }))
+                        }
+                        placeholder="Candidate summary"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y shadow-sm"
+                      />
+
+                      <div className="flex justify-end pt-4 border-t border-gray-100 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddModalOpen(false)}
+                          className="w-full rounded-lg bg-white border border-gray-200 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 shadow-sm sm:w-auto mr-3"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={adding}
+                          className="w-full rounded-lg bg-[#3b82f6] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 shadow-sm sm:w-auto"
+                        >
+                          {adding ? "Saving..." : "Add Applicant"}
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
-
-                <form className="space-y-4" onSubmit={handleStructuredSubmit}>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <input
-                      type="text"
-                      value={structuredForm.name}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          name: event.target.value,
-                        }))
-                      }
-                      placeholder="Candidate name"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                    <input
-                      type="email"
-                      value={structuredForm.email}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          email: event.target.value,
-                        }))
-                      }
-                      placeholder="Email address"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <input
-                      type="text"
-                      value={structuredForm.currentRole || ""}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          currentRole: event.target.value,
-                        }))
-                      }
-                      placeholder="Current role"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      value={structuredForm.experienceYears}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          experienceYears: Number(event.target.value),
-                        }))
-                      }
-                      placeholder="Years of experience"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                    />
-                    <input
-                      type="text"
-                      value={structuredForm.education}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          education: event.target.value,
-                        }))
-                      }
-                      placeholder="Education"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <input
-                        type="text"
-                        value={skillsInput}
-                        onChange={(event) => setSkillsInput(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            addSkill();
-                          }
-                        }}
-                        placeholder="Add skill and press Enter"
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={addSkill}
-                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center shadow-sm"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {structuredForm.skills.map((skill) => (
-                        <button
-                          key={skill}
-                          type="button"
-                          onClick={() => removeSkill(skill)}
-                          className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100"
-                        >
-                          {skill} ×
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <textarea
-                    rows={4}
-                    value={structuredForm.summary || ""}
-                    onChange={(event) =>
-                      setStructuredForm((previous) => ({
-                        ...previous,
-                        summary: event.target.value,
-                      }))
-                    }
-                    placeholder="Candidate summary"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y shadow-sm"
-                  />
-
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={adding}
-                      className="w-full rounded-lg bg-[#3b82f6] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 shadow-sm sm:w-auto"
-                    >
-                      {adding ? "Saving..." : "Add Applicant"}
-                    </button>
-                  </div>
-                </form>
-              </div>
+              )}
 
               {loading ? (
                 <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
@@ -924,7 +962,6 @@ function CandidatesPageContent() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Upgraded to shadow-md */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 lg:p-10 animate-in fade-in duration-300">
                 <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
