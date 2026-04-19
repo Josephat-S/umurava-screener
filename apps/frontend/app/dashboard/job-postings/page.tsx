@@ -493,7 +493,38 @@ export default function CreateJobPostingPage() {
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-gray-400">Loading jobs...</div>
+            <div className="space-y-4 animate-pulse">
+              {[1, 2, 3].map((i) => (
+                <article key={i} className="rounded-xl border border-gray-100 bg-gray-50/70 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-12 bg-gray-200 rounded-full"></div>
+                      </div>
+                      <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-12 bg-gray-200 rounded-lg"></div>
+                      <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="h-3 w-full bg-gray-200 rounded"></div>
+                    <div className="h-3 w-2/3 bg-gray-200 rounded"></div>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                    <div className="h-5 w-20 bg-gray-200 rounded-full"></div>
+                    <div className="h-5 w-14 bg-gray-200 rounded-full"></div>
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
+                    <div className="h-8 w-28 bg-blue-200 rounded-lg"></div>
+                  </div>
+                </article>
+              ))}
+            </div>
           ) : sortedJobs.length === 0 ? (
             <EmptyState
               icon={<Plus className="h-5 w-5" />}
