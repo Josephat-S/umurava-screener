@@ -162,7 +162,7 @@ function CandidatesPageContent() {
   }, [dispatch]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (isDropdownOpen) {
         setIsDropdownOpen(false);
       }

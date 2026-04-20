@@ -1,21 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import umuravaLogo from "@/app/umuravalogo.png"; 
+import NextImage from "next/image";
+import umuravaLogo from "@/app/umuravalogo.png";
 
 export default function SplashScreen() {
   const [showSplash, setShowSplash] = useState(true);
   const [isFading, setIsFading] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     // Check if the user has already seen the splash screen during this browser session
     const hasSeenSplash = sessionStorage.getItem("umurava_has_seen_splash");
-    
+
     if (hasSeenSplash) {
-      setShowSplash(false);
+      setTimeout(() => setShowSplash(false), 0);
     } else {
       // Start fading out after 2 seconds
       const fadeTimer = setTimeout(() => {
@@ -35,8 +33,8 @@ export default function SplashScreen() {
     }
   }, []);
 
-  // Don't render anything on the server to prevent hydration mismatches
-  if (!isMounted || !showSplash) return null;
+  // Don't render anything if splash should not be shown
+  if (!showSplash) return null;
 
   return (
     <div 
@@ -47,11 +45,11 @@ export default function SplashScreen() {
     >
       <div className="flex flex-col items-center justify-center animate-pulse">
         {/* Logo Icon */}
-        <Image 
-          src={umuravaLogo} 
-          alt="Umurava Logo" 
-          width={120} 
-          height={120} 
+        <NextImage
+          src={umuravaLogo}
+          alt="Umurava Logo"
+          width={120}
+          height={120}
           className="object-contain md:w-[140px] md:h-[140px]"
           priority
         />
