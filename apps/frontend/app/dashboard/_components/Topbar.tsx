@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Menu, ChevronDown, Bell, User, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface TopbarProps {
   toggleSidebar: () => void;
@@ -11,6 +12,13 @@ interface TopbarProps {
 export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    // You can add session clearing logic here
+    router.push('/login');
+  };
 
   // FIXED: Changed z-10 to z-30 so the dropdowns stay above the chart bars
   return (
@@ -103,7 +111,7 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
           >
             <div className="w-8 h-8 rounded-full bg-[#3b82f6] text-white flex items-center justify-center text-xs font-bold tracking-wider">
               RA
-            </div>
+              </div>
             <span className="text-sm font-medium text-gray-700 hidden sm:block">Recruiter Admin</span>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
           </div>
@@ -124,7 +132,7 @@ export default function Topbar({ toggleSidebar, toggleMobile }: TopbarProps) {
                   My Profile
                 </button>
                 <button 
-                  onClick={() => setIsProfileOpen(false)}
+                  onClick={handleLogout}
                   className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors mt-1"
                 >
                   <LogOut className="w-4 h-4 text-red-500" /> 

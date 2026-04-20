@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import NextImage from "next/image";
 import { Eye, EyeOff, Mail, ArrowRight, Check } from "lucide-react";
 
 export default function LoginPage() {
@@ -26,13 +27,15 @@ export default function LoginPage() {
 
         {/* Header */}
         <div className="px-12 pt-9">
-          <div className="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#523bf4]">
-              <path d="M10 8H7C4.79 8 3 9.79 3 12C3 14.21 4.79 16 7 16H10" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M14 16H17C19.21 16 21 14.21 21 12C21 9.79 19.21 8 17 8H14" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 12H16" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span className="text-base font-bold tracking-tight text-gray-900">Umurava</span>
+          <div className="flex items-center gap-3">
+            <NextImage
+              src="/login_logo.png"
+              alt="Umurava AI"
+              width={90}
+              height={80}
+              className="w-[90px] h-[80px]"
+            />
+            <span className="text-2xl font-bold tracking-tight text-gray-900">Umurava AI</span>
           </div>
         </div>
 
@@ -42,9 +45,9 @@ export default function LoginPage() {
 
             {/* Title */}
             <div className="mb-8">
-              <h1 className="text-[28px] font-bold text-gray-900 mb-2 tracking-tight">Welcome back</h1>
+              <h1 className="text-[32px] font-bold text-gray-900 mb-2 tracking-tight">Login</h1>
               <p className="text-gray-500 text-sm leading-relaxed">
-                Sign in to your recruiter dashboard to start screening candidates.
+                Welcome! Please fill in the details to get started.
               </p>
             </div>
 
