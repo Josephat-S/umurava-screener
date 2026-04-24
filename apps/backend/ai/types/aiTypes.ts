@@ -27,13 +27,61 @@ export interface ScoringWeights {
 
 export interface CandidateInput {
   _id?: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  skills: string[];
-  experienceYears: number;
-  education: string;
-  currentRole?: string;
-  summary?: string;
+  headline: string;
+  bio?: string;
+  location: string;
+  skills: {
+    name: string;
+    level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+    yearsOfExperience: number;
+  }[];
+  languages?: {
+    name: string;
+    proficiency: "Basic" | "Conversational" | "Fluent" | "Native";
+  }[];
+  experience: {
+    company: string;
+    role: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    technologies: string[];
+    isCurrent: boolean;
+  }[];
+  education: {
+    institution: string;
+    degree: string;
+    fieldOfStudy: string;
+    startYear: number;
+    endYear: number;
+  }[];
+  certifications?: {
+    name: string;
+    issuer: string;
+    issueDate: string;
+  }[];
+  projects: {
+    name: string;
+    description: string;
+    technologies: string[];
+    role: string;
+    link: string;
+    startDate: string;
+    endDate: string;
+  }[];
+  availability: {
+    status: "Available" | "Open to Opportunities" | "Not Available";
+    type: "Full-time" | "Part-time" | "Contract";
+    startDate?: string;
+  };
+  socialLinks?: {
+    linkedin?: string;
+    github?: string;
+    portfolio?: string;
+  };
   resumeText?: string;
   source?: CandidateSource;
 }
