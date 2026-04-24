@@ -40,13 +40,20 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import type { Applicant, StructuredApplicantInput } from "@/types";
 
 const INITIAL_APPLICANT_FORM: StructuredApplicantInput = {
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
+  headline: "",
+  bio: "",
+  location: "",
   skills: [],
-  experienceYears: 0,
-  education: "",
-  currentRole: "",
-  summary: "",
+  experience: [],
+  education: [],
+  projects: [],
+  availability: {
+    status: "Available",
+    type: "Full-time",
+  },
 };
 
 const APPLICANTS_PER_PAGE = 10;
@@ -220,11 +227,12 @@ function CandidatesPageContent() {
       .filter((applicant) => applicant.source === sourceType)
       .filter((applicant) => {
         const haystack = [
-          applicant.name,
+          applicant.firstName,
+          applicant.lastName,
           applicant.email,
-          applicant.currentRole || "",
-          applicant.education,
-          applicant.skills.join(" "),
+          applicant.headline,
+          applicant.location,
+          applicant.skills.map(s => s.name).join(" "),
         ]
           .join(" ")
           .toLowerCase();
@@ -276,15 +284,15 @@ function CandidatesPageContent() {
 
     setStructuredForm((previous) => ({
       ...previous,
-      skills: Array.from(new Set([...previous.skills, value])),
+      skills: [...previous.skills, { name: value, level: "Intermediate", yearsOfExperience: 0 }],
     }));
     setSkillsInput("");
   };
 
-  const removeSkill = (skill: string) => {
+  const removeSkill = (skillName: string) => {
     setStructuredForm((previous) => ({
       ...previous,
-      skills: previous.skills.filter((item) => item !== skill),
+      skills: previous.skills.filter((item) => item.name !== skillName),
     }));
   };
 
@@ -297,10 +305,9 @@ function CandidatesPageContent() {
     }
 
     try {
-      const applicantPayload = {
+      const applicantPayload: StructuredApplicantInput = {
         ...structuredForm,
-        currentRole: structuredForm.currentRole || undefined,
-        summary: structuredForm.summary || undefined,
+        bio: structuredForm.bio || undefined,
       };
 
       await dispatch(
@@ -385,7 +392,7 @@ function CandidatesPageContent() {
     }
 
     const shouldDelete = window.confirm(
-      `Delete ${applicant.name} from ${selectedJob?.title || "this job"}?`,
+      `Delete ${applicant.firstName} ${applicant.lastName} from ${selectedJob?.title || "this job"}?`,
     );
 
     if (!shouldDelete) {
@@ -553,7 +560,7 @@ function CandidatesPageContent() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="break-words text-sm font-semibold text-gray-800">{applicant.name}</p>
+                      <p className="break-words text-sm font-semibold text-gray-800">{applicant.firstName} {applicant.lastName}</p>
                       <p className="mt-1 break-all text-xs text-gray-400">{applicant.email}</p>
                     </div>
                     <span className={`shrink-0 text-sm ${getScoreColor(score)}`}>
@@ -619,7 +626,7 @@ function CandidatesPageContent() {
                     >
                       <td className="py-4 pl-6 pr-4">
                         <div className="min-w-0 max-w-[14rem] sm:max-w-[18rem]">
-                          <p className="truncate text-sm font-medium text-gray-800" title={applicant.name}>{applicant.name}</p>
+                          <p className="truncate text-sm font-medium text-gray-800" title={`${applicant.firstName} ${applicant.lastName}`}>{applicant.firstName} {applicant.lastName}</p>
                           <p className="mt-1 truncate text-xs text-gray-400" title={applicant.email}>{applicant.email}</p>
                         </div>
                       </td>
@@ -886,14 +893,27 @@ function CandidatesPageContent() {
                       <div className="grid gap-4 md:grid-cols-2">
                         <input
                           type="text"
-                          value={structuredForm.name}
+                          value={structuredForm.firstName}
                           onChange={(event) =>
                             setStructuredForm((previous) => ({
                               ...previous,
-                              name: event.target.value,
+                              firstName: event.target.value,
                             }))
                           }
-                          placeholder="Candidate name"
+                          placeholder="First name"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={structuredForm.lastName}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              lastName: event.target.value,
+                            }))
+                          }
+                          placeholder="Last name"
                           className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                           required
                         />
@@ -915,39 +935,27 @@ function CandidatesPageContent() {
                       <div className="grid gap-4 md:grid-cols-3">
                         <input
                           type="text"
-                          value={structuredForm.currentRole || ""}
+                          value={structuredForm.headline}
                           onChange={(event) =>
                             setStructuredForm((previous) => ({
                               ...previous,
-                              currentRole: event.target.value,
+                              headline: event.target.value,
                             }))
                           }
-                          placeholder="Current role"
+                          placeholder="Headline (e.g. Backend Engineer)"
                           className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                        />
-                        <input
-                          type="number"
-                          min={0}
-                          value={structuredForm.experienceYears}
-                          onChange={(event) =>
-                            setStructuredForm((previous) => ({
-                              ...previous,
-                              experienceYears: Number(event.target.value),
-                            }))
-                          }
-                          placeholder="Years of experience"
-                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
                         />
                         <input
                           type="text"
-                          value={structuredForm.education}
+                          value={structuredForm.location}
                           onChange={(event) =>
                             setStructuredForm((previous) => ({
                               ...previous,
-                              education: event.target.value,
+                              location: event.target.value,
                             }))
                           }
-                          placeholder="Education"
+                          placeholder="Location"
                           className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
                           required
                         />
@@ -979,12 +987,12 @@ function CandidatesPageContent() {
                         <div className="mt-3 flex flex-wrap gap-2">
                           {structuredForm.skills.map((skill) => (
                             <button
-                              key={skill}
+                              key={skill.name}
                               type="button"
-                              onClick={() => removeSkill(skill)}
+                              onClick={() => removeSkill(skill.name)}
                               className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100"
                             >
-                              {skill} ×
+                              {skill.name} ×
                             </button>
                           ))}
                         </div>
@@ -992,11 +1000,11 @@ function CandidatesPageContent() {
 
                       <textarea
                         rows={4}
-                        value={structuredForm.summary || ""}
+                        value={structuredForm.bio || ""}
                         onChange={(event) =>
                           setStructuredForm((previous) => ({
                             ...previous,
-                            summary: event.target.value,
+                            bio: event.target.value,
                           }))
                         }
                         placeholder="Candidate summary"

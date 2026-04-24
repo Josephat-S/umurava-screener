@@ -15,14 +15,62 @@ const normalizeStringArray = (values: string[]) =>
   values.map((value) => value.trim()).filter(Boolean);
 
 const ApplicantPayloadSchema = z.object({
-  name: z.string().trim().min(1),
+  firstName: z.string().trim().min(1),
+  lastName: z.string().trim().min(1),
   email: z.string().trim().email(),
-  skills: z.array(z.string()).default([]).transform(normalizeStringArray),
-  experienceYears: z.coerce.number().min(0).default(0),
-  education: z.string().trim().min(1),
-  currentRole: z.string().trim().min(1).optional(),
-  summary: z.string().trim().min(1).optional(),
-  resumeText: z.string().trim().min(1).optional(),
+  headline: z.string().trim().min(1),
+  bio: z.string().trim().optional(),
+  location: z.string().trim().min(1),
+  skills: z.array(z.object({
+    name: z.string().trim().min(1),
+    level: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]),
+    yearsOfExperience: z.number().min(0),
+  })).min(1),
+  languages: z.array(z.object({
+    name: z.string().trim().min(1),
+    proficiency: z.enum(["Basic", "Conversational", "Fluent", "Native"]),
+  })).optional(),
+  experience: z.array(z.object({
+    company: z.string().trim().min(1),
+    role: z.string().trim().min(1),
+    startDate: z.string().trim().min(1),
+    endDate: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    technologies: z.array(z.string()).default([]),
+    isCurrent: z.boolean().default(false),
+  })).min(1),
+  education: z.array(z.object({
+    institution: z.string().trim().min(1),
+    degree: z.string().trim().min(1),
+    fieldOfStudy: z.string().trim().min(1),
+    startYear: z.number().int(),
+    endYear: z.number().int(),
+  })).min(1),
+  certifications: z.array(z.object({
+    name: z.string().trim().min(1),
+    issuer: z.string().trim().min(1),
+    issueDate: z.string().trim().min(1),
+  })).optional(),
+  projects: z.array(z.object({
+    name: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    technologies: z.array(z.string()).default([]),
+    role: z.string().trim().min(1),
+    link: z.string().trim().url(),
+    startDate: z.string().trim().min(1),
+    endDate: z.string().trim().min(1),
+  })).min(1),
+  availability: z.object({
+    status: z.enum(["Available", "Open to Opportunities", "Not Available"]),
+    type: z.enum(["Full-time", "Part-time", "Contract"]),
+    startDate: z.string().trim().optional(),
+  }),
+  socialLinks: z.object({
+    linkedin: z.string().trim().url().optional(),
+    github: z.string().trim().url().optional(),
+    portfolio: z.string().trim().url().optional(),
+  }).optional(),
+  resumeText: z.string().trim().optional(),
 });
 
 const AddApplicantsSchema = z.object({
@@ -65,13 +113,20 @@ const sanitizeParsedApplicant = (
   applicant: Partial<z.infer<typeof ApplicantPayloadSchema>>,
   index: number,
 ) => ({
-  name: applicant.name?.trim() || `Uploaded Candidate ${index + 1}`,
+  firstName: applicant.firstName?.trim() || "Candidate",
+  lastName: applicant.lastName?.trim() || String(index + 1),
   email: applicant.email?.trim() || `uploaded-${Date.now()}-${index}@placeholder.local`,
-  skills: applicant.skills?.map((skill) => skill.trim()).filter(Boolean) || [],
-  experienceYears: applicant.experienceYears ?? 0,
-  education: applicant.education?.trim() || "Not provided",
-  currentRole: applicant.currentRole?.trim() || undefined,
-  summary: applicant.summary?.trim() || undefined,
+  headline: applicant.headline?.trim() || "Professional",
+  bio: applicant.bio?.trim() || undefined,
+  location: applicant.location?.trim() || "Remote",
+  skills: applicant.skills || [],
+  languages: applicant.languages || [],
+  experience: applicant.experience || [],
+  education: applicant.education || [],
+  certifications: applicant.certifications || [],
+  projects: applicant.projects || [],
+  availability: applicant.availability || { status: "Open to Opportunities", type: "Full-time" },
+  socialLinks: applicant.socialLinks || {},
   resumeText: applicant.resumeText?.trim() || undefined,
 });
 

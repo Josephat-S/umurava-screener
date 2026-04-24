@@ -24,7 +24,7 @@ export function scoreCandidate(
 ): WeightedScore {
   const requiredSkills = job.skills.map((skill) => skill.toLowerCase().trim()).filter(Boolean);
   const candidateSkills = candidate.skills
-    .map((skill) => skill.toLowerCase().trim())
+    .map((skill) => skill.name.toLowerCase().trim())
     .filter(Boolean);
   const matchedSkills = requiredSkills.filter((skill) => candidateSkills.includes(skill));
   const skillsScore =
@@ -33,10 +33,12 @@ export function scoreCandidate(
       : weights.skills;
 
   const expBase = Math.max(job.experienceYears, 1);
-  const expRatio = Math.min(candidate.experienceYears / expBase, 1.2);
+  const totalExperienceYears = candidate.skills.reduce((max, skill) => Math.max(max, skill.yearsOfExperience), 0);
+  const expRatio = Math.min(totalExperienceYears / expBase, 1.2);
   const experienceScore = Math.min(expRatio * weights.experience, weights.experience);
 
-  const educationScore = meetsEducationRequirement(candidate.education, job.educationLevel)
+  const educationText = candidate.education.map(e => `${e.degree} in ${e.fieldOfStudy}`).join(", ");
+  const educationScore = meetsEducationRequirement(educationText, job.educationLevel)
     ? weights.education
     : Math.max(Math.round(weights.education * 0.35), 0);
 
@@ -74,11 +76,11 @@ function assessProfileCompleteness(
 ): number {
   let score = 0;
 
-  if (candidate.name) score += 3;
+  if (candidate.firstName && candidate.lastName) score += 3;
   if (candidate.email) score += 2;
   if (candidate.skills.length > 0) score += 3;
-  if (candidate.summary || candidate.resumeText) score += 4;
-  if (candidate.currentRole) score += 3;
+  if (candidate.headline || candidate.bio || candidate.resumeText) score += 4;
+  if (candidate.experience.length > 0) score += 3;
 
   return scaleToWeight(Math.min(score, 15) / 15, weight);
 }

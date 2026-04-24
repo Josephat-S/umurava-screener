@@ -65,8 +65,8 @@ function getConfidence(candidate: CandidateInput): Pick<
 > {
   const hasStructuredData =
     candidate.skills.length > 0 ||
-    Boolean(candidate.currentRole) ||
-    Boolean(candidate.summary);
+    Boolean(candidate.headline) ||
+    candidate.experience.length > 0;
 
   if (candidate.source === "upload" && candidate.resumeText && !hasStructuredData) {
     return {
@@ -143,13 +143,20 @@ export const triggerScreening = async (
 
     const candidateInputs: CandidateInput[] = applicants.map((applicant) => ({
       _id: String(applicant._id),
-      name: applicant.name,
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
       email: applicant.email,
+      headline: applicant.headline,
+      bio: applicant.bio,
+      location: applicant.location,
       skills: applicant.skills,
-      experienceYears: applicant.experienceYears,
+      languages: applicant.languages,
+      experience: applicant.experience,
       education: applicant.education,
-      currentRole: applicant.currentRole,
-      summary: applicant.summary,
+      certifications: applicant.certifications,
+      projects: applicant.projects,
+      availability: applicant.availability,
+      socialLinks: applicant.socialLinks,
       resumeText: applicant.resumeText,
       source: applicant.source,
     }));
