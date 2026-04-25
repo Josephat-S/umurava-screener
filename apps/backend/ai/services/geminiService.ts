@@ -16,6 +16,8 @@ const ScoredCandidateSchema = z.object({
   strengths: z.string().trim().min(1),
   gaps: z.string().trim().min(1),
   recommendation: z.string().trim().min(1),
+  isIncomplete: z.boolean().default(false),
+  incompletenessReason: z.string().optional().default(""),
 });
 
 const ScreeningOutputSchema = z.array(ScoredCandidateSchema);

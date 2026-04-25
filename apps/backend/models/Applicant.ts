@@ -74,6 +74,8 @@ export interface IApplicant extends Document {
   availability: IAvailability;
   socialLinks?: ISocialLinks;
   source: "platform" | "upload";
+  isIncomplete: boolean;
+  incompletenessReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -179,6 +181,8 @@ const ApplicantSchema = new Schema<IApplicant>(
       default: "platform",
       required: true,
     },
+    isIncomplete: { type: Boolean, default: false },
+    incompletenessReason: { type: String },
   },
   { timestamps: true },
 );

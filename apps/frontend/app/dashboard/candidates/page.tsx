@@ -82,8 +82,18 @@ function truncateSelectLabel(value: string, maxLength = 30): string {
   return `${value.slice(0, maxLength - 1)}...`;
 }
 
-function StatusBadge({ status }: { status: "Screened" | "Parsed" | "New" }) {
+function StatusBadge({
+  status,
+}: {
+  status: "Screened" | "Parsed" | "New" | "Incomplete";
+}) {
   switch (status) {
+    case "Incomplete":
+      return (
+        <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-600 shadow-sm">
+          Incomplete
+        </span>
+      );
     case "Screened":
       return (
         <span className="px-3 py-1 bg-green-50 text-green-600 border border-green-200 rounded-full text-xs font-medium">
@@ -355,13 +365,14 @@ function CandidatesPageContent() {
       setPaginationState({ key: paginationKey, page: 1 });
       setLatestImport({
         jobId: activeJobId,
-        count: result.length,
+        count: result.data.length,
       });
       if (resumeLinks.length > 0) {
         setResumeLinksInput("");
       }
       toast.success(
-        `${result.length} applicants imported to ${selectedJob?.title || "the selected job"}.`,
+        result.message ||
+          `${result.data.length} applicants imported to ${selectedJob?.title || "the selected job"}.`,
       );
     } catch (uploadError) {
       toast.error((uploadError as Error).message || "Import failed");
@@ -546,8 +557,9 @@ function CandidatesPageContent() {
           <div className="space-y-3 p-4 md:hidden">
             {rows.map((applicant) => {
               const score = screeningMap.get(applicant._id);
-              const status =
-                typeof score === "number"
+              const status = applicant.isIncomplete
+                ? "Incomplete"
+                : typeof score === "number"
                   ? "Screened"
                   : applicant.source === "upload"
                     ? "Parsed"
@@ -612,8 +624,9 @@ function CandidatesPageContent() {
               <tbody>
                 {rows.map((applicant) => {
                   const score = screeningMap.get(applicant._id);
-                  const status =
-                    typeof score === "number"
+                  const status = applicant.isIncomplete
+                    ? "Incomplete"
+                    : typeof score === "number"
                       ? "Screened"
                       : applicant.source === "upload"
                         ? "Parsed"

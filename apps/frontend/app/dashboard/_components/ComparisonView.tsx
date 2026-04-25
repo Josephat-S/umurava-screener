@@ -75,6 +75,24 @@ export default function ComparisonView({
                 ))}
               </tr>
               <tr>
+                <td className="py-4 text-sm font-medium text-gray-500">
+                  Profile Status
+                </td>
+                {candidates.map((candidate) => (
+                  <td key={candidate.candidateId} className="px-4 py-4">
+                    {candidate.isIncomplete ? (
+                      <div className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-600 shadow-sm text-center">
+                        Incomplete: {candidate.incompletenessReason}
+                      </div>
+                    ) : (
+                      <div className="rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-semibold text-green-600 shadow-sm text-center">
+                        Complete Profile
+                      </div>
+                    )}
+                  </td>
+                ))}
+              </tr>
+              <tr>
                 <td className="py-4 text-sm font-medium text-gray-500">Strengths</td>
                 {candidates.map((candidate) => (
                   <td key={candidate.candidateId} className="px-4 py-4 align-top">

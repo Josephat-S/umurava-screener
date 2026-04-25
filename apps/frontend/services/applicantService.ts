@@ -24,7 +24,7 @@ export const applicantService = {
     jobId: string,
     files: File[],
     resumeLinks: string[] = [],
-  ): Promise<Applicant[]> {
+  ): Promise<{ data: Applicant[]; message?: string }> {
     const formData = new FormData();
     formData.append("jobId", jobId);
     files.forEach((file) => formData.append("files", file));
@@ -34,7 +34,10 @@ export const applicantService = {
       "/api/applicants/upload",
       formData,
     );
-    return response.data.data || [];
+    return {
+      data: response.data.data || [],
+      message: response.data.message,
+    };
   },
 
   async deleteById(jobId: string, applicantId: string): Promise<void> {

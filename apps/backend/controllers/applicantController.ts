@@ -6,6 +6,7 @@ import {
   parseResumeLinks,
   parseSpreadsheet,
 } from "../ai/services/parserService";
+import { checkProfileCompleteness } from "../ai/services/scoringService";
 import { createError } from "../middleware/errorHandler";
 import { Applicant } from "../models/Applicant";
 import { Job } from "../models/Job";
@@ -209,55 +210,80 @@ export const uploadApplicants = async (
     }
 
     const parsedApplicants: Array<ReturnType<typeof sanitizeParsedApplicant>> = [];
+    const errors: string[] = [];
+
     const pdfFiles = files.filter((file) => file.mimetype === "application/pdf");
     const spreadsheetFiles = files.filter(
       (file) => file.mimetype !== "application/pdf",
     );
 
     if (pdfFiles.length > 0) {
-      const parsedPDFApplicants = await parsePDFResumes(pdfFiles);
-      parsedApplicants.push(
-        ...parsedPDFApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedPDFApplicants = await parsePDFResumes(pdfFiles);
+        parsedApplicants.push(
+          ...parsedPDFApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`PDF parsing failed: ${(error as Error).message}`);
+      }
     }
 
     for (const file of spreadsheetFiles) {
-      const parsedSpreadsheetApplicants = parseSpreadsheet(file.buffer);
-      parsedApplicants.push(
-        ...parsedSpreadsheetApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedSpreadsheetApplicants = parseSpreadsheet(file.buffer);
+        parsedApplicants.push(
+          ...parsedSpreadsheetApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`Spreadsheet (${file.originalname}) parsing failed: ${(error as Error).message}`);
+      }
     }
 
     if (resumeLinks.length > 0) {
-      const parsedLinkedApplicants = await parseResumeLinks(resumeLinks);
-      parsedApplicants.push(
-        ...parsedLinkedApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedLinkedApplicants = await parseResumeLinks(resumeLinks);
+        parsedApplicants.push(
+          ...parsedLinkedApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`Resume link parsing failed: ${(error as Error).message}`);
+      }
     }
 
     if (parsedApplicants.length === 0) {
-      throw createError("The provided files or resume links did not contain any applicants", 422);
+      const errorMsg = errors.length > 0
+        ? `Import failed: ${errors.join(" | ")}`
+        : "The provided files or resume links did not contain any applicants";
+      throw createError(errorMsg, 422);
     }
 
-    const docs = parsedApplicants.map((applicant) => ({
-      ...applicant,
-      jobId,
-      source: "upload" as const,
-    }));
+    const docs = parsedApplicants.map((applicant) => {
+      const completeness = checkProfileCompleteness(applicant as any);
+      return {
+        ...applicant,
+        jobId,
+        source: "upload" as const,
+        isIncomplete: completeness.isIncomplete,
+        incompletenessReason: completeness.reason,
+      };
+    });
 
     const savedApplicants = await Applicant.insertMany(docs);
 
     res.status(201).json({
       success: true,
-      message: `${savedApplicants.length} applicants imported successfully`,
+      message: `${savedApplicants.length} applicants imported successfully.${
+        errors.length > 0 ? ` Some errors occurred: ${errors.join(" | ")}` : ""
+      }`,
       data: savedApplicants,
       count: savedApplicants.length,
+      errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
     const typedError = error as { statusCode?: number; name?: string; message?: string };

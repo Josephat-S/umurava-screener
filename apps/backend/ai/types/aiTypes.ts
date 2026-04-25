@@ -84,6 +84,8 @@ export interface CandidateInput {
   };
   resumeText?: string;
   source?: CandidateSource;
+  isIncomplete?: boolean;
+  incompletenessReason?: string;
 }
 
 export interface ScoredCandidate {
@@ -98,6 +100,8 @@ export interface ScoredCandidate {
   source?: CandidateSource;
   confidenceLevel?: ConfidenceLevel;
   confidenceReason?: string;
+  isIncomplete?: boolean;
+  incompletenessReason?: string;
 }
 
 export interface ScreeningOutput {
