@@ -5,6 +5,7 @@ import { buildFinalShortlist } from "../ai/services/rankingService";
 import {
   DEFAULT_SCORING_WEIGHTS,
   filterCandidates,
+  scoreCandidate,
 } from "../ai/services/scoringService";
 import {
   AnalyticsSummary,
@@ -166,10 +167,29 @@ export const triggerScreening = async (
       incompletenessReason: applicant.incompletenessReason || "",
     }));
 
-    const qualifiedCandidates = filterCandidates(candidateInputs, jobInput, undefined, weights);
+    const targetSize = job.shortlistSize || 10;
+    let qualifiedCandidates = filterCandidates(
+      candidateInputs,
+      jobInput,
+      undefined,
+      weights,
+    );
+
+    // Requirement: If the number of qualified candidates is less than the requested shortlist size,
+    // we include more candidates (sorted by their deterministic score) so the AI can fill the 
+    // remaining spots with the "best of the rest", tagging incomplete profiles as requested.
+    if (qualifiedCandidates.length < targetSize) {
+      qualifiedCandidates = [...candidateInputs]
+        .sort(
+          (a, b) =>
+            scoreCandidate(b, jobInput, weights).total -
+            scoreCandidate(a, jobInput, weights).total,
+        )
+        .slice(0, 50);
+    }
 
     if (qualifiedCandidates.length === 0) {
-      throw createError("No candidates met the minimum qualification threshold", 400);
+      throw createError("No applicants available for screening", 400);
     }
 
     const existingResult = await ScreeningResult.findOne({ jobId });

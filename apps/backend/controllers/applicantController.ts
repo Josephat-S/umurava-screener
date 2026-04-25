@@ -26,7 +26,7 @@ const ApplicantPayloadSchema = z.object({
     name: z.string().trim().min(1),
     level: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]),
     yearsOfExperience: z.number().min(0),
-  })).min(1),
+  })).default([]),
   languages: z.array(z.object({
     name: z.string().trim().min(1),
     proficiency: z.enum(["Basic", "Conversational", "Fluent", "Native"]),
@@ -39,14 +39,14 @@ const ApplicantPayloadSchema = z.object({
     description: z.string().trim().min(1),
     technologies: z.array(z.string()).default([]),
     isCurrent: z.boolean().default(false),
-  })).min(1),
+  })).default([]),
   education: z.array(z.object({
     institution: z.string().trim().min(1),
     degree: z.string().trim().min(1),
     fieldOfStudy: z.string().trim().min(1),
     startYear: z.number().int(),
     endYear: z.number().int(),
-  })).min(1),
+  })).default([]),
   certifications: z.array(z.object({
     name: z.string().trim().min(1),
     issuer: z.string().trim().min(1),
@@ -60,7 +60,7 @@ const ApplicantPayloadSchema = z.object({
     link: z.string().trim().url(),
     startDate: z.string().trim().min(1),
     endDate: z.string().trim().min(1),
-  })).min(1),
+  })).default([]),
   availability: z.object({
     status: z.enum(["Available", "Open to Opportunities", "Not Available"]),
     type: z.enum(["Full-time", "Part-time", "Contract"]),
@@ -175,11 +175,16 @@ export const addApplicants = async (
     const { jobId, applicants } = AddApplicantsSchema.parse(req.body);
     await ensureJobExists(jobId);
 
-    const docs = applicants.map((applicant) => ({
-      ...applicant,
-      jobId,
-      source: "platform" as const,
-    }));
+    const docs = applicants.map((applicant) => {
+      const completeness = checkProfileCompleteness(applicant as any);
+      return {
+        ...applicant,
+        jobId,
+        source: "platform" as const,
+        isIncomplete: completeness.isIncomplete,
+        incompletenessReason: completeness.reason,
+      };
+    });
 
     const savedApplicants = await Applicant.insertMany(docs);
 
