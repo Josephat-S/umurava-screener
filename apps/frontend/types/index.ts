@@ -86,6 +86,8 @@ export interface Applicant {
     portfolio?: string;
   };
   source: "platform" | "upload";
+  isIncomplete?: boolean;
+  incompletenessReason?: string;
   createdAt: string;
   updatedAt?: string;
 }
@@ -102,6 +104,8 @@ export interface ScoredCandidate {
   source?: Applicant["source"];
   confidenceLevel?: ConfidenceLevel;
   confidenceReason?: string;
+  isIncomplete?: boolean;
+  incompletenessReason?: string;
 }
 
 export interface ScreeningHistoryEntry {

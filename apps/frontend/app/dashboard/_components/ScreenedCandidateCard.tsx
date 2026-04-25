@@ -143,6 +143,18 @@ export default function ScreenedCandidateCard({
           </p>
         </section>
       </div>
+
+      {candidate.isIncomplete && (
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 shadow-sm sm:p-4">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-red-700 sm:text-xs">
+            Incomplete Resume
+          </p>
+          <p className="min-w-0 break-words [overflow-wrap:anywhere] text-xs leading-5 text-red-800 sm:text-sm sm:leading-6">
+            {candidate.incompletenessReason ||
+              "This candidate's resume or profile is missing critical information."}
+          </p>
+        </div>
+      )}
     </article>
   );
 }

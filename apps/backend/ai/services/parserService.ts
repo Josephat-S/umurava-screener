@@ -95,9 +95,38 @@ const buildResumeCandidate = (
   };
 };
 
+export async function performOCR(buffer: Buffer): Promise<string> {
+  try {
+    const prompt = "Extract all text from this scanned document accurately. Maintain the structure where possible.";
+    const { text } = await generateGeminiText(prompt, {
+      data: buffer.toString("base64"),
+      mimeType: "application/pdf",
+    });
+    return text.replace(/\s+/g, " ").trim();
+  } catch (error) {
+    const message = (error as Error).message;
+    throw new Error(`Gemini OCR failed: ${message}`);
+  }
+}
+
 export async function parsePDF(buffer: Buffer): Promise<string> {
-  const data = await pdfParse(buffer);
-  return data.text.replace(/\s+/g, " ").trim();
+  try {
+    const data = await pdfParse(buffer);
+    const text = data.text.replace(/\s+/g, " ").trim();
+
+    if (text.length > 100) {
+      return text;
+    }
+
+    // Attempt OCR if text is too short (likely scanned)
+    return await performOCR(buffer);
+  } catch (error) {
+    const message = (error as Error).message;
+    if (message.includes("not a PDF")) {
+      throw new Error("The file is not a valid PDF document.");
+    }
+    throw new Error(`Failed to parse PDF: ${message}`);
+  }
 }
 
 export async function parseJobDescriptionWithAI(

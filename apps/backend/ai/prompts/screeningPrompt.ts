@@ -39,6 +39,8 @@ For each shortlisted candidate, provide:
 - strengths: 2-3 sentences on why they are a strong fit
 - gaps: 1-2 sentences on what they are missing or where they fall short
 - recommendation: 1 clear sentence - a final hiring recommendation for the recruiter
+- isIncomplete: boolean, true if the candidate profile or resume is significantly lacking information
+- incompletenessReason: if isIncomplete is true, a brief explanation of what's missing
 
 ## Candidates
 ${JSON.stringify(candidates, null, 2)}
@@ -54,7 +56,9 @@ Example structure:
     "matchScore": 87,
     "strengths": "Strong React and TypeScript skills. 5 years of relevant experience.",
     "gaps": "No formal computer science degree, though self-taught with strong portfolio.",
-    "recommendation": "Highly recommended - meets all core requirements and brings relevant industry experience."
+    "recommendation": "Highly recommended - meets all core requirements and brings relevant industry experience.",
+    "isIncomplete": false,
+    "incompletenessReason": ""
   }
 ]
 `.trim();
