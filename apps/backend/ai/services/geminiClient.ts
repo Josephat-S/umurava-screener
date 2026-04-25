@@ -71,6 +71,7 @@ function wait(ms: number): Promise<void> {
 
 export async function generateGeminiText(
   prompt: string,
+  inlineData?: { data: string; mimeType: string },
 ): Promise<{ text: string; model: string }> {
   const client = getGeminiClient();
   const models = getGeminiModels();
@@ -81,7 +82,9 @@ export async function generateGeminiText(
     for (let attempt = 1; attempt <= MAX_ATTEMPTS_PER_MODEL; attempt += 1) {
       try {
         const model = client.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(
+          inlineData ? [prompt, { inlineData }] : prompt,
+        );
 
         return {
           text: result.response.text(),

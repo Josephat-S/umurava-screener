@@ -57,10 +57,25 @@ export default function AIScreeningPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
-          <div className="rounded-xl border border-gray-100 bg-white px-6 py-16 text-center text-gray-400 shadow-md">
-            Loading screening view...
+        <div className="mx-auto min-h-screen w-full max-w-6xl overflow-x-hidden bg-gray-200 px-2 py-2 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:pr-8 2xl:pr-10 animate-pulse">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
+              <div className="h-4 w-64 bg-gray-300 rounded"></div>
+            </div>
+            <div className="flex w-full flex-col gap-2 md:flex-row md:items-center md:justify-end md:gap-3">
+              <div className="h-10 w-full md:w-64 bg-gray-300 rounded-lg"></div>
+              <div className="h-10 w-full md:w-32 bg-gray-300 rounded-lg"></div>
+              <div className="h-10 w-full md:w-32 bg-gray-300 rounded-lg"></div>
+            </div>
           </div>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-4 mb-6">
+            <div className="h-28 bg-gray-300 rounded-xl"></div>
+            <div className="h-28 bg-gray-300 rounded-xl"></div>
+            <div className="h-28 bg-gray-300 rounded-xl"></div>
+          </div>
+          <div className="h-32 bg-gray-300 rounded-xl mb-6"></div>
+          <div className="h-[400px] bg-gray-300 rounded-xl"></div>
         </div>
       }
     >
@@ -323,8 +338,14 @@ function AIScreeningPageContent() {
       </div>
 
       {jobsLoading ? (
-        <div className="rounded-xl border border-gray-100 bg-white px-6 py-14 text-center text-gray-400 shadow-md">
-          Loading jobs...
+        <div className="min-w-0 max-w-full space-y-6 animate-pulse">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-4">
+            <div className="min-h-28 rounded-xl bg-gray-300 shadow-sm"></div>
+            <div className="min-h-28 rounded-xl bg-gray-300 shadow-sm"></div>
+            <div className="min-h-28 rounded-xl bg-gray-300 shadow-sm"></div>
+          </div>
+          <div className="h-32 rounded-xl bg-gray-300 shadow-sm"></div>
+          <div className="h-[400px] rounded-xl bg-gray-300 shadow-sm"></div>
         </div>
       ) : jobs.length === 0 ? (
         <EmptyState
@@ -442,8 +463,32 @@ function AIScreeningPageContent() {
 
             <div className="min-w-0 max-w-full p-3 sm:p-6">
               {loading ? (
-                <div className="py-10 text-center text-xs text-gray-400 sm:py-16 sm:text-base">
-                  Loading screening results...
+                <div className="min-w-0 max-w-full space-y-4 animate-pulse">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="rounded-xl border border-gray-100 bg-gray-50/70 p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="h-12 w-12 rounded-full bg-gray-200 shrink-0"></div>
+                        <div className="flex-1 w-full">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
+                            <div>
+                              <div className="h-5 w-48 bg-gray-200 rounded mb-2"></div>
+                              <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                            </div>
+                            <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+                            <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+                            <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+                          </div>
+                          <div className="mt-4 space-y-2">
+                            <div className="h-3 w-full bg-gray-200 rounded"></div>
+                            <div className="h-3 w-5/6 bg-gray-200 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : shortlist.length === 0 ? (
                 <EmptyState

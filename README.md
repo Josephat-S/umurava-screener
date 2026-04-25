@@ -20,6 +20,13 @@ Recruiters can:
 - Review ranked Top 10 or Top 20 shortlists with strengths, gaps, and recommendations
 - Compare finalists, export results, and move candidates through hiring stages
 
+## 🔐 Demo Credentials
+
+For testing and evaluation, please use the following recruiter credentials on the login page:
+
+- **Email:** `recruiter@gmail.com`
+- **Password:** `Recruiter@123!`
+
 ## Architecture
 
 Detailed notes live in [docs/architecture.md](docs/architecture.md). High-level flow:

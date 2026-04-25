@@ -50,7 +50,7 @@ export const addStructuredApplicants = createAsyncThunk<
 });
 
 export const uploadApplicantFiles = createAsyncThunk<
-  Applicant[],
+  { data: Applicant[]; message?: string },
   { jobId: string; files: File[]; resumeLinks?: string[] },
   { rejectValue: string }
 >("applicants/upload", async ({ jobId, files, resumeLinks }, { rejectWithValue }) => {
@@ -129,7 +129,7 @@ const applicantSlice = createSlice({
       })
       .addCase(uploadApplicantFiles.fulfilled, (state, action) => {
         state.uploading = false;
-        state.applicants.unshift(...action.payload);
+        state.applicants.unshift(...action.payload.data);
       })
       .addCase(uploadApplicantFiles.rejected, (state, action) => {
         state.uploading = false;

@@ -14,6 +14,7 @@ import {
   Search,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import {
   ChangeEvent,
@@ -39,13 +40,20 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import type { Applicant, StructuredApplicantInput } from "@/types";
 
 const INITIAL_APPLICANT_FORM: StructuredApplicantInput = {
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
+  headline: "",
+  bio: "",
+  location: "",
   skills: [],
-  experienceYears: 0,
-  education: "",
-  currentRole: "",
-  summary: "",
+  experience: [],
+  education: [],
+  projects: [],
+  availability: {
+    status: "Available",
+    type: "Full-time",
+  },
 };
 
 const APPLICANTS_PER_PAGE = 10;
@@ -74,8 +82,18 @@ function truncateSelectLabel(value: string, maxLength = 30): string {
   return `${value.slice(0, maxLength - 1)}...`;
 }
 
-function StatusBadge({ status }: { status: "Screened" | "Parsed" | "New" }) {
+function StatusBadge({
+  status,
+}: {
+  status: "Screened" | "Parsed" | "New" | "Incomplete";
+}) {
   switch (status) {
+    case "Incomplete":
+      return (
+        <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-600 shadow-sm">
+          Incomplete
+        </span>
+      );
     case "Screened":
       return (
         <span className="px-3 py-1 bg-green-50 text-green-600 border border-green-200 rounded-full text-xs font-medium">
@@ -101,10 +119,16 @@ export default function CandidatesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-            Loading candidates...
+        <div className="min-h-screen bg-gray-200 p-4 sm:p-6 lg:p-8 animate-pulse">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="h-8 w-48 bg-gray-300 rounded mb-2"></div>
+              <div className="h-4 w-64 bg-gray-300 rounded"></div>
+            </div>
+            <div className="h-10 w-full sm:w-64 bg-gray-300 rounded-lg"></div>
           </div>
+          <div className="w-full h-24 bg-gray-300 rounded-xl mb-6"></div>
+          <div className="w-full h-96 bg-gray-300 rounded-xl"></div>
         </div>
       }
     >
@@ -133,6 +157,7 @@ function CandidatesPageContent() {
   const [activeTab, setActiveTab] = useState<"structured" | "external">("structured");
   const [selectedJobId, setSelectedJobId] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -154,7 +179,7 @@ function CandidatesPageContent() {
   }, [dispatch]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (isDropdownOpen) {
         setIsDropdownOpen(false);
       }
@@ -212,11 +237,12 @@ function CandidatesPageContent() {
       .filter((applicant) => applicant.source === sourceType)
       .filter((applicant) => {
         const haystack = [
-          applicant.name,
+          applicant.firstName,
+          applicant.lastName,
           applicant.email,
-          applicant.currentRole || "",
-          applicant.education,
-          applicant.skills.join(" "),
+          applicant.headline,
+          applicant.location,
+          applicant.skills.map(s => s.name).join(" "),
         ]
           .join(" ")
           .toLowerCase();
@@ -268,15 +294,15 @@ function CandidatesPageContent() {
 
     setStructuredForm((previous) => ({
       ...previous,
-      skills: Array.from(new Set([...previous.skills, value])),
+      skills: [...previous.skills, { name: value, level: "Intermediate", yearsOfExperience: 0 }],
     }));
     setSkillsInput("");
   };
 
-  const removeSkill = (skill: string) => {
+  const removeSkill = (skillName: string) => {
     setStructuredForm((previous) => ({
       ...previous,
-      skills: previous.skills.filter((item) => item !== skill),
+      skills: previous.skills.filter((item) => item.name !== skillName),
     }));
   };
 
@@ -289,10 +315,9 @@ function CandidatesPageContent() {
     }
 
     try {
-      const applicantPayload = {
+      const applicantPayload: StructuredApplicantInput = {
         ...structuredForm,
-        currentRole: structuredForm.currentRole || undefined,
-        summary: structuredForm.summary || undefined,
+        bio: structuredForm.bio || undefined,
       };
 
       await dispatch(
@@ -305,6 +330,7 @@ function CandidatesPageContent() {
       setStructuredForm(INITIAL_APPLICANT_FORM);
       setSkillsInput("");
       setPaginationState({ key: paginationKey, page: 1 });
+      setIsAddModalOpen(false); // Close the modal on success
     } catch (submitError) {
       toast.error((submitError as Error).message || "Failed to add applicant");
     }
@@ -339,13 +365,14 @@ function CandidatesPageContent() {
       setPaginationState({ key: paginationKey, page: 1 });
       setLatestImport({
         jobId: activeJobId,
-        count: result.length,
+        count: result.data.length,
       });
       if (resumeLinks.length > 0) {
         setResumeLinksInput("");
       }
       toast.success(
-        `${result.length} applicants imported to ${selectedJob?.title || "the selected job"}.`,
+        result.message ||
+          `${result.data.length} applicants imported to ${selectedJob?.title || "the selected job"}.`,
       );
     } catch (uploadError) {
       toast.error((uploadError as Error).message || "Import failed");
@@ -376,7 +403,7 @@ function CandidatesPageContent() {
     }
 
     const shouldDelete = window.confirm(
-      `Delete ${applicant.name} from ${selectedJob?.title || "this job"}?`,
+      `Delete ${applicant.firstName} ${applicant.lastName} from ${selectedJob?.title || "this job"}?`,
     );
 
     if (!shouldDelete) {
@@ -429,8 +456,73 @@ function CandidatesPageContent() {
     }
   };
 
+  const renderTableSkeleton = () => (
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-pulse">
+      <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
+        <div className="h-6 w-48 bg-gray-200 rounded"></div>
+        <div className="flex w-full sm:w-auto gap-3">
+          <div className="h-9 w-full sm:w-48 md:w-64 bg-gray-200 rounded-lg"></div>
+          <div className="h-9 w-full sm:w-24 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+      
+      {/* Mobile Skeleton */}
+      <div className="space-y-3 p-4 md:hidden">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-gray-100 p-4">
+            <div className="flex justify-between gap-3 mb-3">
+              <div>
+                <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 w-40 bg-gray-200 rounded"></div>
+              </div>
+              <div className="h-4 w-10 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-2 mb-3">
+              <div className="h-3 w-3/4 bg-gray-200 rounded"></div>
+              <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+              <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Skeleton */}
+      <div className="hidden w-full overflow-x-auto md:block">
+        <table className="w-full min-w-[640px] text-left border-collapse">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="py-4 pl-6 pr-4"><div className="h-4 w-24 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-20 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-32 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-24 bg-gray-200 rounded"></div></th>
+              <th className="py-4 px-4"><div className="h-4 w-16 bg-gray-200 rounded"></div></th>
+              <th className="py-4 pl-4 pr-6"><div className="h-4 w-16 bg-gray-200 rounded ml-auto"></div></th>
+            </tr>
+          </thead>
+          <tbody>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <tr key={i} className="border-b border-gray-50">
+                <td className="py-4 pl-6 pr-4">
+                  <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-3 w-40 bg-gray-200 rounded"></div>
+                </td>
+                <td className="py-4 px-4"><div className="h-4 w-12 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-4 w-48 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-4 w-20 bg-gray-200 rounded"></div></td>
+                <td className="py-4 px-4"><div className="h-6 w-16 bg-gray-200 rounded-full"></div></td>
+                <td className="py-4 pl-4 pr-6"><div className="h-8 w-20 bg-gray-200 rounded-lg ml-auto"></div></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   const renderTable = (rows: Applicant[]) => (
-    /* Upgraded to shadow-md */
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-in fade-in duration-300">
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100">
         <h2 className="min-w-0 break-words text-lg font-bold text-[#3b82f6]">
@@ -465,8 +557,9 @@ function CandidatesPageContent() {
           <div className="space-y-3 p-4 md:hidden">
             {rows.map((applicant) => {
               const score = screeningMap.get(applicant._id);
-              const status =
-                typeof score === "number"
+              const status = applicant.isIncomplete
+                ? "Incomplete"
+                : typeof score === "number"
                   ? "Screened"
                   : applicant.source === "upload"
                     ? "Parsed"
@@ -479,7 +572,7 @@ function CandidatesPageContent() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="break-words text-sm font-semibold text-gray-800">{applicant.name}</p>
+                      <p className="break-words text-sm font-semibold text-gray-800">{applicant.firstName} {applicant.lastName}</p>
                       <p className="mt-1 break-all text-xs text-gray-400">{applicant.email}</p>
                     </div>
                     <span className={`shrink-0 text-sm ${getScoreColor(score)}`}>
@@ -531,8 +624,9 @@ function CandidatesPageContent() {
               <tbody>
                 {rows.map((applicant) => {
                   const score = screeningMap.get(applicant._id);
-                  const status =
-                    typeof score === "number"
+                  const status = applicant.isIncomplete
+                    ? "Incomplete"
+                    : typeof score === "number"
                       ? "Screened"
                       : applicant.source === "upload"
                         ? "Parsed"
@@ -545,7 +639,7 @@ function CandidatesPageContent() {
                     >
                       <td className="py-4 pl-6 pr-4">
                         <div className="min-w-0 max-w-[14rem] sm:max-w-[18rem]">
-                          <p className="truncate text-sm font-medium text-gray-800" title={applicant.name}>{applicant.name}</p>
+                          <p className="truncate text-sm font-medium text-gray-800" title={`${applicant.firstName} ${applicant.lastName}`}>{applicant.firstName} {applicant.lastName}</p>
                           <p className="mt-1 truncate text-xs text-gray-400" title={applicant.email}>{applicant.email}</p>
                         </div>
                       </td>
@@ -682,7 +776,6 @@ function CandidatesPageContent() {
       </div>
 
       {!jobsLoading && jobs.length === 0 ? (
-        /* Upgraded to shadow-md */
         <div className="rounded-xl border border-dashed border-gray-200 bg-white px-6 py-14 text-center shadow-md">
           <p className="text-lg font-medium text-gray-700">You need a job first.</p>
           <p className="text-sm text-gray-400 mt-2">
@@ -703,7 +796,6 @@ function CandidatesPageContent() {
             </div>
           )}
 
-          {/* Upgraded to shadow-md */}
           <div className="mb-6 w-full min-w-0 rounded-xl border border-gray-100 bg-white p-4 shadow-md sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0">
@@ -765,166 +857,198 @@ function CandidatesPageContent() {
 
           {activeTab === "structured" ? (
             <div className="space-y-6">
-              {/* Upgraded to shadow-md */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6">
-                <div className="mb-6 flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-bold text-[#3b82f6]">
-                      Add Structured Applicant
-                    </h2>
-                    <p className="mt-1 break-words text-sm text-gray-500">
-                      Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
-                    </p>
-                  </div>
-                  <div className="rounded-full bg-blue-50 p-3 text-blue-700">
-                    <Plus className="h-5 w-5" />
-                  </div>
+              
+              {/* Trigger Card for the Modal */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-bold text-[#3b82f6]">
+                    Add Structured Applicant
+                  </h2>
+                  <p className="mt-1 break-words text-sm text-gray-500">
+                    Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
+                  </p>
                 </div>
-
-                <form className="space-y-4" onSubmit={handleStructuredSubmit}>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <input
-                      type="text"
-                      value={structuredForm.name}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          name: event.target.value,
-                        }))
-                      }
-                      placeholder="Candidate name"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                    <input
-                      type="email"
-                      value={structuredForm.email}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          email: event.target.value,
-                        }))
-                      }
-                      placeholder="Email address"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <input
-                      type="text"
-                      value={structuredForm.currentRole || ""}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          currentRole: event.target.value,
-                        }))
-                      }
-                      placeholder="Current role"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      value={structuredForm.experienceYears}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          experienceYears: Number(event.target.value),
-                        }))
-                      }
-                      placeholder="Years of experience"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                    />
-                    <input
-                      type="text"
-                      value={structuredForm.education}
-                      onChange={(event) =>
-                        setStructuredForm((previous) => ({
-                          ...previous,
-                          education: event.target.value,
-                        }))
-                      }
-                      placeholder="Education"
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <input
-                        type="text"
-                        value={skillsInput}
-                        onChange={(event) => setSkillsInput(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            addSkill();
-                          }
-                        }}
-                        placeholder="Add skill and press Enter"
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={addSkill}
-                        className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center shadow-sm"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {structuredForm.skills.map((skill) => (
-                        <button
-                          key={skill}
-                          type="button"
-                          onClick={() => removeSkill(skill)}
-                          className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100"
-                        >
-                          {skill} ×
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <textarea
-                    rows={4}
-                    value={structuredForm.summary || ""}
-                    onChange={(event) =>
-                      setStructuredForm((previous) => ({
-                        ...previous,
-                        summary: event.target.value,
-                      }))
-                    }
-                    placeholder="Candidate summary"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y shadow-sm"
-                  />
-
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={adding}
-                      className="w-full rounded-lg bg-[#3b82f6] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 shadow-sm sm:w-auto"
-                    >
-                      {adding ? "Saving..." : "Add Applicant"}
-                    </button>
-                  </div>
-                </form>
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="shrink-0 rounded-full bg-blue-50 p-3 text-blue-700 hover:bg-blue-100 transition-colors"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
               </div>
 
-              {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-                  Loading applicants...
+              {/* Popup Modal for Add Applicant Form */}
+              {isAddModalOpen && (
+                <div 
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/60 p-4 sm:p-6"
+                  onClick={() => setIsAddModalOpen(false)}
+                >
+                  <div 
+                    className="w-full max-w-3xl max-h-full sm:max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl p-6 relative flex flex-col"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button 
+                      onClick={() => setIsAddModalOpen(false)}
+                      className="absolute top-6 right-6 p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 rounded-lg transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+
+                    <div className="mb-6 pr-8 shrink-0">
+                      <h2 className="text-xl font-bold text-[#3b82f6]">
+                        Add Structured Applicant
+                      </h2>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Add a candidate profile directly for {selectedJob?.title || "the selected role"}.
+                      </p>
+                    </div>
+
+                    <form className="space-y-4" onSubmit={handleStructuredSubmit}>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <input
+                          type="text"
+                          value={structuredForm.firstName}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              firstName: event.target.value,
+                            }))
+                          }
+                          placeholder="First name"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={structuredForm.lastName}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              lastName: event.target.value,
+                            }))
+                          }
+                          placeholder="Last name"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                        <input
+                          type="email"
+                          value={structuredForm.email}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              email: event.target.value,
+                            }))
+                          }
+                          placeholder="Email address"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <input
+                          type="text"
+                          value={structuredForm.headline}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              headline: event.target.value,
+                            }))
+                          }
+                          placeholder="Headline (e.g. Backend Engineer)"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={structuredForm.location}
+                          onChange={(event) =>
+                            setStructuredForm((previous) => ({
+                              ...previous,
+                              location: event.target.value,
+                            }))
+                          }
+                          placeholder="Location"
+                          className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <input
+                            type="text"
+                            value={skillsInput}
+                            onChange={(event) => setSkillsInput(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                addSkill();
+                              }
+                            }}
+                            placeholder="Add skill and press Enter"
+                            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm shadow-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={addSkill}
+                            className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-500 transition-colors flex items-center justify-center shadow-sm"
+                          >
+                            <Plus className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {structuredForm.skills.map((skill) => (
+                            <button
+                              key={skill.name}
+                              type="button"
+                              onClick={() => removeSkill(skill.name)}
+                              className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100"
+                            >
+                              {skill.name} ×
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <textarea
+                        rows={4}
+                        value={structuredForm.bio || ""}
+                        onChange={(event) =>
+                          setStructuredForm((previous) => ({
+                            ...previous,
+                            bio: event.target.value,
+                          }))
+                        }
+                        placeholder="Candidate summary"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors text-sm resize-y shadow-sm"
+                      />
+
+                      <div className="flex justify-end pt-4 border-t border-gray-100 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddModalOpen(false)}
+                          className="w-full rounded-lg bg-white border border-gray-200 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 shadow-sm sm:w-auto mr-3"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={adding}
+                          className="w-full rounded-lg bg-[#3b82f6] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2563eb] disabled:bg-[#3b82f6]/40 shadow-sm sm:w-auto"
+                        >
+                          {adding ? "Saving..." : "Add Applicant"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
-              ) : (
-                renderTable(visibleApplicants)
               )}
+
+              {loading ? renderTableSkeleton() : renderTable(visibleApplicants)}
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Upgraded to shadow-md */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-md p-4 sm:p-6 lg:p-10 animate-in fade-in duration-300">
                 <h2 className="text-lg font-bold text-[#3b82f6] mb-2">
                   Import Applicants from External Sources
@@ -1089,13 +1213,7 @@ function CandidatesPageContent() {
                 </div>
               )}
 
-              {loading ? (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-md px-6 py-16 text-center text-gray-400">
-                  Loading applicants...
-                </div>
-              ) : (
-                renderTable(visibleApplicants)
-              )}
+              {loading ? renderTableSkeleton() : renderTable(visibleApplicants)}
             </div>
           )}
         </>

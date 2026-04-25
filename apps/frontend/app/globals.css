@@ -8,12 +8,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* 1. Map the Work Sans variable to Tailwind's sans font family */
+  --font-sans: var(--font-work-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  /* 2. Set the global body font to Work Sans */
+  font-family: var(--font-work-sans), Arial, Helvetica, sans-serif;
+  font-optical-sizing: auto;
 }

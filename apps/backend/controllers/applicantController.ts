@@ -6,6 +6,7 @@ import {
   parseResumeLinks,
   parseSpreadsheet,
 } from "../ai/services/parserService";
+import { checkProfileCompleteness } from "../ai/services/scoringService";
 import { createError } from "../middleware/errorHandler";
 import { Applicant } from "../models/Applicant";
 import { Job } from "../models/Job";
@@ -15,14 +16,62 @@ const normalizeStringArray = (values: string[]) =>
   values.map((value) => value.trim()).filter(Boolean);
 
 const ApplicantPayloadSchema = z.object({
-  name: z.string().trim().min(1),
+  firstName: z.string().trim().min(1),
+  lastName: z.string().trim().min(1),
   email: z.string().trim().email(),
-  skills: z.array(z.string()).default([]).transform(normalizeStringArray),
-  experienceYears: z.coerce.number().min(0).default(0),
-  education: z.string().trim().min(1),
-  currentRole: z.string().trim().min(1).optional(),
-  summary: z.string().trim().min(1).optional(),
-  resumeText: z.string().trim().min(1).optional(),
+  headline: z.string().trim().min(1),
+  bio: z.string().trim().optional(),
+  location: z.string().trim().min(1),
+  skills: z.array(z.object({
+    name: z.string().trim().min(1),
+    level: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]),
+    yearsOfExperience: z.number().min(0),
+  })).default([]),
+  languages: z.array(z.object({
+    name: z.string().trim().min(1),
+    proficiency: z.enum(["Basic", "Conversational", "Fluent", "Native"]),
+  })).optional(),
+  experience: z.array(z.object({
+    company: z.string().trim().min(1),
+    role: z.string().trim().min(1),
+    startDate: z.string().trim().min(1),
+    endDate: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    technologies: z.array(z.string()).default([]),
+    isCurrent: z.boolean().default(false),
+  })).default([]),
+  education: z.array(z.object({
+    institution: z.string().trim().min(1),
+    degree: z.string().trim().min(1),
+    fieldOfStudy: z.string().trim().min(1),
+    startYear: z.number().int(),
+    endYear: z.number().int(),
+  })).default([]),
+  certifications: z.array(z.object({
+    name: z.string().trim().min(1),
+    issuer: z.string().trim().min(1),
+    issueDate: z.string().trim().min(1),
+  })).optional(),
+  projects: z.array(z.object({
+    name: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    technologies: z.array(z.string()).default([]),
+    role: z.string().trim().min(1),
+    link: z.string().trim().url(),
+    startDate: z.string().trim().min(1),
+    endDate: z.string().trim().min(1),
+  })).default([]),
+  availability: z.object({
+    status: z.enum(["Available", "Open to Opportunities", "Not Available"]),
+    type: z.enum(["Full-time", "Part-time", "Contract"]),
+    startDate: z.string().trim().optional(),
+  }),
+  socialLinks: z.object({
+    linkedin: z.string().trim().url().optional(),
+    github: z.string().trim().url().optional(),
+    portfolio: z.string().trim().url().optional(),
+  }).optional(),
+  resumeText: z.string().trim().optional(),
 });
 
 const AddApplicantsSchema = z.object({
@@ -65,13 +114,20 @@ const sanitizeParsedApplicant = (
   applicant: Partial<z.infer<typeof ApplicantPayloadSchema>>,
   index: number,
 ) => ({
-  name: applicant.name?.trim() || `Uploaded Candidate ${index + 1}`,
+  firstName: applicant.firstName?.trim() || "Candidate",
+  lastName: applicant.lastName?.trim() || String(index + 1),
   email: applicant.email?.trim() || `uploaded-${Date.now()}-${index}@placeholder.local`,
-  skills: applicant.skills?.map((skill) => skill.trim()).filter(Boolean) || [],
-  experienceYears: applicant.experienceYears ?? 0,
-  education: applicant.education?.trim() || "Not provided",
-  currentRole: applicant.currentRole?.trim() || undefined,
-  summary: applicant.summary?.trim() || undefined,
+  headline: applicant.headline?.trim() || "Professional",
+  bio: applicant.bio?.trim() || undefined,
+  location: applicant.location?.trim() || "Remote",
+  skills: applicant.skills || [],
+  languages: applicant.languages || [],
+  experience: applicant.experience || [],
+  education: applicant.education || [],
+  certifications: applicant.certifications || [],
+  projects: applicant.projects || [],
+  availability: applicant.availability || { status: "Open to Opportunities", type: "Full-time" },
+  socialLinks: applicant.socialLinks || {},
   resumeText: applicant.resumeText?.trim() || undefined,
 });
 
@@ -119,11 +175,16 @@ export const addApplicants = async (
     const { jobId, applicants } = AddApplicantsSchema.parse(req.body);
     await ensureJobExists(jobId);
 
-    const docs = applicants.map((applicant) => ({
-      ...applicant,
-      jobId,
-      source: "platform" as const,
-    }));
+    const docs = applicants.map((applicant) => {
+      const completeness = checkProfileCompleteness(applicant as any);
+      return {
+        ...applicant,
+        jobId,
+        source: "platform" as const,
+        isIncomplete: completeness.isIncomplete,
+        incompletenessReason: completeness.reason,
+      };
+    });
 
     const savedApplicants = await Applicant.insertMany(docs);
 
@@ -154,55 +215,80 @@ export const uploadApplicants = async (
     }
 
     const parsedApplicants: Array<ReturnType<typeof sanitizeParsedApplicant>> = [];
+    const errors: string[] = [];
+
     const pdfFiles = files.filter((file) => file.mimetype === "application/pdf");
     const spreadsheetFiles = files.filter(
       (file) => file.mimetype !== "application/pdf",
     );
 
     if (pdfFiles.length > 0) {
-      const parsedPDFApplicants = await parsePDFResumes(pdfFiles);
-      parsedApplicants.push(
-        ...parsedPDFApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedPDFApplicants = await parsePDFResumes(pdfFiles);
+        parsedApplicants.push(
+          ...parsedPDFApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`PDF parsing failed: ${(error as Error).message}`);
+      }
     }
 
     for (const file of spreadsheetFiles) {
-      const parsedSpreadsheetApplicants = parseSpreadsheet(file.buffer);
-      parsedApplicants.push(
-        ...parsedSpreadsheetApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedSpreadsheetApplicants = parseSpreadsheet(file.buffer);
+        parsedApplicants.push(
+          ...parsedSpreadsheetApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`Spreadsheet (${file.originalname}) parsing failed: ${(error as Error).message}`);
+      }
     }
 
     if (resumeLinks.length > 0) {
-      const parsedLinkedApplicants = await parseResumeLinks(resumeLinks);
-      parsedApplicants.push(
-        ...parsedLinkedApplicants.map((applicant, index) =>
-          sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
-        ),
-      );
+      try {
+        const parsedLinkedApplicants = await parseResumeLinks(resumeLinks);
+        parsedApplicants.push(
+          ...parsedLinkedApplicants.map((applicant, index) =>
+            sanitizeParsedApplicant(applicant, parsedApplicants.length + index),
+          ),
+        );
+      } catch (error) {
+        errors.push(`Resume link parsing failed: ${(error as Error).message}`);
+      }
     }
 
     if (parsedApplicants.length === 0) {
-      throw createError("The provided files or resume links did not contain any applicants", 422);
+      const errorMsg = errors.length > 0
+        ? `Import failed: ${errors.join(" | ")}`
+        : "The provided files or resume links did not contain any applicants";
+      throw createError(errorMsg, 422);
     }
 
-    const docs = parsedApplicants.map((applicant) => ({
-      ...applicant,
-      jobId,
-      source: "upload" as const,
-    }));
+    const docs = parsedApplicants.map((applicant) => {
+      const completeness = checkProfileCompleteness(applicant as any);
+      return {
+        ...applicant,
+        jobId,
+        source: "upload" as const,
+        isIncomplete: completeness.isIncomplete,
+        incompletenessReason: completeness.reason,
+      };
+    });
 
     const savedApplicants = await Applicant.insertMany(docs);
 
     res.status(201).json({
       success: true,
-      message: `${savedApplicants.length} applicants imported successfully`,
+      message: `${savedApplicants.length} applicants imported successfully.${
+        errors.length > 0 ? ` Some errors occurred: ${errors.join(" | ")}` : ""
+      }`,
       data: savedApplicants,
       count: savedApplicants.length,
+      errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
     const typedError = error as { statusCode?: number; name?: string; message?: string };
