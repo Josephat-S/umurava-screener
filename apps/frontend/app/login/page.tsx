@@ -12,11 +12,17 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (email !== "recruiter@gmail.com" || password !== "Recruiter@123!") {
+      alert("Please use the provided demo credentials: recruiter@gmail.com / Recruiter@123!");
+      return;
+    }
+
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       window.location.href = "/dashboard";
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -71,7 +77,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:border-[#523bf4] focus:ring-2 focus:ring-[#523bf4]/10 transition-all"
-                    placeholder="you@company.com"
+                    placeholder="recruiter@gmail.com"
                   />
                 </div>
               </div>
@@ -96,7 +102,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-3 pr-10 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none focus:border-[#523bf4] focus:ring-2 focus:ring-[#523bf4]/10 transition-all"
-                    placeholder="Enter your password"
+                    placeholder="Recruiter@123!"
                   />
                   <button
                     type="button"
@@ -175,6 +181,22 @@ export default function LoginPage() {
                 </svg>
                 <span className="text-xs font-semibold text-gray-700">GitHub</span>
               </button>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700 mb-2">
+                Demo Credentials
+              </p>
+              <div className="space-y-1">
+                <p className="text-xs text-gray-600 flex justify-between">
+                  <span className="font-medium text-gray-500">Email:</span>
+                  <code className="bg-white px-1.5 py-0.5 rounded border border-blue-100">recruiter@gmail.com</code>
+                </p>
+                <p className="text-xs text-gray-600 flex justify-between">
+                  <span className="font-medium text-gray-500">Password:</span>
+                  <code className="bg-white px-1.5 py-0.5 rounded border border-blue-100">Recruiter@123!</code>
+                </p>
+              </div>
             </div>
 
             <p className="mt-6 text-center text-xs text-gray-400 leading-relaxed">
