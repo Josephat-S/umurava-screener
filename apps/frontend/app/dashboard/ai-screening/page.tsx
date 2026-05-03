@@ -34,7 +34,7 @@ import {
   updateScreeningCandidateStatus,
 } from "@/store/slices/screeningSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type { CandidateStatus } from "@/types";
+import type { CandidateStatus, ScoredCandidate } from "@/types";
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
