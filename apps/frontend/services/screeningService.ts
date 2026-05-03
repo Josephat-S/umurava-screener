@@ -12,7 +12,7 @@ import type {
 export const screeningService = {
   async trigger(jobId: string, weights: ScoringWeights): Promise<ScoredCandidate[]> {
     const response = await api.post<ApiResponse<ScoredCandidate[]>>(
-      `/api/screening/${jobId}`,
+      `/api/screening/run/${jobId}`,
       { weights },
     );
     return response.data.data || [];
@@ -56,5 +56,26 @@ export const screeningService = {
       "/api/screening/analytics/summary",
     );
     return response.data.data as AnalyticsSummary;
+  },
+
+  async sendCandidateEmail(
+    jobId: string,
+    candidateId: string,
+    subject: string,
+    body: string,
+  ): Promise<void> {
+    await api.post("/api/screening/send-email", {
+      candidateId,
+      subject,
+      body,
+    });
+  },
+
+  async getComparisonInsight(jobId: string, candidateIds: string[]): Promise<string> {
+    const response = await api.post<ApiResponse<string>>(
+      "/api/screening/compare-insight",
+      { jobId, candidateIds },
+    );
+    return response.data.data as string;
   },
 };
