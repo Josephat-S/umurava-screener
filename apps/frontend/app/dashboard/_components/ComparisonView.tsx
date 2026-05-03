@@ -1,9 +1,12 @@
 "use client";
 
-import { X } from "lucide-react";
+import { X, Sparkles, Loader2 } from "lucide-react";
 import type { ScoredCandidate } from "@/types";
+import { useState } from "react";
+import { screeningService } from "@/services/screeningService";
 
 interface ComparisonViewProps {
+  jobId: string;
   candidates: ScoredCandidate[];
   onClose: () => void;
 }
@@ -23,9 +26,27 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 export default function ComparisonView({
+  jobId,
   candidates,
   onClose,
 }: ComparisonViewProps) {
+  const [insight, setInsight] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const generateInsight = async () => {
+    setIsLoading(true);
+    try {
+      const result = await screeningService.getComparisonInsight(
+        jobId,
+        candidates.map((c) => c.candidateId),
+      );
+      setInsight(result);
+    } catch (error) {
+      console.error("Failed to generate insight", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
       <div className="max-h-[90vh] w-full max-w-5xl overflow-x-hidden overflow-y-auto rounded-2xl bg-white shadow-2xl">
@@ -47,6 +68,54 @@ export default function ComparisonView({
         </div>
 
         <div className="w-full overflow-x-auto p-4 sm:p-6">
+          <div className="mb-6 flex flex-col items-center justify-center rounded-2xl border border-blue-100 bg-blue-50/50 p-6 text-center">
+            {insight ? (
+              <div className="text-left">
+                <div className="mb-3 flex items-center gap-2 text-[#3b82f6]">
+                  <Sparkles className="h-5 w-5" />
+                  <h3 className="font-bold">AI Comparison Insight</h3>
+                </div>
+                <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
+                  {insight}
+                </div>
+                <button
+                  onClick={() => setInsight(null)}
+                  className="mt-4 text-xs font-semibold text-[#3b82f6] hover:underline"
+                >
+                  Clear and Regenerate
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-[#3b82f6]">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">Need a deeper analysis?</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Let Gemini analyze the nuances between these {candidates.length} candidates
+                  to explain their ranking.
+                </p>
+                <button
+                  onClick={generateInsight}
+                  disabled={isLoading}
+                  className="mt-5 flex items-center gap-2 rounded-xl bg-[#3b82f6] px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Analyzing Candidates...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      Generate AI Comparison Insight
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+
           <table className="min-w-[680px] w-full">
             <thead>
               <tr>

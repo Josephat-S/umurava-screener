@@ -20,6 +20,12 @@ import { createError } from "../middleware/errorHandler";
 import { Applicant } from "../models/Applicant";
 import { Job } from "../models/Job";
 import { ScreeningResult } from "../models/ScreeningResult";
+import { runCandidateComparison } from "../ai/services/comparisonService";
+import {
+  getInterviewInviteTemplate,
+  getRejectionTemplate,
+  sendEmail,
+} from "../services/emailService";
 
 const WeightsSchema = z
   .object({
@@ -282,11 +288,121 @@ export const updateCandidateStatus = async (
     candidate.status = status;
     await result.save();
 
+    // Trigger emails for specific status changes
+    if (status === "interview" || status === "rejected") {
+      const job = await Job.findById(jobId);
+      const applicant = await Applicant.findById(candidateId);
+
+      if (job && applicant && applicant.email) {
+        let emailOptions;
+        if (status === "interview") {
+          emailOptions = getInterviewInviteTemplate(
+            applicant.firstName || "Candidate",
+            job.title,
+          );
+        } else {
+          emailOptions = getRejectionTemplate(
+            applicant.firstName || "Candidate",
+            job.title,
+            candidate.gaps,
+          );
+        }
+
+        emailOptions.to = applicant.email;
+        // Fire and forget email in dev
+        sendEmail(emailOptions).catch((err) =>
+          console.error("Failed to send status update email:", err),
+        );
+      }
+    }
+
     res.json({
       success: true,
-      message: "Candidate status updated",
+      message: `Candidate status updated to ${status}. ${status === "interview" || status === "rejected" ? "Notification email triggered." : ""}`,
       data: result,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendCandidateEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { candidateId, subject, body } = z
+      .object({
+        candidateId: z.string(),
+        subject: z.string().min(1),
+        body: z.string().min(1),
+      })
+      .parse(req.body);
+
+    const applicant = await Applicant.findById(candidateId);
+    if (!applicant || !applicant.email) {
+      throw createError("Applicant not found or has no email", 404);
+    }
+
+    await sendEmail({
+      to: applicant.email,
+      subject,
+      body,
+    });
+
+    res.json({ success: true, message: "Email sent successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getComparisonInsight = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { jobId, candidateIds } = z
+      .object({
+        jobId: z.string(),
+        candidateIds: z.array(z.string()).min(2),
+      })
+      .parse(req.body);
+
+    const job = await Job.findById(jobId);
+    if (!job) throw createError("Job not found", 404);
+
+    const applicants = await Applicant.find({ _id: { $in: candidateIds } });
+    if (applicants.length < 2) {
+      throw createError("Some candidates not found", 404);
+    }
+
+    const jobInput: JobInput = {
+      title: job.title,
+      description: job.description,
+      requirements: job.requirements,
+      skills: job.skills,
+      experienceYears: job.experienceYears,
+      educationLevel: job.educationLevel,
+    };
+
+    const candidateInputs: CandidateInput[] = applicants.map((a) => ({
+      firstName: a.firstName || "Candidate",
+      lastName: a.lastName || "",
+      email: a.email || "",
+      headline: a.headline || "",
+      skills: a.skills || [],
+      experience: a.experience || [],
+      education: a.education || [],
+      projects: a.projects || [],
+      location: a.location || "Unknown",
+      availability: a.availability || { status: "Open to Opportunities", type: "Full-time" },
+    }));
+
+    const insight = await runCandidateComparison(jobInput, candidateInputs);
+
+    res.json({ success: true, data: insight });
   } catch (error) {
     next(error);
   }

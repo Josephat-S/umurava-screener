@@ -1,12 +1,14 @@
 "use client";
 
 import type { ScoredCandidate } from "@/types";
+import { Mail } from "lucide-react";
 
 interface ScreenedCandidateCardProps {
   candidate: ScoredCandidate;
   selectable?: boolean;
   selected?: boolean;
   onToggleSelection?: (candidateId: string) => void;
+  onEmail?: () => void;
 }
 
 function getScoreStyles(score: number) {
@@ -68,6 +70,7 @@ export default function ScreenedCandidateCard({
   selectable = false,
   selected = false,
   onToggleSelection,
+  onEmail,
 }: ScreenedCandidateCardProps) {
   const styles = getScoreStyles(candidate.matchScore);
   const confidence = getConfidenceStyles(candidate);
@@ -94,12 +97,25 @@ export default function ScreenedCandidateCard({
           </div>
         </div>
 
-        <div
-          className={`flex w-full min-w-0 flex-wrap items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold sm:w-auto sm:px-3 sm:text-sm ${styles.badge}`}
-        >
-          <span className="shrink-0">{candidate.matchScore}%</span>
-          <span className="shrink-0">•</span>
-          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{styles.label}</span>
+        <div className="flex items-center gap-2">
+          {onEmail && (
+            <button
+              onClick={onEmail}
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50 hover:text-[#3b82f6]"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              Email
+            </button>
+          )}
+          <div
+            className={`flex w-full min-w-0 flex-wrap items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold sm:w-auto sm:px-3 sm:text-sm ${styles.badge}`}
+          >
+            <span className="shrink-0">{candidate.matchScore}%</span>
+            <span className="shrink-0">•</span>
+            <span className="min-w-0 break-words [overflow-wrap:anywhere]">
+              {styles.label}
+            </span>
+          </div>
         </div>
       </div>
 

@@ -21,6 +21,7 @@ import ScreeningHistory from "../_components/ScreeningHistory";
 import ScreeningProgress from "../_components/ScreeningProgress";
 import ScreeningSummary from "../_components/ScreeningSummary";
 import WeightsSlider from "../_components/WeightsSlider";
+import EmailModal from "../_components/EmailModal";
 import { fetchApplicants } from "@/store/slices/applicantSlice";
 import { fetchJobs } from "@/store/slices/jobSlice";
 import {
@@ -106,8 +107,11 @@ function AIScreeningPageContent() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedComparisonIds, setSelectedComparisonIds] = useState<string[]>([]);
   const [isComparing, setIsComparing] = useState(false);
+  const [emailCandidate, setEmailCandidate] = useState<ScoredCandidate | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     void dispatch(fetchJobs());
   }, [dispatch]);
 
@@ -299,7 +303,7 @@ function AIScreeningPageContent() {
           <button
             type="button"
             onClick={handleRunScreening}
-            disabled={screening || !activeJobId || !hasApplicants || weightsTotal !== 100}
+            disabled={!!(screening || !activeJobId || !hasApplicants || weightsTotal !== 100)}
             className="inline-flex w-full min-h-10 items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:bg-[#3b82f6]/50 disabled:text-white md:w-auto sm:px-5 sm:py-2.5 sm:text-sm"
           >
             {screening ? (
@@ -328,7 +332,7 @@ function AIScreeningPageContent() {
           <button
             type="button"
             onClick={handleClear}
-            disabled={!result || clearing}
+            disabled={!!(!result || clearing)}
             className="inline-flex w-full min-h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 md:w-auto sm:px-4 sm:py-2.5 sm:text-sm"
           >
             <Trash2 className="h-4 w-4" />
@@ -363,7 +367,11 @@ function AIScreeningPageContent() {
             </div>
           )}
 
-          <div className="min-w-0 max-w-full grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-4">
+          {!mounted ? (
+            <div className="h-96 w-full animate-pulse rounded-xl bg-gray-100" />
+          ) : (
+            <>
+              <div className="min-w-0 max-w-full grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-4">
             {/* Card 1: Primary Blue Focus */}
             <div className="min-w-0 min-h-28 rounded-xl border border-[#3b82f6] bg-[#3b82f6] p-3 shadow-md text-white sm:p-6">
               <p className="text-[11px] font-medium text-blue-100 sm:text-sm">Selected Role</p>
@@ -511,6 +519,7 @@ function AIScreeningPageContent() {
                       selectable
                       selected={selectedComparisonIds.includes(candidate.candidateId)}
                       onToggleSelection={toggleCandidateSelection}
+                      onEmail={() => setEmailCandidate(candidate)}
                     />
                   ))}
                 </div>
@@ -537,13 +546,25 @@ function AIScreeningPageContent() {
               />
             </div>
           )}
+            </>
+          )}
         </div>
       )}
 
       {isComparing && selectedCandidates.length >= 2 && (
         <ComparisonView
+          jobId={activeJobId}
           candidates={selectedCandidates}
           onClose={() => setIsComparing(false)}
+        />
+      )}
+
+      {emailCandidate && (
+        <EmailModal
+          jobId={activeJobId}
+          candidate={emailCandidate}
+          jobTitle={selectedJob?.title || "Role"}
+          onClose={() => setEmailCandidate(null)}
         />
       )}
     </div>
